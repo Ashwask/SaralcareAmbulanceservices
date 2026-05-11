@@ -1,0 +1,83 @@
+---
+import Base from "@/layouts/Base.astro";
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+
+const apiPath = join(process.cwd(), "..", "api", "v1", "changelog.json");
+let changelog: any[] = [];
+if (existsSync(apiPath)) {
+  try {
+    changelog = JSON.parse(readFileSync(apiPath, "utf8")).entries ?? [];
+  } catch {
+    changelog = [];
+  }
+}
+---
+
+<Base
+  title="Recent changes — Saralcare Ambulances"
+  description="Every change to the directory, in real time. The audit trail you can read."
+>
+  <h2 style="margin-top: 0.4rem">Recent changes</h2>
+  <p style="max-width: 60ch; color: var(--muted);">
+    Every change to the dataset — verifications, corrections, takedowns,
+    new providers, retired ones — is a commit in our public Git history.
+    This page is a window into that history.
+  </p>
+
+  <section class="card" style="margin-top: 1rem;">
+    <h3 style="margin-top:0">What gets recorded here</h3>
+    <ul>
+      <li>Verification calls — when a record gets flipped to <span class="badge badge--verified">verified</span>.</li>
+      <li>Corrections — phone number, fare, vehicle type, hospital affiliation changes.</li>
+      <li>Takedowns — when a provider asks to be delisted, the archive commit is logged.</li>
+      <li>New listings — additions to the directory.</li>
+      <li>Dispute resolutions — records flagged or annotated after a contested edit.</li>
+    </ul>
+    <p class="small">
+      Want the raw stream? See the <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/commits/main"><code>main</code> branch on GitHub</a> or fetch <a href="/v1/changelog.json"><code>/v1/changelog.json</code></a>.
+    </p>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Latest commits</h3>
+    {changelog.length === 0 ? (
+      <p class="small">No commit history yet — this site hasn't been initialised as a Git repo or hasn't been pushed. Once the repo is public, every change appears here.</p>
+    ) : (
+      <ul class="changelog">
+        {changelog.map((entry) => (
+          <li>
+            <div class="cl-row">
+              <span class="cl-date">{entry.date?.slice(0, 10) ?? "—"}</span>
+              <span class="cl-hash"><a href={`https://github.com/Ashwask/SaralcareAmbulanceservices/commit/${entry.hash}`} target="_blank" rel="noopener"><code>{entry.hash?.slice(0, 7) ?? "—"}</code></a></span>
+            </div>
+            <p class="cl-subject">{entry.subject}</p>
+            <p class="small cl-author">by {entry.author}</p>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Other audit trails</h3>
+    <ul>
+      <li><a href="/freshness">Freshness dashboard</a> — current counts of verified / stale / dead / unverified records.</li>
+      <li><a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a> — human-readable release notes.</li>
+      <li><a href="https://github.com/Ashwask/SaralcareAmbulanceservices/tree/main/decisions"><code>decisions/</code></a> — Architecture Decision Records (why we chose CC BY-NC-SA over ODbL, etc.).</li>
+      <li><a href="https://github.com/Ashwask/SaralcareAmbulanceservices/tree/main/corrections"><code>corrections/</code></a> — public log of takedown / correction / dispute resolutions.</li>
+      <li><a href="https://github.com/Ashwask/SaralcareAmbulanceservices/issues"><code>Issues</code></a> — pending moderation queue, dead-number reports, new-provider submissions.</li>
+    </ul>
+  </section>
+
+  <style>
+    .changelog { list-style: none; padding: 0; margin: 0; }
+    .changelog li { border-left: 2px solid var(--border); padding: 0.2rem 0 0.6rem 0.8rem; margin-left: 0.4rem; position: relative; }
+    .changelog li::before { content: ""; position: absolute; left: -5px; top: 0.5rem; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+    .cl-row { display: flex; gap: 0.8rem; align-items: baseline; }
+    .cl-date { font-family: monospace; font-size: 0.82rem; color: var(--muted); }
+    .cl-hash code { font-size: 0.82rem; }
+    .cl-subject { margin: 0.15rem 0 0; font-weight: 500; }
+    .cl-author { margin: 0.1rem 0 0; font-size: 0.8rem; }
+  </style>
+</Base>

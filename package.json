@@ -1,0 +1,34 @@
+{
+  "name": "saralcare-ambulance-directory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Open, verified directory of ambulance providers in India. CC BY-NC-SA 4.0 data, MIT code.",
+  "license": "SEE LICENSE-CODE, LICENSE-DATA, LICENSE-CONTENT",
+  "homepage": "https://ambulance.saralcare.com",
+  "scripts": {
+    "validate": "tsx scripts/validate.ts",
+    "build-api": "tsx scripts/build-api.ts",
+    "freshness": "tsx scripts/freshness-report.ts",
+    "site:dev": "npm run dev --workspace=site",
+    "site:build": "npm run validate && npm run build-api && npm run freshness && mkdir -p site/public && rm -rf site/public/v1 && cp -r api/v1 site/public/v1 && npm run build --workspace=site",
+    "ingest:google": "tsx scripts/ingest-google-places.ts",
+    "ingest:justdial": "tsx scripts/ingest-justdial.ts",
+    "ingest:osm": "tsx scripts/ingest-osm.ts"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "js-yaml": "^4.1.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "workspaces": [
+    "site"
+  ]
+}

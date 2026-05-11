@@ -1,0 +1,31 @@
+id: apollo-bannerghatta
+name: Apollo Hospitals — Bannerghatta Road
+brand: Apollo Hospitals
+type: multi-speciality
+city: Bengaluru
+state: Karnataka
+address: 154/11 Bannerghatta Road, Opposite IIM-B, Bengaluru 560076
+pincode: '560076'
+lat_lng:
+  - 12.8939
+  - 77.6022
+er_phone: 1860 500 1066
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: apollo-hospitals-ambulance-bangalore
+dispatched_providers:
+  - provider_id: apollo-hospitals-ambulance-bangalore
+    source: https://www.apollohospitals.com (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.apollohospitals.com/bangalore/
+    accessed: '2026-05-11'
+  - type: website
+    url: https://www.apollohospitals.com/locations/india/bangalore/
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: Apollo pan-India helpline; routes to Bannerghatta via IVR.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

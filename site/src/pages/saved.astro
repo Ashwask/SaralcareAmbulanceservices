@@ -1,0 +1,171 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getProviders, badge } from "@/lib/data";
+
+const providers = getProviders();
+const provLite = providers.map((p) => ({
+  id: p.id,
+  brand_name: p.brand_name,
+  phone: p.contact?.phone_24h ?? "",
+  type: p.type,
+  badge: badge(p),
+  last_verified_at: p.last_verified_at ?? null,
+}));
+---
+
+<Base title="Saved providers — Saralcare Ambulances">
+  <h2 style="margin-top: 0.5rem">Your saved providers</h2>
+  <p class="small" style="max-width: 60ch;">
+    Phone numbers you've starred. Stored on this device only — never sent to a server. Works offline once the page has loaded once.
+  </p>
+
+  <div id="saved-empty" hidden style="text-align: center; padding: 2.5rem 1rem; color: var(--muted);">
+    <p style="font-size: 1.1rem; margin: 0 0 0.5rem;">No saved providers yet.</p>
+    <p>Tap the ⭐ star on any provider to save them here.</p>
+    <p style="margin-top: 1rem;"><a class="button secondary" href="/">← Find providers</a></p>
+  </div>
+
+  <div id="saved-grid"></div>
+
+  <section id="stale-section" hidden class="hl-microcopy" style="margin-top: 1rem;">
+    <strong>Verify reminder:</strong> some of your saved numbers haven't been confirmed in over 30 days. Consider calling them once to verify they still work before you need them.
+  </section>
+
+  <section style="margin-top: 1.6rem;">
+    <h3>Share with family</h3>
+    <p class="small" style="max-width: 60ch;">
+      Generate a QR code with your saved providers. Family members scan it on their phone and import the list — no account, no server.
+    </p>
+    <button id="qr-btn" type="button" class="secondary">Generate share QR</button>
+    <div id="qr-out" style="margin-top: 0.6rem;"></div>
+  </section>
+
+  <script is:inline define:vars={{ provLite }}>
+    window.__PROVS_SAVED__ = provLite;
+  </script>
+  <script type="module">
+    const KEY = "sc.amb.saved";
+    const PROVS = window.__PROVS_SAVED__;
+    function read() { try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; } }
+    function write(a) { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch {} }
+    function escape(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+    function ageDays(d) { if (!d) return null; return Math.floor((Date.now() - new Date(d).getTime())/86400000); }
+
+    function render() {
+      const saved = read();
+      const empty = document.getElementById("saved-empty");
+      const grid = document.getElementById("saved-grid");
+      const stale = document.getElementById("stale-section");
+      if (saved.length === 0) { empty.hidden = false; grid.innerHTML = ""; stale.hidden = true; return; }
+      empty.hidden = true;
+
+      let anyStale = false;
+      const html = saved.map((s, i) => {
+        const live = PROVS.find((p) => p.id === s.id);
+        const b = live?.badge ?? "unverified";
+        const phone = live?.phone ?? s.phone;
+        const phoneTel = String(phone || "").replace(/\s+/g, "");
+        const typeLabel = (live?.type ?? s.type ?? "").replace("-", " ");
+        const age = ageDays(live?.last_verified_at);
+        const reminder = (age == null) || age > 30;
+        if (reminder) anyStale = true;
+        return `
+          <article class="pc" data-provider-id="${s.id}">
+            <div class="pc-head">
+              <span class="pc-rank">${i + 1}</span>
+              <div class="pc-meta">
+                <a href="/providers/${s.id}" class="pc-name">${escape(s.brand_name)}</a>
+                <div class="pc-sub">
+                  <span class="badge badge--${b}">${b}</span>
+                  <span class="pc-type">${typeLabel || "ambulance"}</span>
+                  ${age != null ? `<span class="small">· verified ${age}d ago</span>` : `<span class="small">· not verified</span>`}
+                </div>
+              </div>
+              <button class="pc-save saved" type="button" data-provider-id="${s.id}" aria-pressed="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+              </button>
+            </div>
+            <a class="pc-call" href="tel:${phoneTel}">
+              <span class="pc-call-icon">📞</span>
+              <span class="pc-call-num">${escape(phone)}</span>
+            </a>
+            ${reminder ? `<div class="pc-microcopy" style="color: var(--amber);">⚠ Call once to verify this number still works.</div>` : `<div class="pc-microcopy">If you can't reach them, dial <a href="tel:108"><strong>108</strong></a>.</div>`}
+          </article>`;
+      }).join("");
+      grid.innerHTML = html;
+      stale.hidden = !anyStale;
+    }
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest?.(".pc-save");
+      if (!btn) return;
+      const id = btn.dataset.providerId;
+      write(read().filter((p) => p.id !== id));
+      render();
+    });
+
+    document.getElementById("qr-btn")?.addEventListener("click", async () => {
+      const saved = read();
+      if (saved.length === 0) return;
+      // Encode as compact URL param; let the receiver re-hydrate.
+      const compact = saved.map((s) => s.id).join(",");
+      const url = `${location.origin}/saved?import=${encodeURIComponent(compact)}`;
+      const out = document.getElementById("qr-out");
+
+      // Use Google Charts QR endpoint as a static-friendly fallback (works offline once cached).
+      // Alternative: pure-JS QR lib. For v1 simplicity we use a free public endpoint via &lt;img&gt;.
+      // No PII; URL contains only provider IDs.
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(url)}`;
+      out.innerHTML = `
+        <div style="display: inline-block; background: white; padding: 0.8rem; border-radius: 12px; border: 1px solid var(--border);">
+          <img src="${qrUrl}" width="240" height="240" alt="QR code for sharing saved providers" />
+          <p class="small" style="text-align: center; margin: 0.5rem 0 0;">Scan with another phone, then tap "Import" on the page that opens.</p>
+        </div>
+        <p class="small" style="margin-top: 0.5rem; word-break: break-all;"><a href="${url}">${url}</a></p>`;
+    });
+
+    // Import via ?import=
+    (function checkImport() {
+      const params = new URLSearchParams(location.search);
+      const inc = params.get("import");
+      if (!inc) return;
+      const ids = String(inc).split(",").filter(Boolean);
+      const existing = read();
+      const provById = Object.fromEntries(PROVS.map((p) => [p.id, p]));
+      const merged = [...existing];
+      let added = 0;
+      for (const id of ids) {
+        if (merged.some((m) => m.id === id)) continue;
+        const p = provById[id];
+        if (!p) continue;
+        merged.unshift({ id, brand_name: p.brand_name, phone: p.phone, type: p.type, saved_at: new Date().toISOString() });
+        added++;
+      }
+      write(merged.slice(0, 50));
+      if (added > 0) {
+        const note = document.createElement("div");
+        note.className = "hl-microcopy";
+        note.style.margin = "0.8rem 0";
+        note.textContent = `Imported ${added} provider${added === 1 ? "" : "s"}.`;
+        document.querySelector("main .container").prepend(note);
+      }
+      history.replaceState({}, "", "/saved");
+    })();
+
+    render();
+  </script>
+
+  <style is:global>
+    .pc { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px; padding: 0.85rem 0.95rem 0.7rem; margin: 0.55rem 0; display: flex; flex-direction: column; gap: 0.55rem; }
+    .pc-head { display: flex; align-items: flex-start; gap: 0.6rem; }
+    .pc-rank { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: var(--muted); }
+    .pc-meta { flex: 1; min-width: 0; }
+    .pc-name { display: block; font-weight: 600; font-size: 1.02rem; color: var(--fg); text-decoration: none; line-height: 1.2; }
+    .pc-sub { margin-top: 0.25rem; display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; font-size: 0.82rem; color: var(--muted); }
+    .pc-save { background: var(--accent-bg); color: var(--accent); padding: 0.4rem; border: 1px solid var(--accent); border-radius: 8px; flex-shrink: 0; cursor: pointer; }
+    .pc-call { display: flex; align-items: center; justify-content: center; gap: 0.55rem; background: var(--accent); color: white; text-decoration: none; border-radius: 10px; padding: 0.85rem 1rem; font-weight: 700; min-height: 52px; }
+    .pc-call-num { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .pc-microcopy { font-size: 0.8rem; color: var(--muted); text-align: center; }
+    .pc-microcopy a { color: var(--accent); font-weight: 600; }
+  </style>
+</Base>

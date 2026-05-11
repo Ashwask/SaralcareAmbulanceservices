@@ -1,0 +1,34 @@
+id: manipal-old-airport-road
+name: Manipal Hospital — Old Airport Road
+brand: Manipal Hospitals
+type: multi-speciality
+city: Bengaluru
+state: Karnataka
+address: 98 HAL Old Airport Road, Kodihalli, Bengaluru 560017
+pincode: '560017'
+lat_lng:
+  - 12.9601
+  - 77.6493
+er_phone: 1800 102 5555
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: manipal-hospitals-ambulance-bangalore
+dispatched_providers:
+  - provider_id: manipal-hospitals-ambulance-bangalore
+    source: https://www.manipalhospitals.com (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.manipalhospitals.com/bangalore/old-airport-road
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms 24x7 emergency and ambulance services. ER phone and
+      external-provider affiliations pending verification.
+  - type: website
+    url: https://www.manipalhospitals.com/oldairportroad/contact-us/
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: Manipal chain helpline; routes to Old Airport Road via IVR.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

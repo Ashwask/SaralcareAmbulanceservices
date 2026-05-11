@@ -1,0 +1,3 @@
+# User-submitted call experience reports (post-moderation).
+# Pending reports live as GitHub issues tagged "report" until reviewed.
+# Schema: ../../schema/report.schema.json

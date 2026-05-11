@@ -1,0 +1,34 @@
+id: amri-saltlake-kolkata
+name: AMRI Hospital — Salt Lake
+brand: AMRI Hospitals
+type: multi-speciality
+city: Kolkata
+state: West Bengal
+address: JC-16 & 17, Salt Lake City, Sector III, Kolkata 700098
+pincode: '700098'
+lat_lng:
+  - 22.58
+  - 88.4179
+er_phone: +91 80352 40555
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: amri-saltlake-kolkata-ambulance
+dispatched_providers:
+  - provider_id: amri-saltlake-kolkata-ambulance
+    source: https://www.amrihospitals.in/ (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.amrihospitals.in/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://www.amrihospitals.in/contact-us
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: AMRI (now Manipal Broadway) 24/7 emergency.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

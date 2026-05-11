@@ -1,0 +1,137 @@
+---
+import Base from "@/layouts/Base.astro";
+const submitUrl = import.meta.env.PUBLIC_SUBMIT_URL ?? "";
+---
+
+<Base title="Register your ambulance service — Saralcare Ambulance Directory">
+  <p class="small"><a href="/">← Home</a></p>
+  <h2 style="margin-top:0.3rem">Register your ambulance service</h2>
+  <p style="max-width: 60ch; color: var(--muted)">
+    Listed for free under the public-good license. We verify by phone before publishing. No fees, no advertising, no preferential placement.
+  </p>
+
+  <form id="np-form" class="np-form" data-submit-url={submitUrl}>
+    <div class="grid-2">
+      <label>Brand name *<input type="text" name="brand_name" required maxlength="80" /></label>
+      <label>Legal entity name<input type="text" name="legal_name" maxlength="120" /></label>
+    </div>
+
+    <label>
+      Type *
+      <select name="type" required>
+        <option value="">— select —</option>
+        <option value="private-standalone">Private standalone operator</option>
+        <option value="private-aggregator">Private aggregator (multi-fleet booking)</option>
+        <option value="hospital-owned">Hospital-owned fleet</option>
+        <option value="ngo">NGO / charitable</option>
+        <option value="charitable">Religious / charitable trust</option>
+      </select>
+    </label>
+
+    <label>City *<input type="text" name="city" required value="Bengaluru" /></label>
+
+    <label>HQ address *<input type="text" name="hq_address" required maxlength="240" /></label>
+
+    <div class="grid-2">
+      <label>24h dispatch phone *<input type="tel" name="phone_24h" required pattern="^(108|100|102|1066|1098|112|\+91 ?[0-9 ]{6,15}|1800[0-9 -]{5,15}|[0-9 +-]{8,18})$" placeholder="+91 98765 43210" /></label>
+      <label>Website<input type="url" name="website" placeholder="https://" /></label>
+    </div>
+
+    <div class="grid-2">
+      <label>Total fleet (vehicles)<input type="number" name="fleet_count_claimed" min="0" max="500" /></label>
+      <label>Vehicle types (comma-separated)<input type="text" name="vehicle_types" placeholder="BLS, ALS, MICU" /></label>
+    </div>
+
+    <label>Service area (Bangalore pincodes, comma-separated)<input type="text" name="pincodes" placeholder="560001, 560002, 560076" /></label>
+
+    <div class="grid-2">
+      <label>Base fare (₹)<input type="number" name="fare_base" min="0" step="50" /></label>
+      <label>Per km (₹)<input type="number" name="fare_per_km" min="0" step="5" /></label>
+    </div>
+
+    <label>Hospital tie-ups (comma-separated hospital names)<input type="text" name="hospital_affiliations" placeholder="Manipal HAL, Apollo Bannerghatta" /></label>
+
+    <label>Your role *
+      <select name="claimant_role" required>
+        <option value="">— select —</option>
+        <option value="owner">Owner</option>
+        <option value="operations">Operations manager</option>
+        <option value="dispatcher">Dispatcher</option>
+        <option value="other">Other authorised representative</option>
+      </select>
+    </label>
+
+    <div class="grid-2">
+      <label>Your name (for verification call, not published) *<input type="text" name="claimant_name" required maxlength="80" /></label>
+      <label>Your direct phone (for verification call) *<input type="tel" name="claimant_phone" required /></label>
+    </div>
+
+    <label>Anything else we should know<textarea name="notes" rows="3" maxlength="800"></textarea></label>
+
+    <p class="consent small">
+      By submitting, you attest the information is accurate to your knowledge and that you are authorised to register this service. The brand name, public phone, and operational details may appear publicly under CC BY-NC-SA 4.0. Your name and direct phone are kept private and used only for the verification call. We will call before listing.
+    </p>
+
+    <div class="row">
+      <button type="submit">Submit for verification</button>
+      <span id="np-status" class="small" aria-live="polite"></span>
+    </div>
+  </form>
+
+  <script type="module">
+    const form = document.getElementById("np-form");
+    if (form) {
+      const status = document.getElementById("np-status");
+      const submitUrl = form.dataset.submitUrl;
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        status.textContent = "Sending…";
+        const fd = new FormData(form);
+        const payload = Object.fromEntries(fd.entries());
+        // Coerce + split
+        if (payload.fleet_count_claimed) payload.fleet_count_claimed = Number(payload.fleet_count_claimed);
+        if (payload.fare_base) payload.fare_base = Number(payload.fare_base);
+        if (payload.fare_per_km) payload.fare_per_km = Number(payload.fare_per_km);
+        if (payload.pincodes) payload.pincodes = String(payload.pincodes).split(",").map(s => s.trim()).filter(Boolean);
+        if (payload.vehicle_types) payload.vehicle_types = String(payload.vehicle_types).split(",").map(s => s.trim()).filter(Boolean);
+        for (const k of Object.keys(payload)) if (payload[k] === "") delete payload[k];
+
+        if (submitUrl) {
+          try {
+            const r = await fetch(submitUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ form_type: "new-provider", payload }),
+            });
+            const data = await r.json();
+            if (data.ok) {
+              status.innerHTML = `Thank you. We'll call you for verification within 48h — <a href="${data.issue_url}" target="_blank" rel="noopener">tracking link</a>.`;
+              form.reset();
+              return;
+            } else {
+              status.textContent = `Could not submit (${data.error}). Opening email fallback…`;
+            }
+          } catch (err) {
+            status.textContent = "Network error. Opening email fallback…";
+          }
+        }
+        // mailto fallback
+        const subject = encodeURIComponent(`[NEW PROVIDER] ${payload.brand_name ?? ""}`);
+        const body = encodeURIComponent(Object.entries(payload).map(([k, v]) => `${k}: ${typeof v === "object" ? JSON.stringify(v) : v}`).join("\n") + "\n\n— Submitted from ambulance.saralcare.com");
+        window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
+      });
+    }
+  </script>
+
+  <style>
+    .np-form { display: flex; flex-direction: column; gap: 0.85rem; max-width: 640px; margin-top: 1rem; }
+    .np-form label { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 500; font-size: 0.94rem; }
+    .np-form input, .np-form select, .np-form textarea { font: inherit; padding: 0.5rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; background: white; }
+    .np-form textarea { resize: vertical; min-height: 70px; }
+    .np-form .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    @media (max-width: 540px) { .np-form .grid-2 { grid-template-columns: 1fr; } }
+    .np-form .row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.4rem; }
+    .np-form button { background: var(--accent); color: white; border: 0; padding: 0.6rem 1.1rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .consent { background: #fffbeb; border: 1px solid #fde68a; padding: 0.55rem 0.7rem; border-radius: 6px; color: #7c2d12; }
+  </style>
+</Base>

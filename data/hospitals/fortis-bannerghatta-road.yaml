@@ -1,0 +1,30 @@
+id: fortis-bannerghatta-road
+name: Fortis Hospital — Bannerghatta Road
+brand: Fortis Healthcare
+type: multi-speciality
+city: Bengaluru
+state: Karnataka
+address: 154/9 Bannerghatta Road, Opposite IIM-B, Bengaluru 560076
+pincode: '560076'
+lat_lng:
+  - 12.8929
+  - 77.6011
+er_phone: 9205 010 100
+ambulance_phone: null
+owns_fleet: false
+fleet_provider_id: null
+dispatched_providers: []
+sources:
+  - type: website
+    url: https://www.fortishealthcare.com/bangalore/fortis-hospital-bannerghatta-road
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms emergency services. Ambulance provider tie-ups pending verification
+      call with ER desk.
+  - type: website
+    url: https://www.fortishealthcare.com/bangalore/fortis-hospital-bannerghatta-road
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: Fortis ER helpline; routes to Bannerghatta Road campus.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

@@ -1,0 +1,206 @@
+---
+/**
+ * "Report your call experience" form embedded on /providers/[id].
+ *
+ * Submits to PUBLIC_SUBMIT_URL (Cloudflare Worker) if configured; otherwise
+ * falls back to opening a structured mailto: to ashwinsk@saralcare.com.
+ *
+ * The submission is moderated before it appears in the public dataset.
+ */
+interface Props {
+  providerId: string;
+  providerName: string;
+}
+const { providerId, providerName } = Astro.props;
+const submitUrl = import.meta.env.PUBLIC_SUBMIT_URL ?? "";
+---
+
+<section class="report-form-section">
+  <h3>Report your call experience</h3>
+  <p class="small" style="max-width: 60ch;">
+    If you've actually called <strong>{providerName}</strong>, tell us what happened. Honest reports — answered or not, fare paid, wait time — make the directory more useful for everyone. Reviewed by a maintainer before publishing.
+  </p>
+
+  <form id="report-form" class="report-form" data-provider-id={providerId} data-provider-name={providerName} data-submit-url={submitUrl}>
+    <input type="hidden" name="provider_id" value={providerId} />
+
+    <div class="grid-2">
+      <label>
+        Date of your call
+        <input type="date" name="date_of_call" required max={new Date().toISOString().slice(0, 10)} />
+      </label>
+      <label>
+        Time of day
+        <select name="time_band">
+          <option value="">—</option>
+          <option value="morning">Morning (5am – 12pm)</option>
+          <option value="afternoon">Afternoon (12pm – 5pm)</option>
+          <option value="evening">Evening (5pm – 10pm)</option>
+          <option value="night">Night (10pm – 5am)</option>
+        </select>
+      </label>
+    </div>
+
+    <label>
+      What happened?
+      <select name="outcome" required>
+        <option value="">— select —</option>
+        <option value="answered-dispatched">Answered and dispatched a vehicle</option>
+        <option value="answered-unavailable">Answered but said no vehicle available</option>
+        <option value="no-answer">No answer / rang out</option>
+        <option value="wrong-number">Wrong number / not an ambulance service</option>
+        <option value="declined">Declined the request</option>
+        <option value="busy">Line was engaged</option>
+        <option value="out-of-service">Number out of service</option>
+      </select>
+    </label>
+
+    <div class="grid-2" data-show-when="answered-dispatched">
+      <label>
+        Response time (minutes)
+        <input type="number" name="response_minutes" min="0" max="600" placeholder="e.g. 18" />
+      </label>
+      <label>
+        Vehicle type sent
+        <select name="vehicle_type_sent">
+          <option value="">—</option>
+          <option value="BLS">BLS — Basic Life Support</option>
+          <option value="ALS">ALS — Advanced Life Support</option>
+          <option value="MICU">MICU — Mobile Intensive Care</option>
+          <option value="PTA">PTA — Patient Transport</option>
+          <option value="Neonatal">Neonatal</option>
+          <option value="Cardiac">Cardiac</option>
+          <option value="Other">Other / Unsure</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="grid-2" data-show-when="answered-dispatched">
+      <label>
+        Fare paid (₹)
+        <input type="number" name="fare_paid" min="0" step="50" placeholder="e.g. 2800" />
+      </label>
+      <label>
+        Pincode picked up from
+        <input type="text" name="pincode" pattern="^[1-9][0-9]{5}$" maxlength="6" placeholder="e.g. 560076" />
+      </label>
+    </div>
+
+    <label>
+      Notes <span class="small">(optional — what would be useful for the next person?)</span>
+      <textarea name="notes" rows="3" maxlength="1000" placeholder="Anything noteworthy: driver behaviour, equipment, route choice, billing experience..."></textarea>
+    </label>
+
+    <label>
+      Your initials <span class="small">(optional — up to 4 characters, never published as full name)</span>
+      <input type="text" name="submitter_initials" maxlength="4" placeholder="e.g. AK" style="max-width: 140px;" />
+    </label>
+
+    <p class="consent small">
+      By submitting, you attest the information is your honest first-hand experience and license it under CC BY-NC-SA 4.0. We may publish, withhold, or annotate the report. Providers may dispute and we will mark accordingly. See the <a href="/disclaimer">disclaimer</a> and <a href="/license">license</a>.
+    </p>
+
+    <div class="row">
+      <button type="submit">Submit report</button>
+      <span id="report-status" class="small" aria-live="polite"></span>
+    </div>
+  </form>
+</section>
+
+<script type="module">
+  const form = document.getElementById("report-form");
+  if (form) {
+    const status = document.getElementById("report-status");
+    const submitUrl = form.dataset.submitUrl;
+
+    // Conditional reveal: response_minutes / vehicle / fare only when dispatched.
+    const outcomeSel = form.querySelector('select[name="outcome"]');
+    const conditionalRows = form.querySelectorAll("[data-show-when]");
+    function applyConditional() {
+      const v = outcomeSel.value;
+      for (const row of conditionalRows) {
+        row.style.display = row.dataset.showWhen === v ? "" : "none";
+      }
+    }
+    outcomeSel.addEventListener("change", applyConditional);
+    applyConditional();
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.textContent = "Sending…";
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+      // coerce numerics
+      for (const k of ["response_minutes", "fare_paid"]) {
+        if (payload[k]) payload[k] = Number(payload[k]);
+        else delete payload[k];
+      }
+      for (const k of Object.keys(payload)) if (payload[k] === "") delete payload[k];
+
+      if (submitUrl) {
+        try {
+          const r = await fetch(submitUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ form_type: "report", payload }),
+          });
+          const data = await r.json();
+          if (data.ok) {
+            status.innerHTML = `Thank you. Report logged for moderator review — <a href="${data.issue_url}" target="_blank" rel="noopener">tracking link</a>.`;
+            form.reset();
+            applyConditional();
+          } else {
+            status.textContent = `Could not submit (${data.error}). Try the email fallback below.`;
+            mailtoFallback();
+          }
+        } catch (err) {
+          status.textContent = "Network error. Falling back to email…";
+          mailtoFallback();
+        }
+      } else {
+        mailtoFallback();
+      }
+
+      function mailtoFallback() {
+        const subject = encodeURIComponent(
+          `[REPORT] ${form.dataset.providerName} on ${payload.date_of_call ?? ""}`
+        );
+        const lines = Object.entries(payload).map(([k, v]) => `${k}: ${v}`).join("\n");
+        const body = encodeURIComponent(
+          `Provider: ${form.dataset.providerName}\nProvider ID: ${form.dataset.providerId}\n\n${lines}\n\n— Submitted from ambulance.saralcare.com`
+        );
+        window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
+        status.textContent = "Opening your email app — please send the pre-filled message to complete your report.";
+      }
+    });
+  }
+</script>
+
+<style>
+  .report-form-section { margin-top: 2.2rem; border-top: 1px solid var(--border); padding-top: 1.6rem; }
+  .report-form { display: flex; flex-direction: column; gap: 0.9rem; max-width: 640px; }
+  .report-form label { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 500; font-size: 0.94rem; }
+  .report-form input, .report-form select, .report-form textarea {
+    font: inherit;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: white;
+  }
+  .report-form textarea { resize: vertical; min-height: 70px; }
+  .report-form .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  @media (max-width: 540px) { .report-form .grid-2 { grid-template-columns: 1fr; } }
+  .report-form .row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.4rem; }
+  .report-form button {
+    background: var(--accent);
+    color: white;
+    border: 0;
+    padding: 0.6rem 1.1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .report-form button:hover { background: #991b1b; }
+  .consent { background: #fffbeb; border: 1px solid #fde68a; padding: 0.55rem 0.7rem; border-radius: 6px; color: #7c2d12; }
+</style>

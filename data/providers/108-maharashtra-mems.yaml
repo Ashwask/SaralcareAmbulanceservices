@@ -1,0 +1,52 @@
+id: 108-maharashtra-mems
+legal_name: Maharashtra Emergency Medical Services / BVG India Ltd. (contractor)
+brand_name: 108 Maharashtra Emergency Medical Services (MEMS)
+type: govt-108
+hq_address: State EMS HQ, Mumbai, Maharashtra
+hq_lat_lng:
+  - 19.076
+  - 72.8777
+contact:
+  phone_24h: '108'
+  alt_phone: null
+  whatsapp: null
+  email: null
+  website: https://www.maharashtra.gov.in/
+service_areas:
+  type: polygon
+  polygon:
+    - - 18.076
+      - 71.8777
+    - - 20.076
+      - 71.8777
+    - - 20.076
+      - 73.8777
+    - - 18.076
+      - 73.8777
+hospital_affiliations: []
+fleet_count_claimed: null
+fleet_count_verified: null
+fares:
+  base: 0
+  per_km: 0
+  waiting: null
+  night_premium: null
+  currency: INR
+  source: https://www.maharashtra.gov.in/ (free at point of use for emergencies)
+  observed_date: '2026-05-11'
+certifications:
+  - BVG_contracted
+sources:
+  - type: govt-listing
+    url: https://www.maharashtra.gov.in/
+    accessed: '2026-05-11'
+    notes: State-level 108 EMS published on the Maharashtra health department website.
+call_logs: []
+status: unverified
+last_verified_at: null
+verified_by: null
+license_tag: CC-BY-NC-SA-4.0
+notes: >-
+  Maharashtra state-wide 108 emergency medical service. The number 108 routes through a
+  state-operated call centre. Station-level details (locations, fleet counts) pending RTI to the
+  Maharashtra health department.

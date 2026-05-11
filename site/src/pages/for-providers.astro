@@ -1,0 +1,98 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base title="For ambulance providers — Saralcare Ambulances">
+  <h2 style="margin-top: 0.4rem">For ambulance providers</h2>
+  <p style="max-width: 60ch; font-size: 1.02rem;">
+    Run an ambulance service in Bangalore? <strong>List with us. Free, forever.</strong> No ads, no commission, no paid placement, no kickbacks. We never sell your data.
+  </p>
+
+  <section class="prov-grid">
+    <a class="prov-tile" href="/providers/new">
+      <div class="prov-icon">➕</div>
+      <h3>Register your service</h3>
+      <p>Not listed yet? Submit your details. We'll verify by phone within 48 hours, then publish.</p>
+      <span class="prov-cta">Register →</span>
+    </a>
+
+    <a class="prov-tile" href="/claim">
+      <div class="prov-icon">✓</div>
+      <h3>Claim your listing</h3>
+      <p>Already listed? Claim ownership and submit corrections. We confirm by calling your direct line.</p>
+      <span class="prov-cta">Claim →</span>
+    </a>
+
+    <a class="prov-tile" href="mailto:ashwinsk@saralcare.com?subject=%5BCORRECTION%5D">
+      <div class="prov-icon">✎</div>
+      <h3>Submit a correction</h3>
+      <p>Spot something wrong? Email us. We respond within 48 hours and the correction is public.</p>
+      <span class="prov-cta">Email →</span>
+    </a>
+  </section>
+
+  <section style="margin-top: 1.8rem;">
+    <h3>What being listed gets you</h3>
+    <ul class="benefits">
+      <li><strong>Free public listing</strong> — equivalent to several thousand rupees a month in Google Ads spend.</li>
+      <li><strong>Verified badge</strong> — confirm your data on our call and earn the green badge. Visible trust signal for prospective patients.</li>
+      <li><strong>Earned ranking</strong> — providers with faster user-reported response times surface higher in search results. Reputation, not paid placement.</li>
+      <li><strong>Free analytics</strong> — see your own aggregated user reports (answer rate, response time, fare dispersion). Your own data, surfaced back.</li>
+      <li><strong>Inbound from insurers / hospital chains</strong> — TPAs and hospital networks browsing for empanelled vendors find verified, rich profiles first.</li>
+      <li><strong>"Listed on Saralcare" embed widget</strong> — paste a small badge on your own website as a free trust signal.</li>
+      <li><strong>Dispute rights</strong> — any user report you believe is inaccurate can be disputed. We annotate or remove based on evidence.</li>
+      <li><strong>Takedown rights</strong> — you can ask to be delisted at any time. We respect the choice.</li>
+    </ul>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>What we don't do</h3>
+    <ul>
+      <li>We never take payments from providers. There is no path to pay for ranking, hide negative reports, or accelerate verification.</li>
+      <li>We never publish unsourced affiliation claims. Hospital tie-ups only appear with a public source or a verified call.</li>
+      <li>We never publish "kickback" or "exclusive contract" as facts without a documented public record (RTI response, court filing, press report).</li>
+      <li>We never operate or dispatch ambulances. We are not your competitor; we direct patients to you.</li>
+    </ul>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Embed the "Listed on Saralcare" badge</h3>
+    <p>Paste this on your website to show patients you're verified and openly listed. The badge auto-updates as your verification status changes — no maintenance.</p>
+    <pre style="background: var(--bg-elev); border: 1px solid var(--border); padding: 0.75rem; border-radius: 8px; overflow-x: auto; font-size: 0.82rem;"><code>&lt;a href="https://ambulance.saralcare.com/providers/&lt;your-id&gt;"&gt;
+  &lt;img src="https://ambulance.saralcare.com/embed/&lt;your-id&gt;.svg"
+       alt="Verified on Saralcare Ambulances" /&gt;
+&lt;/a&gt;</code></pre>
+    <p class="small">Replace <code>&lt;your-id&gt;</code> with the slug shown on your listing URL. Find your listing by name on <a href="/explore">the explore page</a>.</p>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Pricing for commercial integrations</h3>
+    <p>If your business wants to ingest our dataset into a for-profit product (booking app, insurance pipeline, hospital chain system), a commercial license is required. <a href="/license">Read the license</a> and email <a href="mailto:ashwinsk@saralcare.com?subject=%5BLICENSE+REQUEST%5D">ashwinsk@saralcare.com</a>. We quote case-by-case.</p>
+    <p class="small">This does not apply to: a hospital using the data internally to inform patients, a doctor referring patients, a researcher, a journalist, an NGO. Those uses are free under CC BY-NC-SA 4.0.</p>
+  </section>
+
+  <style>
+    .prov-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.7rem; margin-top: 1rem;
+    }
+    .prov-tile {
+      display: flex; flex-direction: column;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.05rem 1.1rem 0.9rem;
+      color: var(--fg);
+      text-decoration: none;
+      min-height: 170px;
+    }
+    .prov-tile:hover { border-color: var(--accent); }
+    .prov-icon { font-size: 1.6rem; margin-bottom: 0.35rem; }
+    .prov-tile h3 { font-size: 1.06rem; margin: 0 0 0.4rem; }
+    .prov-tile p { font-size: 0.92rem; color: var(--muted); margin: 0 0 0.7rem; flex: 1; }
+    .prov-cta { color: var(--accent); font-weight: 600; font-size: 0.92rem; }
+
+    .benefits { padding-left: 1.2rem; }
+    .benefits li { margin: 0.45rem 0; }
+  </style>
+</Base>

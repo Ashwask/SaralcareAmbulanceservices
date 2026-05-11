@@ -1,0 +1,48 @@
+Saralcare Ambulance Directory — Content License
+
+Prose content in this repository (README, CONTRIBUTING, blog posts under
+content/**, analyses, and human-readable documentation) is licensed under
+the
+
+    Creative Commons Attribution-ShareAlike 4.0 International
+    Public License
+    (CC BY-SA 4.0)
+
+Canonical legal code: https://creativecommons.org/licenses/by-sa/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by-sa/4.0/
+SPDX identifier: CC-BY-SA-4.0
+
+================================================================
+SUMMARY
+================================================================
+
+You may share, copy, redistribute, adapt, remix, transform, and build
+upon this content, in any medium or format, for any purpose —
+INCLUDING COMMERCIALLY — provided you:
+
+  1. Give appropriate credit, link to this license, and indicate any
+     changes;
+  2. Distribute your contributions under the same license (ShareAlike).
+
+This is intentionally more permissive than the LICENSE-DATA terms. The
+structured ambulance directory data has a non-commercial restriction;
+the prose explaining it does not. Journalists, educators, and others
+are free to quote, republish, and adapt the writing.
+
+================================================================
+ATTRIBUTION FORMAT
+================================================================
+
+    "Source: Saralcare ambulance directory project
+     (https://ambulance.saralcare.com), CC BY-SA 4.0."
+
+================================================================
+SCOPE BOUNDARY
+================================================================
+
+If a piece of content embeds or substantively reproduces the
+structured data (e.g., a published list of provider phone numbers, a
+table of fares), the embedded data remains under CC BY-NC-SA 4.0 even
+when the surrounding prose is under CC BY-SA 4.0.
+
+If unsure which license applies, ask: ashwinsk@saralcare.com

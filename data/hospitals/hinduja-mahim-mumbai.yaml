@@ -1,0 +1,34 @@
+id: hinduja-mahim-mumbai
+name: P.D. Hinduja Hospital & MRC
+brand: Hinduja Hospital
+type: tertiary
+city: Mumbai
+state: Maharashtra
+address: Veer Savarkar Marg, Mahim, Mumbai 400016
+pincode: '400016'
+lat_lng:
+  - 19.0428
+  - 72.84
+er_phone: +91 22 2445 1515
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: hinduja-mahim-mumbai-ambulance
+dispatched_providers:
+  - provider_id: hinduja-mahim-mumbai-ambulance
+    source: https://www.hindujahospital.com/ (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.hindujahospital.com/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://www.hindujahospital.com/contact-us-helpline/
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: P. D. Hinduja Hospital main board.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

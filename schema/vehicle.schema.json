@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ambulance.saralcare.com/schema/vehicle.schema.json",
+  "title": "Ambulance Vehicle Record",
+  "description": "Optional per-vehicle record nested under a provider. v1 typically populates the rolled-up fleet_count_claimed on the provider instead; this schema is used when individual vehicle data is known.",
+  "type": "object",
+  "required": ["type"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$",
+      "description": "Stable slug, unique within the provider's fleet."
+    },
+    "registration_number": {
+      "type": ["string", "null"],
+      "description": "RTO registration. We do not publish this in v1 (privacy-friendly default) even when known."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["BLS", "ALS", "MICU", "PTA", "Neonatal", "Cardiac", "Mortuary"],
+      "description": "BLS=Basic Life Support; ALS=Advanced Life Support; MICU=Mobile Intensive Care Unit; PTA=Patient Transport; Neonatal=for newborns; Cardiac=cardiac-equipped; Mortuary=non-emergency transfer of deceased."
+    },
+    "equipment": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["oxygen", "defibrillator", "ventilator", "suction", "cardiac_monitor", "stretcher", "scoop_stretcher", "splints", "iv_kit", "first_aid_kit"]
+      }
+    },
+    "base_location_lat_lng": {
+      "type": ["array", "null"],
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "staffed_24h": { "type": "boolean" },
+    "paramedic_onboard": { "type": "boolean" },
+    "doctor_onboard": { "type": "boolean", "default": false }
+  }
+}

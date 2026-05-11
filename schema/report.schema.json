@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ambulance.saralcare.com/schema/report.schema.json",
+  "title": "User-submitted call experience report",
+  "description": "One observation about a real call attempt to a listed provider. Submitted by patients/families/contributors. Moderated before publication.",
+  "type": "object",
+  "required": ["id", "provider_id", "date_of_call", "outcome", "submitted_at", "moderator_status", "license_tag"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9]{6,}$",
+      "description": "YYYY-MM-DD-<rand6+> — date the report describes plus a random suffix for uniqueness."
+    },
+    "provider_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+    "date_of_call": { "type": "string", "format": "date" },
+    "time_band": {
+      "type": ["string", "null"],
+      "enum": [null, "morning", "afternoon", "evening", "night"]
+    },
+    "pincode": { "type": ["string", "null"], "pattern": "^[1-9][0-9]{5}$" },
+    "outcome": {
+      "type": "string",
+      "enum": ["answered-dispatched", "answered-unavailable", "no-answer", "wrong-number", "declined", "busy", "out-of-service"]
+    },
+    "response_minutes": { "type": ["integer", "null"], "minimum": 0, "maximum": 600 },
+    "vehicle_type_sent": {
+      "type": ["string", "null"],
+      "enum": [null, "BLS", "ALS", "MICU", "PTA", "Neonatal", "Cardiac", "Other"]
+    },
+    "fare_paid": { "type": ["number", "null"], "minimum": 0 },
+    "fare_currency": { "type": "string", "enum": ["INR"], "default": "INR" },
+    "hospital_id": { "type": ["string", "null"], "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+    "notes": { "type": ["string", "null"], "maxLength": 1000 },
+    "submitter_initials": {
+      "type": ["string", "null"],
+      "maxLength": 4,
+      "description": "Optional. Submitters may identify themselves with up to 4 characters; we never publish full names."
+    },
+    "submitted_at": { "type": "string", "format": "date-time" },
+    "moderator_status": {
+      "type": "string",
+      "enum": ["pending", "published", "rejected"],
+      "description": "Reports are 'pending' when submitted, 'published' after maintainer review, 'rejected' if found unverifiable or in bad faith."
+    },
+    "moderator_notes": { "type": ["string", "null"] },
+    "disputed": { "type": "boolean", "default": false },
+    "license_tag": { "type": "string", "const": "CC-BY-NC-SA-4.0" }
+  }
+}

@@ -1,0 +1,66 @@
+name: "Correction to an existing record"
+description: Fix a phone number, address, fare, vehicle type, or other detail in an existing provider or hospital record.
+title: "[CORRECTION] <provider or hospital id>"
+labels: ["correction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping keep the directory accurate. We respond within 48 hours.
+        If your correction contains sensitive information, please email `ashwinsk@saralcare.com` instead.
+  - type: input
+    id: record_id
+    attributes:
+      label: Record ID
+      description: The slug from the URL (e.g. `red-health-bangalore` from `/providers/red-health-bangalore`)
+      placeholder: red-health-bangalore
+    validations:
+      required: true
+  - type: dropdown
+    id: field
+    attributes:
+      label: Which field is wrong?
+      options:
+        - Phone number
+        - Address / location
+        - Vehicle type (BLS / ALS / MICU / PTA)
+        - Fare
+        - Hospital affiliation
+        - Service area / pincodes
+        - Name or brand
+        - Other (describe below)
+    validations:
+      required: true
+  - type: input
+    id: current
+    attributes:
+      label: Current value
+      placeholder: e.g. +91 91149 11911
+  - type: input
+    id: correct
+    attributes:
+      label: Correct value
+      placeholder: e.g. +91 88888 88888
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source for the correct value
+      description: A public URL, screenshot link, or "called the number on YYYY-MM-DD"
+      placeholder: https://example.com/contact or "called on 2026-05-15 from my own phone"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else we should know?
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Contributor terms
+      options:
+        - label: My submission is honest and to the best of my knowledge
+          required: true
+        - label: I license this contribution under CC BY-NC-SA 4.0 to the project
+          required: true

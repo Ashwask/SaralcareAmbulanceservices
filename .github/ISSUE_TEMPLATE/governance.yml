@@ -1,0 +1,20 @@
+name: "Governance proposal / methodology question"
+description: Suggest a change to how the project is run, or ask a question about methodology.
+title: "[GOVERNANCE] <short summary>"
+labels: ["governance", "discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for anything from "change the verification cadence to 14 days" to "we should add a Hindi translation" to "I disagree with how affiliations are sourced". Changes to GOVERNANCE.md follow the process in that document.
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Your proposal or question
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: What problem does this solve, or what do you want to understand?

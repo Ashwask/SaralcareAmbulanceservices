@@ -1,0 +1,240 @@
+---
+/**
+ * Bangalore map view — every provider + hospital as a marker.
+ * Pan/zoom updates the "in view" counter. Click marker → popup.
+ *
+ * No API key required — uses raw OSM raster tiles. For higher traffic
+ * (>1k req/min), swap to a Maptiler or Stadia key.
+ */
+import { getProviders, getHospitals, badge } from "@/lib/data";
+
+const providers = getProviders();
+const hospitals = getHospitals();
+
+// Slim geojson the map consumes
+const features = [
+  ...providers.map((p) => ({
+    type: "Feature",
+    geometry: { type: "Point", coordinates: [p.hq_lat_lng[1], p.hq_lat_lng[0]] },
+    properties: {
+      kind: "provider",
+      id: p.id,
+      name: p.brand_name,
+      phone: p.contact?.phone_24h ?? "",
+      type: p.type,
+      badge: badge(p),
+      href: `/providers/${p.id}`,
+    },
+  })),
+  ...hospitals.map((h) => ({
+    type: "Feature",
+    geometry: { type: "Point", coordinates: [h.lat_lng[1], h.lat_lng[0]] },
+    properties: {
+      kind: "hospital",
+      id: h.id,
+      name: h.name,
+      phone: h.er_phone ?? "",
+      type: h.type ?? "hospital",
+      badge: badge(h),
+      href: `/hospitals/${h.id}`,
+    },
+  })),
+];
+const geojson = JSON.stringify({ type: "FeatureCollection", features });
+---
+
+<div class="map-wrap">
+  <div class="map-toolbar">
+    <span id="map-counter" class="map-counter">— in view</span>
+    <div class="map-toggles">
+      <label><input type="checkbox" id="t-providers" checked> Providers</label>
+      <label><input type="checkbox" id="t-hospitals" checked> Hospitals</label>
+    </div>
+  </div>
+  <div id="map" class="map-canvas"></div>
+  <p class="map-attribution small">
+    © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors. Map data updated on every push.
+  </p>
+</div>
+
+<script is:inline define:vars={{ geojson }}>
+  window.__DIRECTORY_GEOJSON__ = geojson;
+</script>
+
+<script type="module">
+  import maplibre from "https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/+esm";
+
+  const data = JSON.parse(window.__DIRECTORY_GEOJSON__);
+
+  const style = {
+    version: 8,
+    sources: {
+      osm: {
+        type: "raster",
+        tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+        tileSize: 256,
+        attribution: "© OpenStreetMap contributors",
+        maxzoom: 19,
+      },
+    },
+    layers: [{ id: "osm", type: "raster", source: "osm" }],
+  };
+
+  const map = new maplibre.Map({
+    container: "map",
+    style,
+    center: [78.9629, 22.5937], // India centre
+    zoom: 4,
+    attributionControl: false,
+  });
+
+  // Fit bounds to all features after load (so the user sees every city we cover).
+  map.on("load", () => {
+    if (data.features.length > 0) {
+      const bounds = new maplibre.LngLatBounds();
+      for (const f of data.features) bounds.extend(f.geometry.coordinates);
+      map.fitBounds(bounds, { padding: 40, maxZoom: 10, duration: 0 });
+    }
+  });
+
+  map.addControl(new maplibre.NavigationControl({ showCompass: false }), "top-right");
+  map.addControl(
+    new maplibre.GeolocateControl({
+      positionOptions: { enableHighAccuracy: true },
+      trackUserLocation: false,
+      showAccuracyCircle: true,
+    }),
+    "top-right"
+  );
+
+  map.on("load", () => {
+    map.addSource("dir", { type: "geojson", data, cluster: false });
+
+    // Hospitals — square-ish markers (blue)
+    map.addLayer({
+      id: "hospitals",
+      type: "circle",
+      source: "dir",
+      filter: ["==", ["get", "kind"], "hospital"],
+      paint: {
+        "circle-radius": 7,
+        "circle-color": "#1d4ed8",
+        "circle-stroke-color": "#fff",
+        "circle-stroke-width": 2,
+      },
+    });
+
+    // Providers — round markers coloured by freshness badge
+    map.addLayer({
+      id: "providers",
+      type: "circle",
+      source: "dir",
+      filter: ["==", ["get", "kind"], "provider"],
+      paint: {
+        "circle-radius": 8,
+        "circle-color": [
+          "match",
+          ["get", "badge"],
+          "verified", "#16a34a",
+          "stale", "#eab308",
+          "dead", "#525252",
+          "disputed", "#dc2626",
+          /* unverified */ "#a3a3a3",
+        ],
+        "circle-stroke-color": "#fff",
+        "circle-stroke-width": 2,
+      },
+    });
+
+    // Cursor + popup
+    let popup = null;
+    for (const layerId of ["providers", "hospitals"]) {
+      map.on("mouseenter", layerId, () => (map.getCanvas().style.cursor = "pointer"));
+      map.on("mouseleave", layerId, () => (map.getCanvas().style.cursor = ""));
+      map.on("click", layerId, (e) => {
+        const f = e.features?.[0];
+        if (!f) return;
+        const p = f.properties;
+        const phoneTel = String(p.phone || "").replace(/\s+/g, "");
+        if (popup) popup.remove();
+        popup = new maplibre.Popup({ closeButton: true, offset: 12 })
+          .setLngLat(f.geometry.coordinates)
+          .setHTML(`
+            <div style="font: 14px/1.4 system-ui; min-width: 200px;">
+              <div style="font-weight:600; font-size:15px;">${p.name}</div>
+              <div style="font-size:12px; color:#6b7280; margin: 2px 0 6px;">
+                ${p.kind === "provider" ? p.type : "hospital"} · <span style="color:${
+                  { verified: "#16a34a", stale: "#eab308", dead: "#525252", disputed: "#dc2626", unverified: "#737373" }[p.badge]
+                }; font-weight:600;">${p.badge}</span>
+              </div>
+              ${
+                phoneTel
+                  ? `<a href="tel:${phoneTel}" style="display:block; font-weight:600; color:#1d4ed8; margin-bottom:6px;">📞 ${p.phone}</a>`
+                  : ""
+              }
+              <a href="${p.href}" style="color:#1d4ed8; font-size:13px;">View record →</a>
+            </div>
+          `)
+          .addTo(map);
+      });
+    }
+
+    // Toggles
+    document.getElementById("t-providers")?.addEventListener("change", (e) => {
+      map.setLayoutProperty("providers", "visibility", e.target.checked ? "visible" : "none");
+      updateCounter();
+    });
+    document.getElementById("t-hospitals")?.addEventListener("change", (e) => {
+      map.setLayoutProperty("hospitals", "visibility", e.target.checked ? "visible" : "none");
+      updateCounter();
+    });
+
+    // "X providers in view" counter — BloodBridge pattern
+    function updateCounter() {
+      const showProv = document.getElementById("t-providers")?.checked;
+      const showHosp = document.getElementById("t-hospitals")?.checked;
+      const bounds = map.getBounds();
+      let p = 0,
+        h = 0;
+      for (const f of data.features) {
+        const [lng, lat] = f.geometry.coordinates;
+        if (!bounds.contains([lng, lat])) continue;
+        if (f.properties.kind === "provider" && showProv) p++;
+        else if (f.properties.kind === "hospital" && showHosp) h++;
+      }
+      const parts = [];
+      if (showProv) parts.push(`${p} provider${p === 1 ? "" : "s"}`);
+      if (showHosp) parts.push(`${h} hospital${h === 1 ? "" : "s"}`);
+      document.getElementById("map-counter").textContent = parts.join(" · ") + " in view";
+    }
+    map.on("moveend", updateCounter);
+    map.on("zoomend", updateCounter);
+    updateCounter();
+  });
+</script>
+
+<style>
+  .map-wrap {
+    margin: 1.2rem 0 2rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+  }
+  .map-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    padding: 0.55rem 0.85rem;
+    background: #fafaf9;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .map-counter { font-weight: 600; font-size: 0.9rem; }
+  .map-toggles { display: flex; gap: 0.9rem; font-size: 0.88rem; color: var(--muted); }
+  .map-toggles label { display: inline-flex; gap: 0.3rem; cursor: pointer; align-items: center; }
+  .map-canvas { height: 480px; width: 100%; }
+  .map-attribution { margin: 0; padding: 0.4rem 0.85rem; background: white; border-top: 1px solid var(--border); color: var(--muted); }
+  @media (max-width: 600px) { .map-canvas { height: 360px; } }
+</style>

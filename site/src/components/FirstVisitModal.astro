@@ -1,0 +1,85 @@
+---
+/**
+ * One-time first-visit modal. Sets sc.amb.notice-seen=true on dismiss.
+ * Rendered always; client script decides whether to show.
+ */
+---
+
+<div id="first-visit" class="fv-overlay" hidden>
+  <div class="fv-modal" role="dialog" aria-modal="true" aria-labelledby="fv-title">
+    <h2 id="fv-title">🚑 Welcome to Saralcare Ambulances</h2>
+    <p>
+      <strong>Find and call an ambulance in Bangalore.</strong> Government 108, private, charitable — all on one screen, free of charge.
+    </p>
+    <p>
+      <strong>In any emergency, dial 108 first.</strong> Use this site to identify alternatives, plan ahead, or compare options. We don't operate ambulances — we just help you reach the right number faster.
+    </p>
+    <p class="small">
+      No login. No ads. Your saved preferences live only on your device.
+    </p>
+    <div class="fv-actions">
+      <button id="fv-ok" type="button">Got it</button>
+      <a href="/notice" class="button secondary">How this works ↗</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  const KEY = "sc.amb.notice-seen";
+  const overlay = document.getElementById("first-visit");
+  if (overlay) {
+    function dismiss() {
+      try { localStorage.setItem(KEY, "1"); } catch {}
+      overlay.hidden = true;
+      overlay.style.display = "none";
+      document.body.style.overflow = "";
+    }
+    try {
+      if (!localStorage.getItem(KEY)) {
+        overlay.hidden = false;
+        overlay.style.display = "";
+        document.body.style.overflow = "hidden";
+      }
+    } catch {}
+    document.getElementById("fv-ok")?.addEventListener("click", dismiss);
+    // Click on backdrop (outside the modal box) dismisses
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) dismiss();
+    });
+    // Escape key dismisses
+    document.addEventListener("keydown", (e) => {
+      if (!overlay.hidden && e.key === "Escape") dismiss();
+    });
+  }
+</script>
+
+<style>
+  .fv-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .fv-overlay[hidden] { display: none; }
+  .fv-modal {
+    background: var(--bg-elev);
+    border-radius: 14px;
+    max-width: 28rem;
+    padding: 1.25rem 1.3rem 1.1rem;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  }
+  .fv-modal h2 { margin: 0 0 0.6rem; font-size: 1.15rem; }
+  .fv-modal p { margin: 0.5rem 0; font-size: 0.96rem; }
+  .fv-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  .fv-actions button { background: var(--accent); color: white; }
+</style>

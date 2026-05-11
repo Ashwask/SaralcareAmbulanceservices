@@ -1,0 +1,34 @@
+id: mgm-chennai
+name: MGM Healthcare
+brand: MGM Healthcare
+type: multi-speciality
+city: Chennai
+state: Tamil Nadu
+address: New No. 72 (Old No. 54), Nelson Manickam Road, Aminjikarai, Chennai 600029
+pincode: '600029'
+lat_lng:
+  - 13.0703
+  - 80.2202
+er_phone: +91 44 4524 2407
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: mgm-chennai-ambulance
+dispatched_providers:
+  - provider_id: mgm-chennai-ambulance
+    source: https://www.mgmhealthcare.in/ (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.mgmhealthcare.in/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://mgmhealthcare.in/contact-us/
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: MGM Healthcare Aminjikarai direct number.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

@@ -1,0 +1,19 @@
+id: 2026-05-09-demoaa
+provider_id: red-health-bangalore
+date_of_call: '2026-05-09'
+time_band: evening
+pincode: '560076'
+outcome: answered-dispatched
+response_minutes: 17
+vehicle_type_sent: ALS
+fare_paid: 3200
+hospital_id: apollo-bannerghatta
+notes: >-
+  ALS arrived in ~17 min from Bannerghatta. Driver confirmed Apollo as the routed
+  drop-off when I asked for "the closest hospital". Asked for ₹3,200 in cash.
+submitter_initials: SK
+submitted_at: '2026-05-09T19:42:11Z'
+moderator_status: published
+moderator_notes: 'Sample seeded report — demonstrates aggregation. Replace when real submissions arrive.'
+disputed: false
+license_tag: CC-BY-NC-SA-4.0

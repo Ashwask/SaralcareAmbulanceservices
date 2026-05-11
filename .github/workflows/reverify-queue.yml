@@ -1,0 +1,64 @@
+name: Reverify queue
+
+on:
+  schedule:
+    # Every Monday at 05:00 UTC (10:30 IST).
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+
+jobs:
+  reverify-queue:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Generate reverify queue
+        id: queue
+        run: |
+          pnpm tsx scripts/reverify-queue.ts > queue.md
+          echo "queue<<EOF" >> $GITHUB_OUTPUT
+          cat queue.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create or update tracking issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const body = fs.readFileSync("queue.md", "utf8");
+            const title = `[Reverify queue] week of ${new Date().toISOString().slice(0,10)}`;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: "reverify-queue",
+              state: "open",
+            });
+            if (issues.length > 0) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                title, body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title, body,
+                labels: ["reverify-queue"],
+              });
+            }

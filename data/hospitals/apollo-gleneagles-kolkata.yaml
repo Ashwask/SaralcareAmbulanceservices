@@ -1,0 +1,39 @@
+id: apollo-gleneagles-kolkata
+name: Apollo Multispeciality Hospitals — Kolkata (formerly Apollo Gleneagles)
+brand: Apollo Hospitals
+type: tertiary
+city: Kolkata
+state: West Bengal
+address: 58, Canal Circular Road, Kadapara, Phool Bagan, Kolkata 700054
+pincode: '700054'
+lat_lng:
+  - 22.58
+  - 88.4014
+er_phone: 1860 500 1066
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: apollo-gleneagles-kolkata-ambulance
+dispatched_providers:
+  - provider_id: apollo-gleneagles-kolkata-ambulance
+    source: >-
+      https://www.apollohospitals.com/locations/india/kolkata/apollo-multispeciality-hospitals-kolkata/
+      (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: >-
+      https://www.apollohospitals.com/locations/india/kolkata/apollo-multispeciality-hospitals-kolkata/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://www.apollohospitals.com/locations/india/kolkata/
+    accessed: '2026-05-11'
+    notes: >-
+      Phone scraped from public source: Apollo pan-India helpline; routes to Kolkata
+      Multispeciality.
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

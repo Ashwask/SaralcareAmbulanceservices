@@ -1,0 +1,64 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base title="About — Saralcare Ambulance Directory">
+  <h2 style="margin-top:0">About the Saralcare Ambulance Directory</h2>
+
+  <p>
+    Bengaluru has more than a hundred ambulance providers. In an emergency, you'll likely only ever hear about one — whichever your hospital, your Google search, or your luck routes you to. That's the gap.
+  </p>
+
+  <p>
+    The Saralcare Ambulance Directory is an open, verified directory of every ambulance provider we can find — starting with Bangalore and growing across India. Government 108 stations, private aggregators, hospital-owned fleets, charitable services, and standalone operators, all on one map. Each record carries the date we last called to confirm it works.
+  </p>
+
+  <h3>Why this exists</h3>
+  <p>
+    Patients see one option when fifty exist. They pay a lock-in tax in cash and in minutes — because the delegation point in an emergency (the hospital ER, the Google search, the phone book) is captured by parties whose interests are not the patient's. This project is the open commons that the market hasn't built, because every incumbent is structurally forbidden from neutrality by their own incentives.
+  </p>
+
+  <h3 id="methodology">Methodology</h3>
+  <p>
+    Records are added in two ways: <em>ingested</em> from public sources (provider websites, government listings, OpenStreetMap, Google Places, JustDial) and <em>verified</em> by a phone call following a published script. Every record carries provenance — the URL or call log that supports each field. Every affiliation edge between a provider and a hospital is sourced; we never assert motive ("kickback", "exclusive contract") without a documented public source.
+  </p>
+  <p>
+    The full verification protocol is in <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/CONTRIBUTING.md"><code>CONTRIBUTING.md</code></a>.
+  </p>
+
+  <h3>What this is not</h3>
+  <ul>
+    <li>Not an ambulance service. We do not own or operate any vehicle.</li>
+    <li>Not a dispatcher. We do not place or coordinate calls.</li>
+    <li>Not a recommendation engine. We list factually; we do not rank by paid placement or by anything other than distance and freshness.</li>
+    <li>Not a marketplace. No transactions happen on this site. You call the provider directly.</li>
+    <li>Not an ad-supported directory. We accept no payments from listed providers.</li>
+  </ul>
+
+  <p>See the full <a href="/disclaimer">disclaimer</a> for the no-liability framing.</p>
+
+  <h3 id="contribute">How to help</h3>
+  <p>
+    The dataset is built one phone call at a time. If you can call one provider once a week and tell us whether the number works, the directory is the better for it. See <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/CONTRIBUTING.md"><code>CONTRIBUTING.md</code></a>.
+  </p>
+  <p>
+    You can also: file an RTI with your state EMS; help us digitise a hospital's published ER information; translate site content into Indian languages; or share the site with someone who works in healthcare and would know things that aren't in the public sources.
+  </p>
+
+  <h3>About Saralcare</h3>
+  <p>
+    Saralcare is an early-stage healthcare project working on patient dignity and information transparency in Indian elder care. The ambulance directory is published on a subdomain of <code>saralcare.com</code> as a public-good contribution. We are an information aggregator, not an operator. We do not accept commercial sponsorship in v1; we do not sell ad placement; we do not take payments from listed providers.
+  </p>
+
+  <h3>Governance</h3>
+  <p>
+    v1 is benevolent-dictator: a single maintainer reviews PRs. v2 onward moves to a small editorial council — see <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/GOVERNANCE.md"><code>GOVERNANCE.md</code></a>.
+  </p>
+
+  <h3>Contact</h3>
+  <ul>
+    <li>Corrections / takedown: <a href="mailto:ashwinsk@saralcare.com?subject=%5BCORRECTION%5D">ashwinsk@saralcare.com</a></li>
+    <li>Commercial licensing: <a href="mailto:ashwinsk@saralcare.com?subject=%5BLICENSE+REQUEST%5D">ashwinsk@saralcare.com</a></li>
+    <li>GitHub: PRs and issues preferred for data and code matters.</li>
+  </ul>
+</Base>

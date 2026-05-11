@@ -1,0 +1,34 @@
+id: lilavati-bandra-mumbai
+name: Lilavati Hospital
+brand: Lilavati Hospital
+type: multi-speciality
+city: Mumbai
+state: Maharashtra
+address: A-791, Bandra Reclamation, Bandra (W), Mumbai 400050
+pincode: '400050'
+lat_lng:
+  - 19.0517
+  - 72.8276
+er_phone: 022 69318063
+ambulance_phone: +91 97692 50010
+owns_fleet: true
+fleet_provider_id: lilavati-bandra-mumbai-ambulance
+dispatched_providers:
+  - provider_id: lilavati-bandra-mumbai-ambulance
+    source: https://www.lilavatihospital.com/ (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.lilavatihospital.com/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://www.lilavatihospital.com/contact-us
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: Lilavati casualty + direct ambulance line.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

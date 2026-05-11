@@ -1,0 +1,71 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base title="Corrections and Takedown — Saralcare Ambulance Directory">
+  <h2 style="margin-top:0">Corrections and Takedown</h2>
+
+  <p>We take accuracy seriously. If you find an error in our data, or you are a provider who wishes to correct or remove your listing, this is the process.</p>
+
+  <div class="card">
+    <p style="margin: 0; font-weight: 600;">Email <a href="mailto:ashwinsk@saralcare.com">ashwinsk@saralcare.com</a> with one of:</p>
+    <ul>
+      <li>Subject <code>[CORRECTION]</code> for record fixes.</li>
+      <li>Subject <code>[TAKEDOWN]</code> for full delisting requests.</li>
+      <li>Subject <code>[DISPUTE]</code> for contested affiliation edges or fares.</li>
+    </ul>
+    <p class="small" style="margin: 0;">Or open a GitHub issue using the Correction or Takedown template.</p>
+  </div>
+
+  <h3>Response SLA</h3>
+  <ul>
+    <li><strong>Acknowledgement:</strong> within 48 hours of receipt.</li>
+    <li><strong>Substantive response:</strong> within 7 working days where investigation is required.</li>
+    <li><strong>Urgent factual fixes</strong> (a wrong number causing live harm) within 24 hours.</li>
+  </ul>
+
+  <h3>What we need from you</h3>
+  <p><strong>For a correction:</strong></p>
+  <ol>
+    <li>The provider ID or URL of the record (e.g., <code>/providers/red-health-bangalore</code>).</li>
+    <li>The specific field that is wrong (phone, address, vehicle type, affiliation, fare, etc.).</li>
+    <li>The correct information.</li>
+    <li>A source we can cite — a website URL, a screenshot, a leaflet, or your written authorisation as the provider.</li>
+  </ol>
+
+  <p><strong>For a takedown:</strong></p>
+  <ol>
+    <li>The provider ID or URL.</li>
+    <li>A brief statement that you are the provider, authorised representative, or affected party.</li>
+    <li>The reason: ceased operations, changed entity, privacy concern, factual error you do not wish to correct, etc.</li>
+  </ol>
+
+  <p><strong>For a dispute:</strong></p>
+  <ol>
+    <li>The provider and hospital IDs involved.</li>
+    <li>Your position: "this affiliation does not exist", "this affiliation ended on [date]", "fare is incorrect", etc.</li>
+    <li>Any evidence (a public statement, a contract, a press release).</li>
+  </ol>
+
+  <h3>How we handle it</h3>
+  <ol>
+    <li><strong>Acknowledge</strong> within 48 hours with a ticket reference.</li>
+    <li><strong>Investigate.</strong> For corrections: we call the listed number, check public sources, and confirm the correct information. For takedowns: we verify the requester's authority and process the delisting. For disputes: we re-examine the source we cited and either update, annotate, or remove the contested edge.</li>
+    <li><strong>Resolve.</strong> Confirmed correction: record updated; diff visible in Git history. Confirmed takedown: record archived; no longer appears on map or API. Confirmed dispute: edge removed or annotated.</li>
+    <li><strong>Notify</strong> the requester of the outcome.</li>
+  </ol>
+
+  <h3>What is logged publicly</h3>
+  <p>We maintain a public correction log at <code>corrections/</code> in the GitHub repo so that observers can verify our process is real. Each entry contains: date, type, provider ID affected, brief description (no personal details), outcome, and date of resolution.</p>
+  <p>We do not publish: the requester's identity (unless they authorise), email contents, or any personally identifying information.</p>
+
+  <h3>What we will not do</h3>
+  <ul>
+    <li>We will not remove a factually accurate record at the request of a party who simply does not like being listed. The dataset includes ambulance providers operating in India; listing operators publicly is the point of the project.</li>
+    <li>We will not remove an affiliation edge supported by a public source. We will update or annotate it if you provide a corrected source.</li>
+    <li>We will not enter into adversarial communications. Disputes that cannot be resolved through documentation are noted as such on the record and left for readers to evaluate.</li>
+  </ul>
+
+  <h3>Legal notice</h3>
+  <p>For formal legal notice: email <a href="mailto:ashwinsk@saralcare.com?subject=%5BLEGAL+NOTICE%5D">ashwinsk@saralcare.com</a> with subject <code>[LEGAL NOTICE]</code>. Include the legal basis, the specific record at issue, and the relief sought. We respond within the time stipulated by law.</p>
+</Base>

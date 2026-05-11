@@ -1,0 +1,30 @@
+id: tata-memorial-parel-mumbai
+name: Tata Memorial Hospital
+brand: Tata Memorial Centre
+type: speciality
+city: Mumbai
+state: Maharashtra
+address: Dr. E Borges Road, Parel, Mumbai 400012
+pincode: '400012'
+lat_lng:
+  - 19.009
+  - 72.8423
+er_phone: +91 22 2417 7000
+ambulance_phone: null
+owns_fleet: false
+fleet_provider_id: null
+dispatched_providers: []
+sources:
+  - type: website
+    url: https://tmc.gov.in/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://tmc.gov.in/contactus
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: Tata Memorial Hospital main contact.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

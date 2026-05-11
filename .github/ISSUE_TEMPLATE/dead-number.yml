@@ -1,0 +1,39 @@
+name: "Dead number / number didn't work"
+description: A published phone number doesn't connect or doesn't reach an ambulance service.
+title: "[DEAD NUMBER] <record id>"
+labels: ["dead-number", "needs-reverify"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Most users submit this through the "✗ Number didn't work" link on a provider card. This template is for filing manually.
+
+        We re-verify within 48 hours. If 3+ independent reports arrive in 7 days, it's prioritised.
+  - type: input
+    id: record_id
+    attributes:
+      label: Record ID
+      placeholder: red-health-bangalore
+    validations:
+      required: true
+  - type: input
+    id: phone
+    attributes:
+      label: Number you dialled
+      placeholder: +91 91149 11911
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: What happened?
+      options:
+        - "Number out of service / not reachable"
+        - "Rang out / no answer"
+        - "Wrong number — not an ambulance service"
+        - "Routed to IVR with no ambulance option"
+        - "Other (describe below)"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?

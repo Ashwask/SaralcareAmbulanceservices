@@ -1,0 +1,158 @@
+---
+/**
+ * Compact provider card used in nearest-list, saved-list, and search results.
+ * Renders server-side from data, but every interactive control (save, share, report)
+ * is a small client-side island via inline script.
+ */
+import { badge } from "@/lib/data";
+
+interface Props {
+  provider: any;
+  distanceKm?: number | null;
+  rank?: number | null;
+}
+const { provider, distanceKm = null, rank = null } = Astro.props;
+const b = badge(provider);
+const phone = provider.contact?.phone_24h ?? "";
+const phoneTel = phone.replace(/\s+/g, "");
+---
+
+<article class="pc" data-provider-id={provider.id}>
+  <div class="pc-head">
+    {rank != null ? <span class="pc-rank">{rank}</span> : null}
+    <div class="pc-meta">
+      <a href={`/providers/${provider.id}`} class="pc-name">{provider.brand_name}</a>
+      <div class="pc-sub">
+        <span class={`badge badge--${b}`}>{b}</span>
+        <span class="pc-type">{provider.type === "govt-108" ? "108 / govt" : provider.type.replace("-", " ")}</span>
+        {distanceKm != null ? <span class="pc-distance">· {distanceKm.toFixed(1)} km</span> : null}
+      </div>
+    </div>
+    <button class="pc-save" type="button" data-provider-id={provider.id} data-provider-name={provider.brand_name} data-provider-phone={phone} data-provider-type={provider.type} aria-label="Save provider">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+    </button>
+  </div>
+
+  <a class="pc-call" href={`tel:${phoneTel}`} data-phone={phone}>
+    <span class="pc-call-icon">📞</span>
+    <span class="pc-call-num">{phone}</span>
+  </a>
+
+  <div class="pc-microcopy">If you can't reach them, dial <a href="tel:108"><strong>108</strong></a>.</div>
+</article>
+
+<style>
+  .pc {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0.85rem 0.95rem 0.7rem;
+    margin: 0.55rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .pc-head { display: flex; align-items: flex-start; gap: 0.6rem; }
+  .pc-rank {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem; color: var(--muted);
+  }
+  .pc-meta { flex: 1; min-width: 0; }
+  .pc-name {
+    display: block;
+    font-weight: 600;
+    font-size: 1.02rem;
+    color: var(--fg);
+    text-decoration: none;
+    line-height: 1.2;
+  }
+  .pc-name:hover { text-decoration: underline; }
+  .pc-sub {
+    margin-top: 0.25rem;
+    display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;
+    font-size: 0.82rem; color: var(--muted);
+  }
+  .pc-type { text-transform: capitalize; }
+  .pc-distance { font-weight: 500; }
+  .pc-save {
+    background: transparent;
+    color: var(--muted);
+    padding: 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .pc-save.saved { color: var(--accent); border-color: var(--accent); background: var(--accent-bg); }
+  .pc-save:hover { background: var(--bg); }
+
+  .pc-call {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    font-weight: 700;
+    min-height: 52px;
+  }
+  .pc-call:hover { background: var(--accent-hover); }
+  .pc-call-icon { font-size: 1.15rem; }
+  .pc-call-num { font-size: 1.15rem; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+
+  .pc-microcopy {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: center;
+  }
+  .pc-microcopy a { color: var(--accent); font-weight: 600; }
+</style>
+
+<script type="module">
+  // Save button: toggle in localStorage
+  const KEY = "sc.amb.saved";
+  function readSaved() {
+    try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; }
+  }
+  function writeSaved(arr) {
+    try { localStorage.setItem(KEY, JSON.stringify(arr)); } catch {}
+  }
+  function refreshStars() {
+    const saved = readSaved();
+    document.querySelectorAll(".pc-save").forEach((btn) => {
+      const id = btn.dataset.providerId;
+      const is = saved.some((p) => p.id === id);
+      btn.classList.toggle("saved", is);
+      btn.setAttribute("aria-pressed", is ? "true" : "false");
+      btn.setAttribute("aria-label", is ? "Unsave provider" : "Save provider");
+    });
+  }
+  refreshStars();
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest?.(".pc-save");
+    if (!btn) return;
+    const id = btn.dataset.providerId;
+    let saved = readSaved();
+    if (saved.some((p) => p.id === id)) {
+      saved = saved.filter((p) => p.id !== id);
+    } else {
+      saved.unshift({
+        id,
+        brand_name: btn.dataset.providerName,
+        phone: btn.dataset.providerPhone,
+        type: btn.dataset.providerType,
+        saved_at: new Date().toISOString(),
+      });
+      saved = saved.slice(0, 50);
+    }
+    writeSaved(saved);
+    refreshStars();
+  });
+</script>

@@ -1,0 +1,24 @@
+name: "Site bug or technical issue"
+description: Something on the site is broken — map not loading, form not submitting, build failure, etc.
+title: "[BUG] <short summary>"
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+  - type: input
+    id: device
+    attributes:
+      label: Device / browser
+      placeholder: iPhone 14 / iOS 17 / Safari
+  - type: input
+    id: url
+    attributes:
+      label: Page URL where this happened

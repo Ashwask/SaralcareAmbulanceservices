@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ambulance.saralcare.com/schema/provider.schema.json",
+  "title": "Ambulance Provider Record",
+  "description": "Canonical record for one ambulance provider in the Saralcare directory.",
+  "type": "object",
+  "required": [
+    "id",
+    "legal_name",
+    "brand_name",
+    "type",
+    "hq_address",
+    "hq_lat_lng",
+    "contact",
+    "service_areas",
+    "sources",
+    "status",
+    "license_tag"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$",
+      "description": "Stable, lowercase, hyphenated slug. Must be unique across the dataset."
+    },
+    "legal_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Registered legal name of the operator. Use the brand name if no separate legal entity is identifiable."
+    },
+    "brand_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Name as the provider markets themselves."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "govt-108",
+        "private-aggregator",
+        "private-standalone",
+        "hospital-owned",
+        "ngo",
+        "charitable"
+      ]
+    },
+    "hq_address": {
+      "type": "string",
+      "minLength": 5
+    },
+    "hq_lat_lng": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "[latitude, longitude] of the headquarters or primary base."
+    },
+    "contact": {
+      "type": "object",
+      "required": ["phone_24h"],
+      "additionalProperties": false,
+      "properties": {
+        "phone_24h": {
+          "type": "string",
+          "pattern": "^[0-9+ -]{3,20}$",
+          "description": "24-hour primary phone number for dispatch. Accepts Indian short emergency codes (108, 102, 112, 1066, 1098), toll-free (1800/1860/1066), landlines, and +91 mobile formats. Validated leniently here; verified by call on the 30-day cycle."
+        },
+        "alt_phone": { "type": ["string", "null"] },
+        "whatsapp": { "type": ["string", "null"] },
+        "email": { "type": ["string", "null"], "format": "email" },
+        "website": { "type": ["string", "null"], "format": "uri" }
+      }
+    },
+    "service_areas": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": ["type", "pincodes"],
+          "properties": {
+            "type": { "const": "pincode-list" },
+            "pincodes": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^[1-9][0-9]{5}$" },
+              "minItems": 0
+            }
+          }
+        },
+        {
+          "required": ["type", "polygon"],
+          "properties": {
+            "type": { "const": "polygon" },
+            "polygon": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": { "type": "number" },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "minItems": 3
+            }
+          }
+        },
+        {
+          "required": ["type", "radius_km", "centre"],
+          "properties": {
+            "type": { "const": "radius" },
+            "radius_km": { "type": "number", "minimum": 0 },
+            "centre": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        }
+      ]
+    },
+    "hospital_affiliations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["hospital_id", "source"],
+        "additionalProperties": false,
+        "properties": {
+          "hospital_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+          "exclusivity": {
+            "type": "string",
+            "enum": ["exclusive", "primary", "occasional", "unknown"]
+          },
+          "source": {
+            "type": "string",
+            "description": "URL or call-log reference supporting this edge. Required — no edges without sources."
+          },
+          "observed_date": { "type": "string", "format": "date" },
+          "disputed": { "type": "boolean", "default": false },
+          "dispute_note": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "fleet_count_claimed": { "type": ["integer", "null"], "minimum": 0 },
+    "fleet_count_verified": { "type": ["integer", "null"], "minimum": 0 },
+    "vehicles": {
+      "type": "array",
+      "items": { "$ref": "vehicle.schema.json" }
+    },
+    "fares": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "base": { "type": "number", "minimum": 0 },
+        "per_km": { "type": "number", "minimum": 0 },
+        "waiting": { "type": ["number", "null"], "minimum": 0 },
+        "night_premium": { "type": ["number", "null"], "minimum": 0 },
+        "currency": { "type": "string", "enum": ["INR"] },
+        "source": { "type": "string" },
+        "observed_date": { "type": "string", "format": "date" }
+      },
+      "required": ["currency", "source", "observed_date"]
+    },
+    "certifications": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["type", "accessed"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["website", "phone-verification", "rti-response", "govt-listing", "press-report", "hospital-listing", "osm", "google-places", "justdial", "contributor-pr"]
+          },
+          "url": { "type": ["string", "null"], "format": "uri" },
+          "accessed": { "type": "string", "format": "date" },
+          "caller_initials": { "type": ["string", "null"] },
+          "notes": { "type": ["string", "null"] }
+        }
+      },
+      "description": "Provenance for the record. At least one source required."
+    },
+    "call_logs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "outcome"],
+        "additionalProperties": false,
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "caller_initials": { "type": ["string", "null"] },
+          "outcome": {
+            "type": "string",
+            "enum": ["answered", "no-answer", "wrong-number", "declined-to-confirm", "busy", "out-of-service"]
+          },
+          "notes": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["verified", "unverified", "stale", "dead", "disputed"],
+      "description": "verified=phone-confirmed ≤30 days; unverified=ingested but never called; stale=verified >30 days ago; dead=unreachable across multiple attempts; disputed=provider has contested the record."
+    },
+    "last_verified_at": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Date the record was last confirmed by phone. Null if never verified."
+    },
+    "verified_by": {
+      "type": ["string", "null"],
+      "description": "Caller initials of the last verifier."
+    },
+    "license_tag": {
+      "type": "string",
+      "const": "CC-BY-NC-SA-4.0"
+    },
+    "notes": { "type": ["string", "null"] },
+    "routing_note": {
+      "type": ["string", "null"],
+      "maxLength": 200,
+      "description": "Short text shown next to the call button when the published number routes via an IVR or other multi-step menu. E.g. 'Press 5 for ambulance after the IVR.'"
+    }
+  }
+}

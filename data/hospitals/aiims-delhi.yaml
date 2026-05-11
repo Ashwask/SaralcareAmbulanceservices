@@ -1,0 +1,36 @@
+id: aiims-delhi
+name: All India Institute of Medical Sciences (AIIMS) Delhi
+brand: AIIMS
+type: tertiary
+city: Delhi NCR
+state: Delhi
+address: Ansari Nagar, New Delhi 110029
+pincode: '110029'
+lat_lng:
+  - 28.5672
+  - 77.21
+er_phone: 011 26596428
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: aiims-delhi-ambulance
+dispatched_providers:
+  - provider_id: aiims-delhi-ambulance
+    source: https://www.aiims.edu/ (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.aiims.edu/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://www.aiims.edu/index.php/en
+    accessed: '2026-05-11'
+    notes: >-
+      Phone scraped from public source: AIIMS Delhi MSSO Control Room (emergency). Board
+      011-26588500/26588700.
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

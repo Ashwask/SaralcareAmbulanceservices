@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Confidential correction or takedown request
+    url: mailto:ashwinsk@saralcare.com
+    about: Use email if your correction or takedown contains sensitive details you do not want in a public issue.
+  - name: Commercial licensing inquiry
+    url: mailto:ashwinsk@saralcare.com
+    about: Email with subject [LICENSE REQUEST] and we will reply with the standard intake form.
+  - name: General question
+    url: https://github.com/Ashwask/SaralcareAmbulanceservices/discussions
+    about: Start a Discussion for open questions, methodology debates, or contribution ideas.

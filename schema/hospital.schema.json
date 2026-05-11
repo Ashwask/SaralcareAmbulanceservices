@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ambulance.saralcare.com/schema/hospital.schema.json",
+  "title": "Hospital Record",
+  "description": "Hospital entry, used both for affiliations and for hospital-owned provider records. A hospital that operates its own fleet has a paired provider record of type=hospital-owned.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "city",
+    "address",
+    "lat_lng",
+    "er_phone",
+    "sources",
+    "license_tag"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "brand": { "type": ["string", "null"] },
+    "type": {
+      "type": "string",
+      "enum": ["multi-speciality", "speciality", "general", "tertiary", "secondary", "primary", "trauma-centre", "maternity"]
+    },
+    "city": { "type": "string" },
+    "state": { "type": "string", "default": "Karnataka" },
+    "address": { "type": "string", "minLength": 5 },
+    "pincode": { "type": "string", "pattern": "^[1-9][0-9]{5}$" },
+    "lat_lng": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "er_phone": {
+      "type": "string",
+      "pattern": "^[0-9+ -]{3,20}$",
+      "description": "Published 24-hour Emergency Room reception number."
+    },
+    "ambulance_phone": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9+ -]{3,20}$",
+      "description": "Separate ambulance dispatch number if published."
+    },
+    "owns_fleet": {
+      "type": "boolean",
+      "description": "True if the hospital operates its own ambulance fleet. Paired provider record should exist."
+    },
+    "fleet_provider_id": {
+      "type": ["string", "null"],
+      "description": "ID of the provider record for the hospital-owned fleet (if owns_fleet=true)."
+    },
+    "dispatched_providers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["provider_id", "source"],
+        "properties": {
+          "provider_id": { "type": "string" },
+          "source": { "type": "string" },
+          "observed_date": { "type": "string", "format": "date" },
+          "exclusivity": {
+            "type": "string",
+            "enum": ["exclusive", "primary", "occasional", "unknown"]
+          }
+        }
+      },
+      "description": "External providers that this hospital's ER routes calls to. The affiliation graph."
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["type", "accessed"],
+        "properties": {
+          "type": { "type": "string", "enum": ["website", "phone-verification", "press-report", "rti-response", "govt-listing", "contributor-pr"] },
+          "url": { "type": ["string", "null"], "format": "uri" },
+          "accessed": { "type": "string", "format": "date" },
+          "notes": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["verified", "unverified", "stale", "dead", "disputed"]
+    },
+    "last_verified_at": { "type": ["string", "null"], "format": "date" },
+    "license_tag": { "type": "string", "const": "CC-BY-NC-SA-4.0" }
+  }
+}

@@ -1,0 +1,35 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getProviders, badge } from "@/lib/data";
+
+const providers = getProviders().sort((a, b) => a.brand_name.localeCompare(b.brand_name));
+---
+
+<Base title="All providers — Saralcare Ambulance Directory">
+  <h2 style="margin-top:0">All Bangalore ambulance providers ({providers.length})</h2>
+  <p class="small">Alphabetical. Tap a row for full record, sources, and freshness.</p>
+
+  <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+    <thead>
+      <tr style="border-bottom: 1px solid var(--border);">
+        <th style="text-align:left; padding: 0.5rem 0.4rem;">Provider</th>
+        <th style="text-align:left; padding: 0.5rem 0.4rem;">Type</th>
+        <th style="text-align:left; padding: 0.5rem 0.4rem;">Phone</th>
+        <th style="text-align:left; padding: 0.5rem 0.4rem;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {providers.map((p) => {
+        const b = badge(p);
+        return (
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.55rem 0.4rem;"><a href={`/providers/${p.id}`}>{p.brand_name}</a></td>
+            <td style="padding: 0.55rem 0.4rem;" class="small">{p.type}</td>
+            <td style="padding: 0.55rem 0.4rem;"><a href={`tel:${p.contact?.phone_24h?.replace(/\s+/g, "")}`}>{p.contact?.phone_24h}</a></td>
+            <td style="padding: 0.55rem 0.4rem;"><span class={`badge badge--${b}`}>{b}</span></td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</Base>

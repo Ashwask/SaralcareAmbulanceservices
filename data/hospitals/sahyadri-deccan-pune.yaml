@@ -1,0 +1,34 @@
+id: sahyadri-deccan-pune
+name: Sahyadri Hospital — Deccan Gymkhana
+brand: Sahyadri Hospitals
+type: multi-speciality
+city: Pune
+state: Maharashtra
+address: Plot No 30-C, Erandwane, Karve Road, Pune 411004
+pincode: '411004'
+lat_lng:
+  - 18.5076
+  - 73.8278
+er_phone: +91 88062 52525
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: sahyadri-deccan-pune-ambulance
+dispatched_providers:
+  - provider_id: sahyadri-deccan-pune-ambulance
+    source: https://www.sahyadrihospitals.com/ (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.sahyadrihospitals.com/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://sahyadrihospital.com/deccan/
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: Sahyadri Deccan Gymkhana 24/7 emergency.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

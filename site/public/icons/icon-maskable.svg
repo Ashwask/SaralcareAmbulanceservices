@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- maskable: safe area is inner 80% -->
+  <rect width="512" height="512" fill="#b91c1c"/>
+  <path d="M196 240h44v-44h60v44h44v60h-44v44h-60v-44h-44z" fill="#ffffff"/>
+  <text x="256" y="402" font-family="-apple-system, system-ui, sans-serif" font-weight="700" font-size="56" fill="#ffffff" text-anchor="middle" letter-spacing="2">108</text>
+</svg>

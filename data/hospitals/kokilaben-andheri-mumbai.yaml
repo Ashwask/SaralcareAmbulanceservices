@@ -1,0 +1,34 @@
+id: kokilaben-andheri-mumbai
+name: Kokilaben Dhirubhai Ambani Hospital
+brand: Kokilaben Hospital
+type: tertiary
+city: Mumbai
+state: Maharashtra
+address: Rao Saheb Achutrao Patwardhan Marg, Four Bunglows, Andheri (W), Mumbai 400053
+pincode: '400053'
+lat_lng:
+  - 19.1314
+  - 72.8278
+er_phone: +91 22 4269 9999
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: kokilaben-andheri-mumbai-ambulance
+dispatched_providers:
+  - provider_id: kokilaben-andheri-mumbai-ambulance
+    source: https://www.kokilabenhospital.com/ (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.kokilabenhospital.com/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://www.kokilabenhospital.com/contacts.html
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: Kokilaben emergency treatment / ambulance, 24h.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

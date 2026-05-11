@@ -1,0 +1,27 @@
+id: aster-cmi
+name: Aster CMI Hospital
+brand: Aster DM Healthcare
+type: multi-speciality
+city: Bengaluru
+state: Karnataka
+address: 43/2 NH-7, Hebbal, New Airport Road, Sahakara Nagar, Bengaluru 560092
+pincode: '560092'
+lat_lng:
+  - 13.0428
+  - 77.5944
+er_phone: 080 4647 4647
+ambulance_phone: null
+owns_fleet: false
+fleet_provider_id: null
+dispatched_providers: []
+sources:
+  - type: website
+    url: https://www.asterhospitals.in/hospitals/aster-cmi-bangalore
+    accessed: '2026-05-11'
+  - type: website
+    url: https://www.asterhospitals.in/hospitals/aster-cmi-bangalore
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: Aster CMI Bangalore direct emergency line.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

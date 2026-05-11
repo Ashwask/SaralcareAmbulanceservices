@@ -1,0 +1,97 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getHospitals, getProviders, badge, badgeLabel } from "@/lib/data";
+
+export async function getStaticPaths() {
+  const hospitals = getHospitals();
+  return hospitals.map((h) => ({ params: { id: h.id }, props: { hospital: h } }));
+}
+
+const { hospital } = Astro.props as any;
+const providers = getProviders();
+const b = badge(hospital);
+---
+
+<Base
+  title={`${hospital.name} — Saralcare Ambulance Directory`}
+  description={`${hospital.name}, ${hospital.city}. ER phone, ambulance affiliations, and dispatch information.`}
+>
+  <p class="small"><a href="/hospitals">← All hospitals</a></p>
+
+  <h2 style="margin-top: 0.4rem; margin-bottom: 0.4rem;">{hospital.name}</h2>
+  <p class="small" style="margin-top:0;">
+    <span class={`badge badge--${b}`}>{b}</span>
+    &nbsp; <em>{badgeLabel(b)}</em>
+    {hospital.type ? <> &nbsp;· &nbsp; {hospital.type}</> : null}
+  </p>
+
+  <div class="card" style="margin-top: 1.2rem">
+    <p style="margin: 0 0 0.4rem; font-weight: 600;">Emergency Room</p>
+    <p style="margin: 0;">
+      📞 <a href={`tel:${hospital.er_phone?.replace(/\s+/g, "")}`} style="font-size: 1.1rem; font-weight: 600;">{hospital.er_phone}</a>
+    </p>
+    {hospital.ambulance_phone ? (
+      <p style="margin: 0.4rem 0 0;">Ambulance line: <a href={`tel:${hospital.ambulance_phone.replace(/\s+/g, "")}`}>{hospital.ambulance_phone}</a></p>
+    ) : null}
+  </div>
+
+  <h3>Address</h3>
+  <p>{hospital.address}</p>
+  {hospital.pincode ? <p class="small">Pincode {hospital.pincode}</p> : null}
+
+  <h3>Ambulance dispatch</h3>
+  {hospital.owns_fleet ? (
+    <p>
+      <strong>Operates own fleet.</strong>
+      {hospital.fleet_provider_id ? (
+        <>
+          &nbsp; See: <a href={`/providers/${hospital.fleet_provider_id}`}>{providers.find((p) => p.id === hospital.fleet_provider_id)?.brand_name ?? hospital.fleet_provider_id}</a>
+        </>
+      ) : null}
+    </p>
+  ) : (
+    <p class="small">This hospital does not appear to operate its own ambulance fleet.</p>
+  )}
+
+  {(hospital.dispatched_providers ?? []).length > 0 ? (
+    <>
+      <h3>External providers this ER routes to</h3>
+      <p class="small">Each edge below is supported by a public source or verified call. <a href="/about#methodology">How we build the affiliation graph →</a></p>
+      <ul>
+        {hospital.dispatched_providers.map((dp: any) => {
+          const p = providers.find((x) => x.id === dp.provider_id);
+          return (
+            <li>
+              {p ? <a href={`/providers/${dp.provider_id}`}>{p.brand_name}</a> : <code>{dp.provider_id}</code>}
+              {dp.exclusivity ? <> — <em>{dp.exclusivity}</em></> : null}
+              <br />
+              <span class="small">
+                Source: {dp.source?.startsWith("http") ? <a href={dp.source} target="_blank" rel="noopener">link</a> : dp.source}
+                {dp.observed_date ? <> &nbsp;· observed {dp.observed_date}</> : null}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  ) : null}
+
+  <section>
+    <h3>Sources</h3>
+    <ul>
+      {(hospital.sources ?? []).map((s: any) => (
+        <li>
+          <strong>{s.type}</strong>
+          {s.url ? <> — <a href={s.url} target="_blank" rel="noopener">{s.url}</a></> : null}
+          {s.accessed ? <span class="small"> &nbsp; (accessed {s.accessed})</span> : null}
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.4rem;">
+    <p class="small">
+      Hospital staff: if any information is incorrect, please email <a href="mailto:ashwinsk@saralcare.com?subject=%5BCORRECTION%5D">ashwinsk@saralcare.com</a>. We respond within 48 hours.
+    </p>
+  </section>
+</Base>

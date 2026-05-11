@@ -1,0 +1,104 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base
+  title="How Saralcare Ambulances works"
+  description="What we do, what we don't, how we verify, and what your rights are as a user, a provider, or a contributor."
+>
+  <h2 style="margin-top: 0.4rem">How this site works</h2>
+  <p style="max-width: 60ch; font-size: 1.02rem; color: var(--fg)">
+    Saralcare Ambulances helps you find and call an ambulance in Bangalore — government 108, private, or charitable. We're an independent project that calls every listed number on a 30-day cycle and publishes what we hear, openly and free of charge.
+  </p>
+
+  <div class="card" style="background: var(--accent-bg); border-color: #fecaca; color: #7f1d1d; margin-top: 1rem;">
+    <p style="margin: 0; font-weight: 700;">In any medical emergency, dial 108 first.</p>
+    <p style="margin: 0.3rem 0 0; font-size: 0.95rem;">
+      Use this site to find alternatives if 108 is overloaded, or to plan ahead. Always verify a number by calling before depending on it.
+    </p>
+  </div>
+
+  <h3>What we do</h3>
+  <ul>
+    <li>Compile a directory of every ambulance provider we can find in Bangalore — government 108 stations, private aggregators, hospital-owned fleets, charitable trusts, and standalone operators.</li>
+    <li>Call every listed number on a 30-day cycle. The freshness badge on each record tells you when we last confirmed it.</li>
+    <li>Show you fares, vehicle types (BLS / ALS / MICU), hospital affiliations, and what other users reported about real calls.</li>
+    <li>Let providers claim their listing and submit corrections — free of charge.</li>
+    <li>Publish all data openly under <a href="/license">CC BY-NC-SA 4.0</a> so anyone can audit, fork, or cite.</li>
+  </ul>
+
+  <h3>What we don't do</h3>
+  <ul>
+    <li>We do not operate any ambulance. We have no vehicles, no drivers, no contracts.</li>
+    <li>We do not dispatch. We do not place calls on your behalf. You tap a number and reach the provider directly.</li>
+    <li>We do not show real-time vehicle availability. Numbers reflect provider claims and user reports — historical, not live.</li>
+    <li>We do not take payments from listed providers. No ads, no paid placement, no commission.</li>
+    <li>We do not collect personal data from users. The site works without an account; saved preferences live on your device only.</li>
+  </ul>
+
+  <h3>In an emergency — what to actually do</h3>
+  <ol>
+    <li><strong>Call 108.</strong> Karnataka's state ambulance service is free at point of use and routes to the nearest contracted vehicle.</li>
+    <li>If 108 is unreachable or unavailable, open this site, tap the geolocate button, and call any of the listed providers directly.</li>
+    <li>Verify the vehicle type before agreeing — basic ambulances (BLS) carry oxygen + first aid; advanced (ALS) carry a defibrillator + paramedic; MICU carries ventilator + ICU staff.</li>
+    <li>Confirm the fare before the trip begins, and ask whether the vehicle accepts cash, card, or insurance.</li>
+  </ol>
+
+  <h3>Verification cadence</h3>
+  <p>Every record carries a coloured badge:</p>
+  <ul>
+    <li><span class="badge badge--verified">verified</span> &nbsp; confirmed by phone within 30 days.</li>
+    <li><span class="badge badge--stale">stale</span> &nbsp; verified 30–60 days ago. Re-check before relying.</li>
+    <li><span class="badge badge--unverified">unverified</span> &nbsp; ingested from a public source; we haven't called yet.</li>
+    <li><span class="badge badge--dead">dead</span> &nbsp; unreachable across attempts. Hidden from the map; kept in our public Git history for provenance.</li>
+    <li><span class="badge badge--disputed">disputed</span> &nbsp; the provider has contested the record. Read the dispute note.</li>
+  </ul>
+
+  <h3>What users report</h3>
+  <p>
+    Patients and families who have actually called these providers submit reports describing what happened — answered or not, vehicle type sent, response time, fare paid. We aggregate those into per-provider stats (answer rate, median response time, fare dispersion). These are <strong>historical observations</strong>, not promises of future performance.
+  </p>
+  <p>
+    To submit a report, open the provider's page and tap <em>"Report your call experience"</em>. We review each submission before publishing.
+  </p>
+
+  <h3>Your rights as a user</h3>
+  <ul>
+    <li>Free to read, save, share. No account required.</li>
+    <li>Save providers to your device for offline access (works in airplane mode after one online visit).</li>
+    <li>Install this site to your home screen — it works as an app.</li>
+    <li>Report any error or out-of-date information — we respond within 48 hours.</li>
+    <li>Read the data, fork it, cite it: <a href="/license">CC BY-NC-SA 4.0</a>.</li>
+  </ul>
+
+  <h3>Your rights as a provider</h3>
+  <ul>
+    <li>Free listing. We will never ask you to pay for placement, visibility, or removal.</li>
+    <li>Claim your listing and submit corrections at <a href="/for-providers">/for-providers</a>.</li>
+    <li>Dispute any user report you believe is inaccurate — we annotate or remove according to the evidence.</li>
+    <li>Receive the verified badge by confirming your data on our call. Free signal of trust to your prospective patients.</li>
+    <li>Take down your listing on request. We respect the choice.</li>
+  </ul>
+
+  <h3>Your rights as a contributor</h3>
+  <ul>
+    <li>You keep copyright on what you submit; we license it under CC BY-NC-SA 4.0 to publish.</li>
+    <li>Withdrawal at any time — email us, your report is archived from the public dataset.</li>
+    <li>We never publish your full name. Optional initials (up to 4 characters) only if you wish.</li>
+  </ul>
+
+  <h3>How we protect ourselves and you</h3>
+  <p>
+    We're an information aggregator. We don't operate ambulances and we don't make availability guarantees. To the extent permitted by Indian law, the maintainers accept no liability for outcomes of relying on this data — see the <a href="/disclaimer">full disclaimer</a> for the technical legal language. In practice this means: always verify by phone, always call 108 in emergencies, and treat this site as one signal among many.
+  </p>
+
+  <h3>About this project</h3>
+  <p>
+    Saralcare Ambulances is a public-good project hosted under saralcare.com. It is run pseudonymously under the Saralcare umbrella by volunteers and the founding maintainer. We accept no commercial sponsorship in v1; the code and data are open source. Want to help?
+  </p>
+  <ul>
+    <li><a href="https://github.com/Ashwask/SaralcareAmbulanceservices">GitHub repo</a> — issues, PRs, the verification protocol.</li>
+    <li><a href="mailto:ashwinsk@saralcare.com">Email</a> — corrections, takedown, licensing inquiries.</li>
+    <li><a href="/for-providers">For providers</a> — registration and claim flows.</li>
+  </ul>
+</Base>

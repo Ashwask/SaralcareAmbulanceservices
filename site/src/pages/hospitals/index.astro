@@ -1,0 +1,39 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getHospitals, badge } from "@/lib/data";
+
+const hospitals = getHospitals().sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<Base title="Hospitals — Saralcare Ambulance Directory">
+  <h2 style="margin-top:0">Bangalore hospitals ({hospitals.length})</h2>
+  <p class="small">
+    Each hospital page shows the published ER number and which provider(s) the ER routes to. The affiliation graph is sourced — see <a href="/about#methodology">methodology</a>.
+  </p>
+
+  <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+    <thead>
+      <tr style="border-bottom: 1px solid var(--border);">
+        <th style="text-align:left; padding: 0.5rem 0.4rem;">Hospital</th>
+        <th style="text-align:left; padding: 0.5rem 0.4rem;">Pincode</th>
+        <th style="text-align:left; padding: 0.5rem 0.4rem;">ER Phone</th>
+        <th style="text-align:left; padding: 0.5rem 0.4rem;">Owns fleet?</th>
+        <th style="text-align:left; padding: 0.5rem 0.4rem;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {hospitals.map((h) => {
+        const b = badge(h);
+        return (
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.55rem 0.4rem;"><a href={`/hospitals/${h.id}`}>{h.name}</a></td>
+            <td style="padding: 0.55rem 0.4rem;" class="small">{h.pincode}</td>
+            <td style="padding: 0.55rem 0.4rem;"><a href={`tel:${h.er_phone?.replace(/\s+/g, "")}`}>{h.er_phone}</a></td>
+            <td style="padding: 0.55rem 0.4rem;" class="small">{h.owns_fleet ? "Yes" : "No"}</td>
+            <td style="padding: 0.55rem 0.4rem;"><span class={`badge badge--${b}`}>{b}</span></td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</Base>

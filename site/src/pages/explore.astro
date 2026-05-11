@@ -1,0 +1,209 @@
+---
+import Base from "@/layouts/Base.astro";
+import Map from "@/components/Map.astro";
+import { getProviders, getHospitals, getReports, badge } from "@/lib/data";
+
+const providers = getProviders();
+const hospitals = getHospitals();
+const reports = getReports();
+
+const counts = providers.reduce((acc: Record<string, number>, p) => {
+  acc[badge(p)] = (acc[badge(p)] ?? 0) + 1;
+  return acc;
+}, { verified: 0, stale: 0, unverified: 0, dead: 0, disputed: 0 });
+
+// Derive a city tag for each record by first-3-digit of any pincode in its service area.
+const PIN_PREFIX_CITY: Record<string, string> = {
+  "560": "Bengaluru", "561": "Bengaluru", "562": "Bengaluru",
+  "400": "Mumbai", "401": "Mumbai", "402": "Mumbai",
+  "411": "Pune", "412": "Pune", "413": "Pune",
+  "110": "Delhi NCR", "111": "Delhi NCR", "112": "Delhi NCR", "121": "Delhi NCR", "122": "Delhi NCR", "201": "Delhi NCR",
+  "600": "Chennai", "601": "Chennai", "602": "Chennai", "603": "Chennai",
+  "500": "Hyderabad", "501": "Hyderabad", "502": "Hyderabad",
+  "700": "Kolkata", "711": "Kolkata", "712": "Kolkata",
+  "380": "Ahmedabad", "302": "Jaipur", "226": "Lucknow", "682": "Kochi",
+  "695": "Thiruvananthapuram", "641": "Coimbatore", "462": "Bhopal", "530": "Visakhapatnam",
+};
+function cityOf(rec: any): string {
+  const pins = rec.service_areas?.type === "pincode-list" ? (rec.service_areas.pincodes ?? []) : [];
+  for (const p of pins) {
+    const c = PIN_PREFIX_CITY[String(p).slice(0, 3)];
+    if (c) return c;
+  }
+  // 108 govt records: use hq address city
+  if (rec.type === "govt-108" && rec.hq_address) {
+    for (const c of Object.values(PIN_PREFIX_CITY)) {
+      if (rec.hq_address.includes(c) || rec.hq_address.includes(c.split(" ")[0])) return c;
+    }
+  }
+  return "Other / pan-India";
+}
+function hospitalCityOf(h: any): string {
+  if (h.pincode) {
+    const c = PIN_PREFIX_CITY[String(h.pincode).slice(0, 3)];
+    if (c) return c;
+  }
+  return h.city ?? "Other";
+}
+
+const providerWithCity = providers.map((p) => ({ ...p, _city: cityOf(p) }));
+const hospitalWithCity = hospitals.map((h) => ({ ...h, _city: hospitalCityOf(h) }));
+
+// All cities present in the dataset
+const allCities = Array.from(new Set([
+  ...providerWithCity.map((p) => p._city),
+  ...hospitalWithCity.map((h) => h._city),
+])).sort();
+
+const sortedProviders = [...providerWithCity].sort((a, b) => (a._city + a.brand_name).localeCompare(b._city + b.brand_name));
+const sortedHospitals = [...hospitalWithCity].sort((a, b) => (a._city + a.name).localeCompare(b._city + b.name));
+
+// Fare summary
+const faresWithBase = providers.filter((p) => p.fares?.base);
+const fareMedian = (() => {
+  const xs = faresWithBase.map((p) => p.fares!.base).sort((a, b) => a - b);
+  return xs.length ? xs[Math.floor(xs.length / 2)] : null;
+})();
+---
+
+<Base title="Explore the data — Saralcare Ambulances" hideHero={true}>
+  <h2 style="margin-top: 0.4rem">Explore the data</h2>
+  <p style="max-width: 60ch; color: var(--muted);">
+    Every ambulance provider in Bangalore we've found, with sources, affiliations, and reports. Pan the map, browse the lists, or drill into individual records. All data CC BY-NC-SA 4.0.
+  </p>
+
+  <section style="margin-top: 1rem;">
+    <Map />
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Quick stats</h3>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-num">{providers.length}</div>
+        <div class="stat-label">providers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">{hospitals.length}</div>
+        <div class="stat-label">hospitals</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">{reports.length}</div>
+        <div class="stat-label">user reports</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">{counts.verified}</div>
+        <div class="stat-label">verified ≤30 days</div>
+      </div>
+      {fareMedian != null ? (
+        <div class="stat-card">
+          <div class="stat-num">₹{fareMedian}</div>
+          <div class="stat-label">median base fare</div>
+        </div>
+      ) : null}
+    </div>
+    <p class="small" style="margin-top: 0.5rem;"><a href="/freshness">Detailed freshness dashboard →</a></p>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <div class="filter-row">
+      <h3 style="margin: 0;">Browse by city</h3>
+      <label>
+        <span class="small" style="margin-right: 0.4rem;">Filter:</span>
+        <select id="city-filter">
+          <option value="">All cities</option>
+          {allCities.map((c) => <option value={c}>{c}</option>)}
+        </select>
+      </label>
+    </div>
+    <p class="small" style="margin: 0.4rem 0 0.6rem;">Grouped by city, then alphabetical.</p>
+
+    <h3 style="margin-top: 1.2rem;">Providers (<span id="prov-count">{providers.length}</span>)</h3>
+    <table class="data-table" id="prov-table">
+      <thead>
+        <tr><th>Provider</th><th>City</th><th>Type</th><th>Status</th><th>Phone</th></tr>
+      </thead>
+      <tbody>
+        {sortedProviders.map((p) => {
+          const b = badge(p);
+          const phone = p.contact?.phone_24h ?? "";
+          return (
+            <tr data-city={p._city}>
+              <td><a href={`/providers/${p.id}`}>{p.brand_name}</a></td>
+              <td class="small">{p._city}</td>
+              <td class="small">{p.type}</td>
+              <td><span class={`badge badge--${b}`}>{b}</span></td>
+              <td><a href={`tel:${phone.replace(/\s+/g, "")}`}>{phone}</a></td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+
+    <h3 style="margin-top: 1.5rem;">Hospitals (<span id="hosp-count">{hospitals.length}</span>)</h3>
+    <table class="data-table" id="hosp-table">
+      <thead>
+        <tr><th>Hospital</th><th>City</th><th>Pincode</th><th>ER Phone</th><th>Own fleet?</th></tr>
+      </thead>
+      <tbody>
+        {sortedHospitals.map((h) => (
+          <tr data-city={h._city}>
+            <td><a href={`/hospitals/${h.id}`}>{h.name}</a></td>
+            <td class="small">{h._city}</td>
+            <td class="small">{h.pincode}</td>
+            <td><a href={`tel:${(h.er_phone ?? "").replace(/\s+/g, "")}`}>{h.er_phone}</a></td>
+            <td class="small">{h.owns_fleet ? "Yes" : "No"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <script type="module">
+      const sel = document.getElementById("city-filter");
+      function applyFilter() {
+        const v = sel.value;
+        let pCount = 0, hCount = 0;
+        for (const row of document.querySelectorAll("#prov-table tbody tr")) {
+          const show = !v || row.dataset.city === v;
+          row.style.display = show ? "" : "none";
+          if (show) pCount++;
+        }
+        for (const row of document.querySelectorAll("#hosp-table tbody tr")) {
+          const show = !v || row.dataset.city === v;
+          row.style.display = show ? "" : "none";
+          if (show) hCount++;
+        }
+        document.getElementById("prov-count").textContent = pCount;
+        document.getElementById("hosp-count").textContent = hCount;
+      }
+      sel?.addEventListener("change", applyFilter);
+      // Pre-select from query string ?city=Bengaluru
+      const qp = new URLSearchParams(location.search).get("city");
+      if (qp) { sel.value = qp; applyFilter(); }
+    </script>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Open data downloads</h3>
+    <ul>
+      <li><a href="/v1/providers.json"><code>/v1/providers.json</code></a> — all providers as JSON</li>
+      <li><a href="/v1/hospitals.json"><code>/v1/hospitals.json</code></a> — all hospitals as JSON</li>
+      <li><a href="/v1/freshness.json"><code>/v1/freshness.json</code></a> — freshness stats</li>
+      <li><a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/data/affiliations/edges.csv"><code>data/affiliations/edges.csv</code></a> — provider × hospital affiliation graph</li>
+      <li><a href="https://github.com/Ashwask/SaralcareAmbulanceservices">GitHub repo</a> — full source + raw YAML</li>
+    </ul>
+    <p class="small">All data licensed under <a href="/license">CC BY-NC-SA 4.0</a>. For commercial integration, email <a href="mailto:ashwinsk@saralcare.com">ashwinsk@saralcare.com</a>.</p>
+  </section>
+
+  <style>
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.55rem; }
+    .stat-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem 0.9rem; }
+    .stat-num { font-size: 1.5rem; font-weight: 700; line-height: 1.05; color: var(--fg); }
+    .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.92rem; }
+    .data-table th, .data-table td { padding: 0.45rem 0.4rem; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table th { font-weight: 600; color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.02em; }
+    .filter-row { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .filter-row select { padding: 0.4rem 0.55rem; font-size: 0.92rem; }
+  </style>
+</Base>

@@ -1,0 +1,52 @@
+id: 108-tamil-nadu
+legal_name: GVK EMRI on contract with Tamil Nadu Health Department
+brand_name: 108 Tamil Nadu Emergency Medical Services
+type: govt-108
+hq_address: State EMS HQ, Chennai, Tamil Nadu
+hq_lat_lng:
+  - 13.0827
+  - 80.2707
+contact:
+  phone_24h: '108'
+  alt_phone: null
+  whatsapp: null
+  email: null
+  website: https://www.tnhealth.tn.gov.in/
+service_areas:
+  type: polygon
+  polygon:
+    - - 12.0827
+      - 79.2707
+    - - 14.0827
+      - 79.2707
+    - - 14.0827
+      - 81.2707
+    - - 12.0827
+      - 81.2707
+hospital_affiliations: []
+fleet_count_claimed: null
+fleet_count_verified: null
+fares:
+  base: 0
+  per_km: 0
+  waiting: null
+  night_premium: null
+  currency: INR
+  source: https://www.tnhealth.tn.gov.in/ (free at point of use for emergencies)
+  observed_date: '2026-05-11'
+certifications:
+  - GVK_contracted
+sources:
+  - type: govt-listing
+    url: https://www.tnhealth.tn.gov.in/
+    accessed: '2026-05-11'
+    notes: State-level 108 EMS published on the Tamil Nadu health department website.
+call_logs: []
+status: unverified
+last_verified_at: null
+verified_by: null
+license_tag: CC-BY-NC-SA-4.0
+notes: >-
+  Tamil Nadu state-wide 108 emergency medical service. The number 108 routes through a
+  state-operated call centre. Station-level details (locations, fleet counts) pending RTI to the
+  Tamil Nadu health department.

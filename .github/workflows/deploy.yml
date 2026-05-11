@@ -1,0 +1,55 @@
+name: Build and deploy site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/**"
+      - "site/**"
+      - "schema/**"
+      - "scripts/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate
+        run: pnpm validate
+
+      - name: Build API artifacts
+        run: pnpm build-api
+
+      - name: Build site
+        run: pnpm site:build
+
+      # Deploy to Cloudflare Pages. Configure these secrets in repo settings:
+      #   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
+      # The Pages project name is "ambulance-saralcare" (adjust to match what you create).
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ambulance-saralcare
+          directory: site/dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

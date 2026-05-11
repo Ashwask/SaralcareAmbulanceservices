@@ -1,0 +1,34 @@
+id: jehangir-pune
+name: Jehangir Hospital
+brand: Jehangir Hospital
+type: multi-speciality
+city: Pune
+state: Maharashtra
+address: 32, Sassoon Road, Pune 411001
+pincode: '411001'
+lat_lng:
+  - 18.5295
+  - 73.8783
+er_phone: 020 66819999
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: jehangir-pune-ambulance
+dispatched_providers:
+  - provider_id: jehangir-pune-ambulance
+    source: https://www.jehangirhospital.com/ (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.jehangirhospital.com/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://www.jehangirhospital.com/contact-us/
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: Jehangir Hospital main number. Ambulance short code: 1066.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

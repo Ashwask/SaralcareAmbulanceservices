@@ -1,0 +1,102 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getProviders } from "@/lib/data";
+
+const providers = getProviders().sort((a, b) => a.brand_name.localeCompare(b.brand_name));
+const submitUrl = import.meta.env.PUBLIC_SUBMIT_URL ?? "";
+---
+
+<Base title="Claim your listing — Saralcare Ambulance Directory">
+  <p class="small"><a href="/">← Home</a></p>
+  <h2 style="margin-top:0.3rem">Claim your listing</h2>
+  <p style="max-width: 60ch; color: var(--muted)">
+    If your ambulance service is listed and you'd like to submit corrections, claim the listing. We verify by phone before applying any changes.
+  </p>
+
+  <form id="claim-form" class="claim-form" data-submit-url={submitUrl}>
+    <label>Which listing are you claiming? *
+      <select name="provider_id" required>
+        <option value="">— select —</option>
+        {providers.map((p) => <option value={p.id}>{p.brand_name} ({p.type})</option>)}
+      </select>
+    </label>
+
+    <label>Your role *
+      <select name="claimant_role" required>
+        <option value="">— select —</option>
+        <option value="owner">Owner</option>
+        <option value="operations">Operations manager</option>
+        <option value="dispatcher">Dispatcher</option>
+        <option value="other">Other authorised representative</option>
+      </select>
+    </label>
+
+    <div class="grid-2">
+      <label>Your name *<input type="text" name="claimant_name" required maxlength="80" /></label>
+      <label>Direct phone *<input type="tel" name="claimant_phone" required /></label>
+    </div>
+
+    <label>What's wrong or needs updating? *<textarea name="corrections" rows="6" required maxlength="2000" placeholder="Spell out the specific field, the current value, the correct value, and how we can verify (e.g., 'phone should be +91 80 1234 5678, see our website https://...')"></textarea></label>
+
+    <p class="consent small">
+      We will call your direct phone to confirm you are authorised to make changes for this provider. Name and direct phone are kept private. Approved corrections are applied within 48 hours and the change is visible in the public Git history.
+    </p>
+
+    <div class="row">
+      <button type="submit">Submit claim</button>
+      <span id="claim-status" class="small" aria-live="polite"></span>
+    </div>
+  </form>
+
+  <script type="module">
+    const params = new URLSearchParams(location.search);
+    const preselect = params.get("provider");
+    if (preselect) {
+      const sel = document.querySelector('select[name="provider_id"]');
+      if (sel) sel.value = preselect;
+    }
+    const form = document.getElementById("claim-form");
+    if (form) {
+      const status = document.getElementById("claim-status");
+      const submitUrl = form.dataset.submitUrl;
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        status.textContent = "Sending…";
+        const fd = new FormData(form);
+        const payload = Object.fromEntries(fd.entries());
+        for (const k of Object.keys(payload)) if (payload[k] === "") delete payload[k];
+        if (submitUrl) {
+          try {
+            const r = await fetch(submitUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ form_type: "provider-claim", payload }),
+            });
+            const data = await r.json();
+            if (data.ok) {
+              status.innerHTML = `Thank you. We'll call your direct number within 48h — <a href="${data.issue_url}" target="_blank" rel="noopener">tracking link</a>.`;
+              form.reset();
+              return;
+            }
+          } catch (err) {}
+        }
+        const subject = encodeURIComponent(`[CLAIM] ${payload.provider_id ?? ""}`);
+        const body = encodeURIComponent(Object.entries(payload).map(([k, v]) => `${k}: ${v}`).join("\n") + "\n\n— Submitted from ambulance.saralcare.com");
+        window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
+        status.textContent = "Opening your email app — please send the pre-filled message to complete your claim.";
+      });
+    }
+  </script>
+
+  <style>
+    .claim-form { display: flex; flex-direction: column; gap: 0.85rem; max-width: 640px; margin-top: 1rem; }
+    .claim-form label { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 500; font-size: 0.94rem; }
+    .claim-form input, .claim-form select, .claim-form textarea { font: inherit; padding: 0.5rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; background: white; }
+    .claim-form textarea { resize: vertical; min-height: 100px; }
+    .claim-form .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    @media (max-width: 540px) { .claim-form .grid-2 { grid-template-columns: 1fr; } }
+    .claim-form .row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.4rem; }
+    .claim-form button { background: var(--accent); color: white; border: 0; padding: 0.6rem 1.1rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .consent { background: #fffbeb; border: 1px solid #fde68a; padding: 0.55rem 0.7rem; border-radius: 6px; color: #7c2d12; }
+  </style>
+</Base>

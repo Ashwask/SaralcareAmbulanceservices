@@ -1,0 +1,113 @@
+Saralcare Ambulance Directory — Data License
+
+The structured data in this repository (all files under `data/**` and the
+generated artifacts under `api/v1/**`) is licensed under the
+
+    Creative Commons Attribution-NonCommercial-ShareAlike 4.0
+    International Public License
+    (CC BY-NC-SA 4.0)
+
+Canonical legal code: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by-nc-sa/4.0/
+SPDX identifier: CC-BY-NC-SA-4.0
+
+================================================================
+WHAT YOU MAY DO (FREELY, AT NO COST)
+================================================================
+
+You may share, copy, redistribute, adapt, remix, transform, and build upon
+this data, in any medium or format, for any non-commercial purpose, provided
+you:
+
+  1. Give appropriate credit ("Saralcare ambulance directory project,
+     ambulance.saralcare.com, CC BY-NC-SA 4.0"), and provide a link to
+     this license, and indicate if changes were made;
+
+  2. Distribute your contributions under the same license (ShareAlike) if
+     you remix, transform, or build upon the data;
+
+  3. Do not apply legal terms or technological measures that legally
+     restrict others from doing anything the license permits.
+
+================================================================
+WHAT COUNTS AS NON-COMMERCIAL
+================================================================
+
+Non-commercial uses include, without limitation:
+
+  - Individuals and families locating an ambulance for themselves or a
+    relative.
+  - Doctors, clinics, and hospitals using this data to inform patients
+    of options when arranging transport or referral.
+  - Journalists, researchers, and academics using the data for
+    reporting or study.
+  - NGOs, charitable organisations, and civic-tech projects using the
+    data to assist members of the public.
+  - Government bodies and government-contracted Emergency Medical
+    Services (including 108 / Arogya Kavacha and equivalent state
+    schemes) using the data for public-service delivery.
+  - Educational use, including teaching and student projects.
+
+================================================================
+WHAT COUNTS AS COMMERCIAL (REQUIRES A SEPARATE LICENSE)
+================================================================
+
+Commercial uses include, without limitation:
+
+  - Ingesting the dataset into a for-profit product, app, API, or SaaS.
+  - Embedding the data in a service that is monetised by subscription,
+    advertising, lead generation, paid placement, or transaction fees.
+  - Insurance claims processing, hospital chain proprietary systems,
+    ambulance aggregator apps, and fleet-management products.
+  - Any redistribution of the data in a form that is gated by payment
+    or restricted from open redistribution.
+
+Commercial use of this dataset requires a separate, bilateral license
+from the rights-holder. Inquiries:
+
+    ashwinsk@saralcare.com
+
+Each commercial license is negotiated case-by-case. There is no public
+price list, no self-serve signup, and no tiered marketing in v1.
+Counterparties should expect questions about use case, integration
+scope, query volume, redistribution rights, and attribution.
+
+================================================================
+ATTRIBUTION FORMAT (REQUIRED FOR ALL USES)
+================================================================
+
+When citing or redistributing this data, include:
+
+    "Source: Saralcare ambulance directory project
+     (https://ambulance.saralcare.com), CC BY-NC-SA 4.0."
+
+Link to the license and indicate any modifications.
+
+================================================================
+NO WARRANTY, NO LIABILITY — INFORMATION AGGREGATOR ONLY
+================================================================
+
+This dataset is provided "AS IS" without warranty of any kind, express
+or implied, including but not limited to warranties of accuracy,
+completeness, merchantability, fitness for a particular purpose, and
+non-infringement.
+
+The Saralcare Ambulance Directory is an INFORMATION AGGREGATOR only.
+The maintainers and rights-holder:
+
+  - Do not operate, dispatch, or coordinate any ambulance.
+  - Do not hold real-time vehicle status, availability, or location.
+  - Do not endorse, recommend, or guarantee any listed provider.
+  - Have no contractual or operational relationship with any provider.
+  - Make no representation as to the continuous accuracy of records.
+
+By using or relying on this data you agree that the maintainers,
+contributors, and rights-holder accept NO RESPONSIBILITY AND NO
+LIABILITY for any loss, injury, delay, cost, or other consequence
+arising from your use of or reliance upon this data — whether direct,
+indirect, incidental, consequential, or otherwise.
+
+You assume full responsibility for verifying details by direct phone
+call before relying on any record. In any medical emergency, dial 108
+(or your nearest emergency service) directly. This dataset is not a
+substitute for emergency services and must not be used as one.

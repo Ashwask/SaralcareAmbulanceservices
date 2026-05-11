@@ -1,0 +1,49 @@
+name: "Takedown request"
+description: Provider wants to be delisted, or a record contains content you believe should not be public.
+title: "[TAKEDOWN] <record id>"
+labels: ["takedown", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We respond within 48 hours and follow the process in `TAKEDOWN.md`.
+
+        If the basis for your takedown is sensitive (legal threat, personal safety, ongoing investigation),
+        please use email instead: `ashwinsk@saralcare.com` with subject `[TAKEDOWN]`.
+  - type: input
+    id: record_id
+    attributes:
+      label: Record ID to be removed
+      placeholder: red-health-bangalore
+    validations:
+      required: true
+  - type: dropdown
+    id: requester_role
+    attributes:
+      label: Your role
+      options:
+        - I am the provider (owner / operations / dispatcher)
+        - I am an authorised representative of the provider
+        - I am an affected third party (please explain below)
+        - Other (please explain below)
+    validations:
+      required: true
+  - type: dropdown
+    id: reason
+    attributes:
+      label: Reason
+      options:
+        - Service has ceased operations
+        - Service has changed legal entity / merged
+        - Privacy concern about the published information
+        - Factual error I do not wish to correct (delist instead)
+        - Other (explain below)
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Anything we should know. We may reach out to verify authorisation before delisting.
+    validations:
+      required: true

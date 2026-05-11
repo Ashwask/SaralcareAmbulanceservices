@@ -1,0 +1,40 @@
+{
+  "name": "Saralcare Ambulances",
+  "short_name": "Ambulances",
+  "description": "Find and call an ambulance in Bangalore. Government 108, private, charitable. Free, open, no ads.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fafaf9",
+  "theme_color": "#b91c1c",
+  "categories": ["health", "medical", "utilities"],
+  "lang": "en-IN",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Call 108",
+      "short_name": "108",
+      "description": "Government ambulance, free",
+      "url": "/?action=call108"
+    },
+    {
+      "name": "Saved providers",
+      "short_name": "Saved",
+      "url": "/saved"
+    }
+  ]
+}

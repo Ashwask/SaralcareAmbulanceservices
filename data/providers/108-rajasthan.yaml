@@ -1,0 +1,52 @@
+id: 108-rajasthan
+legal_name: Ziqitza Healthcare Limited on contract with Rajasthan Health Department
+brand_name: 108 Rajasthan Emergency Medical Services
+type: govt-108
+hq_address: State EMS HQ, Jaipur, Rajasthan
+hq_lat_lng:
+  - 26.9124
+  - 75.7873
+contact:
+  phone_24h: '108'
+  alt_phone: null
+  whatsapp: null
+  email: null
+  website: https://rajswasthya.nic.in/
+service_areas:
+  type: polygon
+  polygon:
+    - - 25.9124
+      - 74.7873
+    - - 27.9124
+      - 74.7873
+    - - 27.9124
+      - 76.7873
+    - - 25.9124
+      - 76.7873
+hospital_affiliations: []
+fleet_count_claimed: null
+fleet_count_verified: null
+fares:
+  base: 0
+  per_km: 0
+  waiting: null
+  night_premium: null
+  currency: INR
+  source: https://rajswasthya.nic.in/ (free at point of use for emergencies)
+  observed_date: '2026-05-11'
+certifications:
+  - ZHL_contracted
+sources:
+  - type: govt-listing
+    url: https://rajswasthya.nic.in/
+    accessed: '2026-05-11'
+    notes: State-level 108 EMS published on the Rajasthan health department website.
+call_logs: []
+status: unverified
+last_verified_at: null
+verified_by: null
+license_tag: CC-BY-NC-SA-4.0
+notes: >-
+  Rajasthan state-wide 108 emergency medical service. The number 108 routes through a state-operated
+  call centre. Station-level details (locations, fleet counts) pending RTI to the Rajasthan health
+  department.

@@ -1,0 +1,304 @@
+---
+import Base from "@/layouts/Base.astro";
+import ReportForm from "@/components/ReportForm.astro";
+import { getProviders, getHospitals, getReports, aggregateReportsFor, badge, badgeLabel, freshnessNote } from "@/lib/data";
+
+export async function getStaticPaths() {
+  const providers = getProviders();
+  return providers.map((p) => ({ params: { id: p.id }, props: { provider: p } }));
+}
+
+const { provider } = Astro.props as any;
+const hospitals = getHospitals();
+const reports = getReports();
+const b = badge(provider);
+const aff = provider.hospital_affiliations ?? [];
+const ownReports = reports.filter((r) => r.provider_id === provider.id && !r.disputed);
+const agg = aggregateReportsFor(provider.id, reports);
+const phone = provider.contact?.phone_24h ?? "";
+const phoneTel = phone.replace(/\s+/g, "");
+---
+
+<Base
+  title={`${provider.brand_name} — ambulance phone, Bangalore`}
+  description={`Call ${provider.brand_name} in Bangalore. ${provider.type}. ${ownReports.length > 0 ? `${agg.count} user reports.` : "Tap to call."}`}
+>
+  <p class="small" style="margin-top: 0.4rem;"><a href="/">← Find another</a></p>
+
+  <header class="provider-hero">
+    <h1 class="provider-name">{provider.brand_name}</h1>
+    <div class="provider-pills">
+      <span class={`badge badge--${b}`}>{badgeLabel(b)}</span>
+      <span class="pill">{provider.type === "govt-108" ? "108 / govt" : provider.type.replace("-", " ")}</span>
+      {provider.fleet_count_claimed ? <span class="pill">{provider.fleet_count_claimed} vehicles</span> : null}
+      {agg.median_response_minutes != null ? <span class="pill">~{agg.median_response_minutes} min reported</span> : null}
+      {agg.fare_median != null ? <span class="pill">₹{agg.fare_median} median fare</span> : null}
+    </div>
+
+    <a class="phone-button" href={`tel:${phoneTel}`} data-provider-id={provider.id}>
+      <span class="phone-button-icon">📞</span>
+      <span class="phone-button-num">{phone}</span>
+      <span class="phone-button-sub">Tap to call · 24×7</span>
+    </a>
+
+    {provider.routing_note ? (
+      <div class="hl-microcopy" style="margin-top: 0.5rem; background: #fffbeb; border-color: #fde68a; color: #78350f;">
+        ↪ {provider.routing_note}
+      </div>
+    ) : null}
+
+    <div class="hl-microcopy" style="margin-top: 0.5rem;">
+      Calling <strong>{provider.brand_name}</strong>. <a href="#" class="pc-dead-link" data-provider-id={provider.id} data-provider-name={provider.brand_name} data-phone={phone}>Number didn't work?</a> &nbsp;·&nbsp; In an emergency, dial <a href="tel:108"><strong>108</strong></a>.
+    </div>
+
+    <div class="provider-actions">
+      <button class="secondary save-btn" type="button"
+        data-provider-id={provider.id}
+        data-provider-name={provider.brand_name}
+        data-provider-phone={phone}
+        data-provider-type={provider.type}>
+        <span class="save-icon">★</span> <span class="save-text">Save</span>
+      </button>
+      <button class="secondary share-btn" type="button" data-name={provider.brand_name} data-phone={phone} data-href={`https://ambulance.saralcare.com/providers/${provider.id}`}>
+        ↗ Share
+      </button>
+      <button class="secondary report-toggle" type="button">✎ Report a call</button>
+    </div>
+  </header>
+
+  {agg.count > 0 ? (
+    <section class="block">
+      <h3>What users report</h3>
+      <p class="small">From {agg.count} call report{agg.count === 1 ? "" : "s"}. <strong>Historical observation</strong>, not real-time availability.</p>
+      <div class="report-stats">
+        {agg.answer_rate != null ? <div class="stat"><span class="stat-num">{agg.answer_rate}%</span><span class="stat-label">answered</span></div> : null}
+        {agg.dispatch_rate != null ? <div class="stat"><span class="stat-num">{agg.dispatch_rate}%</span><span class="stat-label">dispatched</span></div> : null}
+        {agg.median_response_minutes != null ? <div class="stat"><span class="stat-num">{agg.median_response_minutes}<small>min</small></span><span class="stat-label">median response</span></div> : null}
+        {agg.fare_median != null ? <div class="stat"><span class="stat-num">₹{agg.fare_median}</span><span class="stat-label">median fare{agg.fare_min !== agg.fare_max ? ` (₹${agg.fare_min}–₹${agg.fare_max})` : ""}</span></div> : null}
+      </div>
+      {ownReports.length > 0 ? (
+        <details style="margin-top: 0.7rem">
+          <summary class="small">Recent reports ({ownReports.length})</summary>
+          <ul class="small">
+            {ownReports.slice(0, 8).map((r: any) => (
+              <li>
+                <strong>{r.date_of_call}</strong> {r.time_band ?? ""} — {r.outcome}
+                {r.response_minutes ? <> · {r.response_minutes}min</> : null}
+                {r.vehicle_type_sent ? <> · {r.vehicle_type_sent}</> : null}
+                {r.fare_paid ? <> · ₹{r.fare_paid}</> : null}
+                {r.notes ? <p style="margin:0.15rem 0 0; color:var(--muted)">{r.notes}</p> : null}
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
+    </section>
+  ) : null}
+
+  <section class="block">
+    <h3>About</h3>
+    <dl class="kv">
+      <dt>Legal name</dt><dd>{provider.legal_name}</dd>
+      <dt>Headquarters</dt><dd>{provider.hq_address}</dd>
+      {provider.contact?.website ? (<><dt>Website</dt><dd><a href={provider.contact.website} target="_blank" rel="noopener">{provider.contact.website}</a></dd></>) : null}
+      <dt>Last verified</dt><dd>{provider.last_verified_at ?? <em>not yet verified</em>}</dd>
+    </dl>
+    <p class="small">{freshnessNote(provider)}</p>
+  </section>
+
+  {provider.fares ? (
+    <section class="block">
+      <h3>Fares (provider-claimed)</h3>
+      <p class="small">Observed {provider.fares.observed_date}. Source: <code>{provider.fares.source}</code>.</p>
+      <dl class="kv">
+        {provider.fares.base != null ? <><dt>Base</dt><dd>₹{provider.fares.base}</dd></> : null}
+        {provider.fares.per_km ? <><dt>Per km</dt><dd>₹{provider.fares.per_km}</dd></> : null}
+        {provider.fares.waiting ? <><dt>Waiting</dt><dd>₹{provider.fares.waiting}/hr</dd></> : null}
+        {provider.fares.night_premium ? <><dt>Night premium</dt><dd>₹{provider.fares.night_premium}</dd></> : null}
+      </dl>
+    </section>
+  ) : null}
+
+  {aff.length > 0 ? (
+    <section class="block">
+      <h3>Hospital affiliations</h3>
+      <p class="small">Hospitals whose published numbers route to this provider, with sources cited.</p>
+      <ul>
+        {aff.map((a: any) => {
+          const h = hospitals.find((x) => x.id === a.hospital_id);
+          return (
+            <li>
+              {h ? <a href={`/hospitals/${a.hospital_id}`}>{h.name}</a> : <code>{a.hospital_id}</code>}
+              {a.exclusivity ? <> — <em>{a.exclusivity}</em></> : null}
+              {a.disputed ? <> &nbsp;<span class="badge badge--disputed">disputed</span></> : null}
+              <br />
+              <span class="small">
+                Source: {a.source.startsWith("http") ? <a href={a.source} target="_blank" rel="noopener">link</a> : a.source}
+                {a.observed_date ? <> &nbsp;· observed {a.observed_date}</> : null}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  ) : null}
+
+  <details class="block">
+    <summary><strong>Sources & provenance</strong></summary>
+    <ul style="margin-top: 0.6rem;">
+      {(provider.sources ?? []).map((s: any) => (
+        <li>
+          <strong>{s.type}</strong>
+          {s.url ? <> — <a href={s.url} target="_blank" rel="noopener">{s.url}</a></> : null}
+          {s.accessed ? <span class="small"> &nbsp; (accessed {s.accessed})</span> : null}
+          {s.notes ? <p class="small" style="margin: 0.2rem 0 0;">{s.notes}</p> : null}
+        </li>
+      ))}
+    </ul>
+  </details>
+
+  <section id="report-section" hidden>
+    <ReportForm providerId={provider.id} providerName={provider.brand_name} />
+  </section>
+
+  <section class="block">
+    <p class="small">
+      Are you the provider? <a href={`/claim?provider=${provider.id}`}>Claim this listing</a> to submit corrections.
+      Otherwise: <a href="mailto:ashwinsk@saralcare.com?subject=%5BCORRECTION%5D">email a correction</a>.
+    </p>
+  </section>
+
+  <style>
+    .provider-hero {
+      margin-top: 0.4rem;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.05rem;
+    }
+    .provider-name {
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+      margin: 0 0 0.55rem;
+    }
+    .provider-pills {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      margin-bottom: 0.85rem;
+    }
+    .pill {
+      background: var(--bg); border: 1px solid var(--border);
+      padding: 0.18rem 0.6rem; border-radius: 999px;
+      font-size: 0.78rem; color: var(--muted);
+    }
+    .phone-button {
+      display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+      background: var(--accent); color: white;
+      border-radius: 14px;
+      padding: 1.05rem 1rem;
+      text-decoration: none;
+      min-height: 80px;
+    }
+    .phone-button:hover { background: var(--accent-hover); }
+    .phone-button-icon { font-size: 1.5rem; }
+    .phone-button-num { font-size: 1.8rem; font-weight: 800; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+    .phone-button-sub { font-size: 0.8rem; opacity: 0.85; }
+
+    .provider-actions {
+      display: flex; gap: 0.45rem; margin-top: 0.7rem; flex-wrap: wrap;
+    }
+    .provider-actions button { font-size: 0.88rem; padding: 0.45rem 0.85rem; }
+    .save-btn.saved { color: var(--accent); border-color: var(--accent); background: var(--accent-bg); }
+    .save-btn.saved .save-icon { color: var(--accent); }
+
+    .block {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.85rem 1.05rem;
+      margin: 0.7rem 0;
+    }
+    .block details { padding: 0; }
+    .kv { display: grid; grid-template-columns: max-content 1fr; gap: 0.25rem 0.9rem; margin: 0.4rem 0 0; }
+    .kv dt { color: var(--muted); font-size: 0.86rem; }
+    .kv dd { margin: 0; font-size: 0.94rem; }
+
+    .report-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.55rem; margin-top: 0.55rem; }
+    .stat { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.55rem 0.75rem; display: flex; flex-direction: column; }
+    .stat-num { font-size: 1.35rem; font-weight: 700; line-height: 1.05; color: var(--fg); }
+    .stat-num small { font-size: 0.72rem; font-weight: 500; color: var(--muted); margin-left: 0.15rem; }
+    .stat-label { font-size: 0.76rem; color: var(--muted); margin-top: 0.1rem; }
+  </style>
+
+  <script type="module">
+    // Save state
+    const KEY = "sc.amb.saved";
+    const btn = document.querySelector(".save-btn");
+    function readSaved() {
+      try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; }
+    }
+    function writeSaved(arr) { try { localStorage.setItem(KEY, JSON.stringify(arr)); } catch {} }
+    function refresh() {
+      if (!btn) return;
+      const saved = readSaved();
+      const is = saved.some((p) => p.id === btn.dataset.providerId);
+      btn.classList.toggle("saved", is);
+      btn.querySelector(".save-text").textContent = is ? "Saved" : "Save";
+    }
+    refresh();
+    btn?.addEventListener("click", () => {
+      let saved = readSaved();
+      const id = btn.dataset.providerId;
+      if (saved.some((p) => p.id === id)) {
+        saved = saved.filter((p) => p.id !== id);
+      } else {
+        saved.unshift({ id, brand_name: btn.dataset.providerName, phone: btn.dataset.providerPhone, type: btn.dataset.providerType, saved_at: new Date().toISOString() });
+      }
+      writeSaved(saved.slice(0, 50));
+      refresh();
+    });
+
+    // Share button — Web Share API w/ clipboard fallback
+    document.querySelector(".share-btn")?.addEventListener("click", async () => {
+      const sb = document.querySelector(".share-btn");
+      const title = sb.dataset.name;
+      const text = `${sb.dataset.name} ambulance — ${sb.dataset.phone}`;
+      const url = sb.dataset.href;
+      if (navigator.share) {
+        try { await navigator.share({ title, text, url }); return; } catch {}
+      }
+      try { await navigator.clipboard.writeText(`${text}\n${url}`); sb.textContent = "✓ Copied"; setTimeout(() => sb.textContent = "↗ Share", 1800); } catch {}
+    });
+
+    // Report toggle
+    document.querySelector(".report-toggle")?.addEventListener("click", () => {
+      const sec = document.getElementById("report-section");
+      sec.hidden = !sec.hidden;
+      if (!sec.hidden) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    // Dead-number one-tap report (also on detail page)
+    document.querySelector(".pc-dead-link")?.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const a = e.currentTarget;
+      const id = a.dataset.providerId;
+      // localStorage
+      try {
+        const cur = JSON.parse(localStorage.getItem("sc.amb.dead") || "[]");
+        if (!cur.includes(id)) { cur.push(id); localStorage.setItem("sc.amb.dead", JSON.stringify(cur)); }
+      } catch {}
+      a.textContent = "✓ Reported — re-verify queue.";
+      a.style.color = "var(--green)";
+      a.style.pointerEvents = "none";
+      const submitUrl = (import.meta.env.PUBLIC_SUBMIT_URL ?? "") || "";
+      if (submitUrl) {
+        try {
+          await fetch(submitUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ form_type: "dead-number", payload: { provider_id: id, provider_name: a.dataset.providerName, phone: a.dataset.phone, reported_at: new Date().toISOString() } }),
+          });
+        } catch {}
+      }
+    });
+  </script>
+</Base>

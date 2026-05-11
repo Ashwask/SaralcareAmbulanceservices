@@ -1,0 +1,52 @@
+id: 108-telangana
+legal_name: GVK EMRI on contract with Telangana Health Department
+brand_name: 108 Telangana Emergency Response Services
+type: govt-108
+hq_address: State EMS HQ, Hyderabad, Telangana
+hq_lat_lng:
+  - 17.385
+  - 78.4867
+contact:
+  phone_24h: '108'
+  alt_phone: null
+  whatsapp: null
+  email: null
+  website: https://www.emri.in/
+service_areas:
+  type: polygon
+  polygon:
+    - - 16.385
+      - 77.4867
+    - - 18.385
+      - 77.4867
+    - - 18.385
+      - 79.4867
+    - - 16.385
+      - 79.4867
+hospital_affiliations: []
+fleet_count_claimed: null
+fleet_count_verified: null
+fares:
+  base: 0
+  per_km: 0
+  waiting: null
+  night_premium: null
+  currency: INR
+  source: https://www.emri.in/ (free at point of use for emergencies)
+  observed_date: '2026-05-11'
+certifications:
+  - GVK_contracted
+sources:
+  - type: govt-listing
+    url: https://www.emri.in/
+    accessed: '2026-05-11'
+    notes: State-level 108 EMS published on the Telangana health department website.
+call_logs: []
+status: unverified
+last_verified_at: null
+verified_by: null
+license_tag: CC-BY-NC-SA-4.0
+notes: >-
+  Telangana state-wide 108 emergency medical service. The number 108 routes through a state-operated
+  call centre. Station-level details (locations, fleet counts) pending RTI to the Telangana health
+  department.

@@ -1,0 +1,37 @@
+id: apollo-jubilee-hyderabad
+name: Apollo Hospitals — Jubilee Hills
+brand: Apollo Hospitals
+type: tertiary
+city: Hyderabad
+state: Telangana
+address: Road No. 72, Opp. Bharatiya Vidya Bhavan, Film Nagar, Jubilee Hills, Hyderabad 500033
+pincode: '500033'
+lat_lng:
+  - 17.417
+  - 78.4111
+er_phone: 1860 500 1066
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: apollo-jubilee-hyderabad-ambulance
+dispatched_providers:
+  - provider_id: apollo-jubilee-hyderabad-ambulance
+    source: >-
+      https://www.apollohospitals.com/locations/india/hyderabad/apollo-hospitals-jubilee-hills-hyderabad/
+      (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: >-
+      https://www.apollohospitals.com/locations/india/hyderabad/apollo-hospitals-jubilee-hills-hyderabad/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://www.apollohospitals.com/locations/india/hyderabad/
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: Apollo pan-India helpline; routes to Jubilee Hills campus.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

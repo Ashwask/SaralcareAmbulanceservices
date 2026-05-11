@@ -1,0 +1,52 @@
+id: 108-kerala-kass
+legal_name: Kerala State Health Department / GVK EMRI
+brand_name: 108 Kanivu Emergency Medical Services (Kerala)
+type: govt-108
+hq_address: State EMS HQ, Thiruvananthapuram, Kerala
+hq_lat_lng:
+  - 8.5241
+  - 76.9366
+contact:
+  phone_24h: '108'
+  alt_phone: null
+  whatsapp: null
+  email: null
+  website: https://dhs.kerala.gov.in/
+service_areas:
+  type: polygon
+  polygon:
+    - - 7.524100000000001
+      - 75.9366
+    - - 9.5241
+      - 75.9366
+    - - 9.5241
+      - 77.9366
+    - - 7.524100000000001
+      - 77.9366
+hospital_affiliations: []
+fleet_count_claimed: null
+fleet_count_verified: null
+fares:
+  base: 0
+  per_km: 0
+  waiting: null
+  night_premium: null
+  currency: INR
+  source: https://dhs.kerala.gov.in/ (free at point of use for emergencies)
+  observed_date: '2026-05-11'
+certifications:
+  - GVK_contracted
+sources:
+  - type: govt-listing
+    url: https://dhs.kerala.gov.in/
+    accessed: '2026-05-11'
+    notes: State-level 108 EMS published on the Kerala health department website.
+call_logs: []
+status: unverified
+last_verified_at: null
+verified_by: null
+license_tag: CC-BY-NC-SA-4.0
+notes: >-
+  Kerala state-wide 108 emergency medical service. The number 108 routes through a state-operated
+  call centre. Station-level details (locations, fleet counts) pending RTI to the Kerala health
+  department.

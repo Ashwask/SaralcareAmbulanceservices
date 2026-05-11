@@ -1,0 +1,68 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getProviders, badge } from "@/lib/data";
+
+const providers = getProviders();
+const counts = providers.reduce(
+  (acc: Record<string, number>, p) => {
+    acc[badge(p)] = (acc[badge(p)] ?? 0) + 1;
+    return acc;
+  },
+  { verified: 0, stale: 0, dead: 0, unverified: 0, disputed: 0 }
+);
+
+const byType = providers.reduce((acc: Record<string, number>, p) => {
+  acc[p.type] = (acc[p.type] ?? 0) + 1;
+  return acc;
+}, {});
+
+const oldest = providers
+  .filter((p) => p.last_verified_at && badge(p) === "verified")
+  .map((p) => ({ id: p.id, brand_name: p.brand_name, last_verified_at: p.last_verified_at }))
+  .sort((a, b) => new Date(a.last_verified_at!).getTime() - new Date(b.last_verified_at!).getTime())
+  .slice(0, 5);
+---
+
+<Base title="Freshness dashboard — Saralcare Ambulance Directory">
+  <h2 style="margin-top:0">Dataset freshness</h2>
+  <p style="color: var(--muted); max-width: 60ch;">
+    Records age. Phone numbers go stale. Providers shut down or rebrand. This page is the public proof that we maintain the dataset by calling — not by guessing.
+  </p>
+
+  <h3>By verification status</h3>
+  <ul>
+    <li><span class="badge badge--verified">verified</span> &nbsp; {counts.verified} — confirmed by phone within 30 days</li>
+    <li><span class="badge badge--stale">stale</span> &nbsp; {counts.stale} — verified 30–60 days ago; re-check soon</li>
+    <li><span class="badge badge--unverified">unverified</span> &nbsp; {counts.unverified} — ingested from public sources, never called</li>
+    <li><span class="badge badge--dead">dead</span> &nbsp; {counts.dead} — unreachable across attempts; archived</li>
+    <li><span class="badge badge--disputed">disputed</span> &nbsp; {counts.disputed} — provider has contested the record</li>
+  </ul>
+
+  <h3>By provider type</h3>
+  <ul>
+    {Object.entries(byType).map(([t, n]) => <li>{t}: {n}</li>)}
+  </ul>
+
+  {oldest.length > 0 ? (
+    <>
+      <h3>Oldest verified records (re-verify next)</h3>
+      <ul>
+        {oldest.map((p) => (
+          <li><a href={`/providers/${p.id}`}>{p.brand_name}</a> — last verified {p.last_verified_at}</li>
+        ))}
+      </ul>
+    </>
+  ) : null}
+
+  <h3>The freshness contract</h3>
+  <ul>
+    <li>A record is <strong>verified</strong> when the phone is called, answered, and the published details are confirmed within the last 30 days.</li>
+    <li>At 30 days the record becomes <strong>stale</strong> and enters the re-verify queue.</li>
+    <li>At 60 days without a successful call, the record is marked <strong>dead</strong> and hidden from the map.</li>
+    <li>Dead records remain in the public Git history for provenance.</li>
+  </ul>
+
+  <p class="small">
+    Anyone can scrape JustDial in an afternoon. The freshness contract is the difference between a website and a moat.
+  </p>
+</Base>

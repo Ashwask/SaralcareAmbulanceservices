@@ -1,0 +1,49 @@
+name: "New provider — please add this one"
+description: Suggest an ambulance provider we're missing.
+title: "[NEW PROVIDER] <provider name> (<city>)"
+labels: ["new-provider", "needs-verification-call"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We verify by phone before listing — usually within 48 hours.
+  - type: input
+    id: brand
+    attributes:
+      label: Provider name (as marketed)
+    validations:
+      required: true
+  - type: input
+    id: city
+    attributes:
+      label: City
+      placeholder: Bengaluru
+    validations:
+      required: true
+  - type: input
+    id: phone
+    attributes:
+      label: 24-hour phone number
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of operator
+      options:
+        - Government 108 / state EMS
+        - Private aggregator (multi-fleet booking)
+        - Private standalone operator
+        - Hospital-owned fleet
+        - NGO / charitable trust
+    validations:
+      required: true
+  - type: input
+    id: website
+    attributes:
+      label: Website (if any)
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else useful
+      description: Service area, fleet size, hospital tie-ups, fares, your relationship to the provider if any.

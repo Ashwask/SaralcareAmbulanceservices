@@ -1,0 +1,52 @@
+id: 108-andhra-pradesh
+legal_name: GVK EMRI on contract with AP Health Department
+brand_name: 108 Andhra Pradesh Emergency Response Services
+type: govt-108
+hq_address: State EMS HQ, Visakhapatnam, Andhra Pradesh
+hq_lat_lng:
+  - 17.6868
+  - 83.2185
+contact:
+  phone_24h: '108'
+  alt_phone: null
+  whatsapp: null
+  email: null
+  website: https://www.emri.in/
+service_areas:
+  type: polygon
+  polygon:
+    - - 16.6868
+      - 82.2185
+    - - 18.6868
+      - 82.2185
+    - - 18.6868
+      - 84.2185
+    - - 16.6868
+      - 84.2185
+hospital_affiliations: []
+fleet_count_claimed: null
+fleet_count_verified: null
+fares:
+  base: 0
+  per_km: 0
+  waiting: null
+  night_premium: null
+  currency: INR
+  source: https://www.emri.in/ (free at point of use for emergencies)
+  observed_date: '2026-05-11'
+certifications:
+  - GVK_contracted
+sources:
+  - type: govt-listing
+    url: https://www.emri.in/
+    accessed: '2026-05-11'
+    notes: State-level 108 EMS published on the Andhra Pradesh health department website.
+call_logs: []
+status: unverified
+last_verified_at: null
+verified_by: null
+license_tag: CC-BY-NC-SA-4.0
+notes: >-
+  Andhra Pradesh state-wide 108 emergency medical service. The number 108 routes through a
+  state-operated call centre. Station-level details (locations, fleet counts) pending RTI to the
+  Andhra Pradesh health department.

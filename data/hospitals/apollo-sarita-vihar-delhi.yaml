@@ -1,0 +1,36 @@
+id: apollo-sarita-vihar-delhi
+name: Indraprastha Apollo Hospitals
+brand: Apollo Hospitals
+type: tertiary
+city: Delhi NCR
+state: Delhi
+address: Mathura Road, Sarita Vihar, New Delhi 110076
+pincode: '110076'
+lat_lng:
+  - 28.5391
+  - 77.2856
+er_phone: 1860 500 1066
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: apollo-sarita-vihar-delhi-ambulance
+dispatched_providers:
+  - provider_id: apollo-sarita-vihar-delhi-ambulance
+    source: https://www.apollohospitals.com/ (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.apollohospitals.com/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://www.apollohospitals.com/locations/india/delhi/
+    accessed: '2026-05-11'
+    notes: >-
+      Phone scraped from public source: Apollo pan-India helpline; routes to Indraprastha Apollo
+      (Sarita Vihar).
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

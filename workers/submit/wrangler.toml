@@ -1,0 +1,16 @@
+name = "ambulance-submit"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+
+# Secrets to set with `wrangler secret put`:
+#   GH_TOKEN        — fine-scoped GitHub PAT with `repo:public_repo` issues:write
+#   GH_REPO         — e.g. "Ashwask/SaralcareAmbulanceservices"
+# Public env (set with [vars]):
+
+[vars]
+ALLOWED_ORIGIN = "https://ambulance.saralcare.com"
+RATE_LIMIT_PER_HOUR = "10"
+
+[[kv_namespaces]]
+binding = "RATE"
+id = "REPLACE_AFTER_WRANGLER_KV_CREATE"

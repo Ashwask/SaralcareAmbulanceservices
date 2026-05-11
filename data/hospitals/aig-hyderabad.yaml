@@ -1,0 +1,34 @@
+id: aig-hyderabad
+name: AIG Hospitals
+brand: AIG Hospitals
+type: tertiary
+city: Hyderabad
+state: Telangana
+address: Plot No 2/3/4/5, Survey No 136/1, Mindspace Road, Gachibowli, Hyderabad 500032
+pincode: '500032'
+lat_lng:
+  - 17.44
+  - 78.3489
+er_phone: 040 4244 4244
+ambulance_phone: null
+owns_fleet: true
+fleet_provider_id: aig-hyderabad-ambulance
+dispatched_providers:
+  - provider_id: aig-hyderabad-ambulance
+    source: https://www.aighospitals.com/ (hospital-owned fleet, primary)
+    observed_date: '2026-05-11'
+    exclusivity: primary
+sources:
+  - type: website
+    url: https://www.aighospitals.com/
+    accessed: '2026-05-11'
+    notes: >-
+      Hospital website confirms operations. ER phone and external-provider affiliations pending
+      verification.
+  - type: website
+    url: https://www.aighospitals.com/
+    accessed: '2026-05-11'
+    notes: 'Phone scraped from public source: AIG Hospitals Gachibowli 24h emergency.'
+status: unverified
+last_verified_at: null
+license_tag: CC-BY-NC-SA-4.0

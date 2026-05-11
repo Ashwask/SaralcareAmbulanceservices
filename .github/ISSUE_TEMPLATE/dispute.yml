@@ -1,0 +1,43 @@
+name: "Dispute a record"
+description: "Provider: contest information published about you. User: contest a published user report."
+title: "[DISPUTE] <record id> — <what you contest>"
+labels: ["dispute", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We respond within 48 hours and follow the process in `TAKEDOWN.md`. Disputes are annotated, not silently removed, when the original is sourced.
+  - type: input
+    id: record_id
+    attributes:
+      label: Record ID
+      placeholder: red-health-bangalore
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: What are you disputing?
+      options:
+        - "An affiliation edge (provider X is shown as routed by hospital Y)"
+        - "A published fare"
+        - "A vehicle type / fleet count"
+        - "A user-submitted report (call experience)"
+        - "Operating area / pincodes"
+        - "Other"
+    validations:
+      required: true
+  - type: textarea
+    id: position
+    attributes:
+      label: Your position
+      description: What is wrong, what is correct, on what date, and any context.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: A public statement, contract, press release, RTI response, or anything else we can cite. We do not remove sourced edges without contrary evidence.
+    validations:
+      required: true
