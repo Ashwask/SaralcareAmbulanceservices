@@ -148,7 +148,7 @@ writeFileSync(
     {
       generated_at: new Date().toISOString(),
       license: "CC-BY-NC-SA-4.0",
-      attribution: "Saralcare ambulance directory project (https://ambulance.saralcare.com)",
+      attribution: "Saralcare ambulance directory project (https://www.ambulance.saralcare.com)",
       count: providers.length,
       providers: providers.map(slimProvider).sort((a, b) =>
         (a.brand_name ?? "").localeCompare(b.brand_name ?? "")
@@ -180,7 +180,7 @@ writeFileSync(
     {
       generated_at: new Date().toISOString(),
       license: "CC-BY-NC-SA-4.0",
-      attribution: "Saralcare ambulance directory project (https://ambulance.saralcare.com)",
+      attribution: "Saralcare ambulance directory project (https://www.ambulance.saralcare.com)",
       count: hospitals.length,
       hospitals: hospitals.map(slimHospital).sort((a, b) => a.name.localeCompare(b.name)),
     },
@@ -246,6 +246,12 @@ writeFileSync(
   join(OUT, "changelog.json"),
   JSON.stringify({ generated_at: new Date().toISOString(), entries: changelog }, null, 2)
 );
+
+// Copy the federation manifest into the API output for public consumption
+const mirrorsSrc = join(ROOT, "data", "mirrors.json");
+if (existsSync(mirrorsSrc)) {
+  writeFileSync(join(OUT, "mirrors.json"), readFileSync(mirrorsSrc, "utf8"));
+}
 
 console.log(`✓ Wrote api/v1/providers.json (${providers.length})`);
 console.log(`✓ Wrote api/v1/providers/{id}.json (${providers.length})`);

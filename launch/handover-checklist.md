@@ -15,7 +15,7 @@ This is the punch list to take the project from "fully functional locally" to "l
 - [ ] Choose pseudonymous Git author for commits: e.g. `Saralcare Maintainer <maintainer@ambulance.saralcare.com>`. Configure in repo-specific `~/.gitconfig`:
   ```
   git config user.name "Saralcare Maintainer"
-  git config user.email "maintainer@ambulance.saralcare.com"
+  git config user.email "maintainer@www.ambulance.saralcare.com"
   ```
 - [ ] From the Ambulances/ folder, initialise and push:
   ```
@@ -62,7 +62,7 @@ Create `.github/ISSUE_TEMPLATE/correction.md` and `takedown.md` after the repo i
 - [ ] Deploy. First build will take ~3-5 minutes.
 - [ ] Once deployed, copy the `*.pages.dev` URL into the DNS CNAME from step 3.
 - [ ] Pages → Custom domains → Add `ambulance.saralcare.com`. Cloudflare auto-provisions the cert.
-- [ ] Verify https://ambulance.saralcare.com renders.
+- [ ] Verify https://www.ambulance.saralcare.com renders.
 
 ## 5. GitHub Actions secrets (for auto-deploy)
 

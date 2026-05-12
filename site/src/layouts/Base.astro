@@ -1,12 +1,13 @@
 ---
+import LangSwitcher from "@/components/LangSwitcher.astro";
 interface Props {
   title?: string;
   description?: string;
   hideHero?: boolean;
 }
 const {
-  title = "Saralcare Ambulances — find and call an ambulance in Bangalore",
-  description = "Find and call an ambulance in Bangalore. Government 108, private, charitable. Free, open, no ads, no commission. Works offline.",
+  title = "Saralcare Ambulances — find and call an ambulance in India",
+  description = "Find and call an ambulance in India. Government 108, private, charitable. Free, open, no ads, no commission. Works offline.",
 } = Astro.props;
 ---
 
@@ -18,7 +19,7 @@ const {
     <meta name="description" content={description} />
     <meta name="theme-color" content="#b91c1c" />
     <meta name="robots" content="index,follow" />
-    <link rel="canonical" href={`https://ambulance.saralcare.com${Astro.url.pathname}`} />
+    <link rel="canonical" href={`https://www.ambulance.saralcare.com${Astro.url.pathname}`} />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icons/icon.svg" />
@@ -54,6 +55,16 @@ const {
         }
       }
       * { box-sizing: border-box; }
+      .skip-link {
+        position: absolute; left: -9999px; top: 0;
+        background: var(--accent); color: white;
+        padding: 0.5rem 0.9rem; border-radius: 0 0 8px 0;
+        font-weight: 600; z-index: 100;
+        text-decoration: none;
+      }
+      .skip-link:focus { left: 0; outline: 2px solid white; outline-offset: 2px; }
+      :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 4px; }
+      button:focus-visible, .button:focus-visible, a:focus-visible { outline-offset: 3px; }
       html, body {
         margin: 0; padding: 0;
         background: var(--bg);
@@ -165,19 +176,21 @@ const {
     </style>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="site-header">
       <div class="container row">
-        <h1><a href="/">Saralcare Ambulances</a></h1>
-        <nav>
-          <a href="/" class:list={[Astro.url.pathname === "/" && "active"]}>Find</a>
-          <a href="/explore" class:list={[Astro.url.pathname.startsWith("/explore") && "active"]}>Explore</a>
-          <a href="/for-providers" class:list={[Astro.url.pathname.startsWith("/for-providers") && "active"]}>For providers</a>
-          <a href="/notice" class:list={[Astro.url.pathname.startsWith("/notice") && "active"]}>About</a>
+        <h1><a href="/" data-i18n="site.title">Saralcare Ambulances</a></h1>
+        <nav aria-label="Primary">
+          <a href="/" class:list={[Astro.url.pathname === "/" && "active"]} data-i18n="nav.find">Find</a>
+          <a href="/explore" class:list={[Astro.url.pathname.startsWith("/explore") && "active"]} data-i18n="nav.explore">Explore</a>
+          <a href="/for-providers" class:list={[Astro.url.pathname.startsWith("/for-providers") && "active"]} data-i18n="nav.for_providers">For providers</a>
+          <a href="/notice" class:list={[Astro.url.pathname.startsWith("/notice") && "active"]} data-i18n="nav.about">About</a>
+          <LangSwitcher />
         </nav>
       </div>
     </header>
 
-    <main>
+    <main id="main-content">
       <div class="container">
         <slot />
       </div>
@@ -192,7 +205,12 @@ const {
           <a href="/license">License</a>
           <a href="/freshness">Freshness</a>
           <a href="/changes">Recent changes</a>
-          <a href="https://github.com/Ashwask/SaralcareAmbulanceservices" rel="noopener">GitHub</a>
+          <a href="/moderation">Moderation queue</a>
+          <a href="/accessibility">Accessibility</a>
+          <a href="/federation">Federation</a>
+          <a href="/donate">Donate</a>
+          <a href="/open-source">Open source</a>
+          <a href="https://github.com/Ashwask/SaralcareAmbulanceservices" rel="noopener">GitHub ↗</a>
         </div>
         <p class="legal">In any medical emergency, call <a href="tel:108"><strong>108</strong></a>. We do not operate or dispatch ambulances. Data is CC BY-NC-SA 4.0.</p>
       </div>

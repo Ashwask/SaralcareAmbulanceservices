@@ -1,0 +1,74 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base
+  title="Donate / sponsor — Saralcare Ambulances"
+  description="What we'd do with money, what we won't, and why we're not accepting donations yet."
+>
+  <h2 style="margin-top: 0.4rem">Donate / sponsor</h2>
+
+  <div class="card" style="background: var(--amber-bg); border-color: #fde68a; color: #78350f;">
+    <p style="margin: 0; font-weight: 600;">v1 status: we are NOT YET accepting donations.</p>
+    <p style="margin: 0.4rem 0 0; font-size: 0.94rem;">
+      This page exists so you can see what we'd do with money when we're ready to take it, and so we have somewhere honest to point you in the meantime.
+    </p>
+  </div>
+
+  <h3>Why we're not accepting yet</h3>
+  <p>Until a not-for-profit entity (Section 8 company under Indian law) is registered, donations can only be routed to a personal account. That creates two problems:</p>
+  <ul>
+    <li><strong>Tax + audit exposure</strong> for the recipient.</li>
+    <li><strong>Confusion about the public-good positioning</strong> — money in a founder's personal account is not the same as money received by a community project, even if every rupee is spent on the project.</li>
+  </ul>
+  <p>So we wait. The Section 8 registration is in the deferred-until-traction column (<a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/decisions/0002-pseudonymous-publication.md">see ADR-0002</a>). When v1 has organic traction (1k+ weekly visitors, first verified contributor, first grant interest), we'll trigger the entity registration and update this page.</p>
+
+  <h3>What we'd spend money on (when we can)</h3>
+  <p>In rough priority order:</p>
+  <ol>
+    <li><strong>Verification call labour.</strong> The core moat. Part-time verifier paying ₹15-30k/month per city to maintain the 30-day phone cadence. At 600+ records, this is a salaried role per metro.</li>
+    <li><strong>RTI filing fees + postage.</strong> Each RTI costs ₹10 + postage. Pan-India coverage means hundreds of RTIs across 28 state health departments. ~₹50k/year at scale.</li>
+    <li><strong>Hosting + Cloudflare Workers paid tier.</strong> Currently free-tier. At >100k req/day the Worker cost is ~₹2-4k/month.</li>
+    <li><strong>Independent legal review</strong> of disclaimers, takedown process, and dispute handling — ₹15-30k/audit, repeated annually.</li>
+    <li><strong>Native-speaker translation review</strong> for Hindi, Kannada, Tamil, Telugu, Marathi, Bengali, Malayalam — ₹5-10k per language for a one-time critical-strings pass.</li>
+    <li><strong>Third-party WCAG accessibility audit</strong> — ₹50-100k/audit.</li>
+    <li><strong>Volunteer city-captain stipends</strong> — small monthly honoraria (₹2-5k) to recognise verifier time.</li>
+  </ol>
+  <p>We will publish, monthly, what came in and what went out. The audit trail will live in <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/tree/main/finance"><code>finance/</code></a> in the repo. No money will be spent that isn't reported.</p>
+
+  <h3>What we won't take money for, ever</h3>
+  <ul>
+    <li><strong>Provider placement.</strong> No ranking changes for sponsorship.</li>
+    <li><strong>Removal of negative user reports.</strong> Disputed reports follow the process in <a href="/takedown">/takedown</a>. Money does not buy outcomes.</li>
+    <li><strong>Removal of affiliation edges.</strong> Sourced edges stay unless contrary evidence arrives.</li>
+    <li><strong>Faster verification queue position</strong> for a specific provider.</li>
+    <li><strong>White-labelling the dataset</strong> — the commercial licence requires attribution; that doesn't change with sponsorship.</li>
+  </ul>
+
+  <h3>What you can do today (instead of money)</h3>
+  <ul>
+    <li><strong>Verify one provider this week.</strong> Pick a record marked <em>unverified</em>, call the number, open a PR via <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/CONTRIBUTING.md"><code>CONTRIBUTING.md</code></a>. This is more valuable than ₹1000 of sponsorship.</li>
+    <li><strong>Translate a screen.</strong> The Hindi and Kannada strings need a native review. Open a PR against <code>site/src/i18n/strings.ts</code>.</li>
+    <li><strong>File an RTI</strong> with your state's health department. <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/tree/main/sources/rti">The templates are here</a>.</li>
+    <li><strong>Spin up a mirror</strong> in a different region — see <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/MIRRORING.md">MIRRORING.md</a>.</li>
+    <li><strong>Tell your hospital's ER staff this exists.</strong> Word-of-mouth is the unfunded growth engine.</li>
+  </ul>
+
+  <h3>Future grant targets</h3>
+  <p>When the entity is registered, the grants we'd apply to (in order of fit):</p>
+  <ul>
+    <li><a href="https://wikimediafoundation.org/grants/">Wikimedia Foundation</a> — Project Grants programme, public-good civic data.</li>
+    <li><a href="https://foundation.mozilla.org/en/what-we-fund/">Mozilla Foundation</a> — public-interest technology track.</li>
+    <li><a href="https://foundation.mozilla.org/en/what-we-fund/awards/mozilla-open-source-support-program/">Mozilla MOSS</a> — open-source software grants.</li>
+    <li><a href="https://www.bloomberg.org/">Bloomberg Philanthropies — Public Health track</a>.</li>
+    <li><a href="https://omidyar.com/">Omidyar Network India</a> — digital public infrastructure.</li>
+    <li><a href="https://www.opensocietyfoundations.org/">Open Society Foundations</a> — health information access.</li>
+    <li>State-level civic-tech funds (Karnataka Innovation & Technology Society, etc.).</li>
+  </ul>
+  <p>Application tracker (when active): <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/GRANTS.md"><code>GRANTS.md</code></a>.</p>
+
+  <h3>Commercial licensing as a revenue source</h3>
+  <p>The dual-licence model (<a href="/license">CC BY-NC-SA</a> + bilateral commercial) is an opportunistic revenue path, not a planned one. If a for-profit ingestion request arrives, we'll quote case-by-case. Any commercial revenue goes into the same audit trail above.</p>
+
+  <p class="small" style="margin-top: 1.5rem;">This page will be re-written the day we open donations. Until then, contributions of time are what matters most.</p>
+</Base>

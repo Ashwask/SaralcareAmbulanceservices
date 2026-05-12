@@ -1,0 +1,123 @@
+---
+import { LANG_LABELS, LANG_REVIEWED, STRINGS } from "@/i18n/strings";
+---
+
+<details class="lang-switcher">
+  <summary class="lang-summary" id="lang-current">English</summary>
+  <ul class="lang-list">
+    {Object.entries(LANG_LABELS).map(([code, label]) => (
+      <li>
+        <button type="button" class="lang-option" data-lang={code}>
+          {label}
+          {LANG_REVIEWED[code as keyof typeof LANG_REVIEWED] === "machine-only" ? (
+            <span class="lang-tag">machine</span>
+          ) : LANG_REVIEWED[code as keyof typeof LANG_REVIEWED] === "stub" ? (
+            <span class="lang-tag stub">soon</span>
+          ) : null}
+        </button>
+      </li>
+    ))}
+  </ul>
+</details>
+
+<div id="lang-warning" class="lang-warning" hidden>
+  ⚠️ This language is machine-translated and awaiting native-speaker review.
+  Spot an error? <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/site/src/i18n/strings.ts" target="_blank" rel="noopener">Open a PR</a>.
+</div>
+
+<script is:inline define:vars={{ STRINGS, LANG_LABELS, LANG_REVIEWED }}>
+  window.__I18N__ = { STRINGS, LANG_LABELS, LANG_REVIEWED };
+</script>
+<script type="module">
+  const KEY = "sc.amb.lang";
+  function getLang() {
+    try { return localStorage.getItem(KEY) || "en"; } catch { return "en"; }
+  }
+  function setLang(l) {
+    try { localStorage.setItem(KEY, l); } catch {}
+  }
+  function t(key, lang) {
+    const s = window.__I18N__.STRINGS;
+    return (s[lang] && s[lang][key]) || s.en[key] || key;
+  }
+  function apply(lang) {
+    const reviewed = window.__I18N__.LANG_REVIEWED[lang];
+    document.documentElement.lang = lang;
+    // Text content of data-i18n elements
+    for (const el of document.querySelectorAll("[data-i18n]")) {
+      const key = el.getAttribute("data-i18n");
+      el.textContent = t(key, lang);
+    }
+    // Placeholder
+    for (const el of document.querySelectorAll("[data-i18n-placeholder]")) {
+      const key = el.getAttribute("data-i18n-placeholder");
+      el.setAttribute("placeholder", t(key, lang));
+    }
+    // aria-label
+    for (const el of document.querySelectorAll("[data-i18n-aria]")) {
+      const key = el.getAttribute("data-i18n-aria");
+      el.setAttribute("aria-label", t(key, lang));
+    }
+    // Title attribute
+    for (const el of document.querySelectorAll("[data-i18n-title]")) {
+      const key = el.getAttribute("data-i18n-title");
+      el.setAttribute("title", t(key, lang));
+    }
+    document.getElementById("lang-current").textContent = window.__I18N__.LANG_LABELS[lang] || "English";
+    const warn = document.getElementById("lang-warning");
+    if (warn) {
+      warn.hidden = reviewed !== "machine-only";
+      if (!warn.hidden) {
+        warn.querySelector("a").textContent = t("lang.review_warning", lang).includes("PR") ? "PR" : "PR";
+      }
+    }
+  }
+  document.querySelectorAll(".lang-option").forEach((b) => {
+    b.addEventListener("click", () => {
+      const l = b.dataset.lang;
+      setLang(l);
+      apply(l);
+      // Close the details
+      b.closest("details")?.removeAttribute("open");
+    });
+  });
+  apply(getLang());
+</script>
+
+<style>
+  .lang-switcher { position: relative; display: inline-block; }
+  .lang-summary {
+    cursor: pointer; color: var(--muted); font-size: 0.86rem;
+    padding: 0.2rem 0.4rem; list-style: none;
+  }
+  .lang-summary::before { content: "🌐 "; }
+  .lang-summary::-webkit-details-marker { display: none; }
+  .lang-list {
+    position: absolute; right: 0; top: 100%;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.3rem; margin: 0.3rem 0 0;
+    list-style: none; min-width: 12rem; z-index: 60;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+  }
+  .lang-option {
+    width: 100%; text-align: left;
+    background: transparent; color: var(--fg);
+    padding: 0.45rem 0.7rem; border: 0; border-radius: 6px;
+    cursor: pointer; font-weight: 500; font-size: 0.92rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .lang-option:hover { background: var(--bg); }
+  .lang-tag {
+    font-size: 0.65rem; font-weight: 600;
+    background: var(--amber-bg); color: var(--amber);
+    padding: 0.1rem 0.4rem; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .lang-tag.stub { background: var(--bg); color: var(--muted); }
+  .lang-warning {
+    background: var(--amber-bg); border: 1px solid #fde68a;
+    color: #78350f; padding: 0.5rem 0.7rem; border-radius: 8px;
+    font-size: 0.84rem; margin: 0.5rem 0;
+  }
+</style>

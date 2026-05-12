@@ -117,7 +117,7 @@ const submitUrl = import.meta.env.PUBLIC_SUBMIT_URL ?? "";
         }
         // mailto fallback
         const subject = encodeURIComponent(`[NEW PROVIDER] ${payload.brand_name ?? ""}`);
-        const body = encodeURIComponent(Object.entries(payload).map(([k, v]) => `${k}: ${typeof v === "object" ? JSON.stringify(v) : v}`).join("\n") + "\n\n— Submitted from ambulance.saralcare.com");
+        const body = encodeURIComponent(Object.entries(payload).map(([k, v]) => `${k}: ${typeof v === "object" ? JSON.stringify(v) : v}`).join("\n") + "\n\n— Submitted from www.ambulance.saralcare.com");
         window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
       });
     }

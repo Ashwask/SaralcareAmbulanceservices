@@ -91,7 +91,13 @@ const b = badge(hospital);
 
   <section style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.4rem;">
     <p class="small">
-      Hospital staff: if any information is incorrect, please email <a href="mailto:ashwinsk@saralcare.com?subject=%5BCORRECTION%5D">ashwinsk@saralcare.com</a>. We respond within 48 hours.
+      <strong>Three ways to fix this record:</strong>
     </p>
+    <ul class="small" style="margin: 0.4rem 0 0;">
+      <li><a href={`https://github.com/Ashwask/SaralcareAmbulanceservices/edit/main/data/hospitals/${hospital.id}.yaml`} target="_blank" rel="noopener">✎ Edit on GitHub</a> — open the YAML in the GitHub web editor, anyone with a GitHub account can submit a PR in 2 clicks</li>
+      <li><a href="mailto:ashwinsk@saralcare.com?subject=%5BCORRECTION%5D">Email a correction</a> — for sensitive details or if you're not on GitHub</li>
+      <li><a href={`https://github.com/Ashwask/SaralcareAmbulanceservices/issues/new?template=correction.yml&title=%5BCORRECTION%5D+${hospital.id}`} target="_blank" rel="noopener">Open a structured issue</a> — best for non-trivial corrections that need review</li>
+    </ul>
+    <p class="small" style="margin-top: 0.7rem;">We respond within 48 hours.</p>
   </section>
 </Base>

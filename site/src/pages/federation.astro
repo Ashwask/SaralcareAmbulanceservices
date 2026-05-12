@@ -1,0 +1,92 @@
+---
+import Base from "@/layouts/Base.astro";
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+
+const path = join(process.cwd(), "..", "data", "mirrors.json");
+let manifest: any = { canonical: null, mirrors: [], forks: [], updated_at: "" };
+if (existsSync(path)) {
+  try { manifest = JSON.parse(readFileSync(path, "utf8")); } catch {}
+}
+---
+
+<Base
+  title="Federation — Saralcare Ambulances"
+  description="Known mirrors, regional forks, and how to register your own. Civic infrastructure shouldn't depend on one domain."
+>
+  <h2 style="margin-top: 0.4rem">Federation</h2>
+  <p style="max-width: 62ch;">
+    The canonical site can go down. The canonical domain owner can be pressured. The single Git remote on GitHub can be taken offline. None of this should kill the dataset for the public. This page lists every known mirror and regional fork.
+  </p>
+
+  <section class="card" style="margin-top: 1rem;">
+    <h3 style="margin-top:0">Canonical</h3>
+    {manifest.canonical ? (
+      <div class="site-card">
+        <div class="site-url"><a href={manifest.canonical.url}>{manifest.canonical.url}</a></div>
+        <div class="site-meta">
+          <span class="badge badge--verified">{manifest.canonical.trust}</span>
+          <span class="small"> Operator: {manifest.canonical.operator}</span>
+          <span class="small"> · Jurisdiction: {manifest.canonical.jurisdiction}</span>
+          <span class="small"> · Data: {manifest.canonical.license_data}</span>
+        </div>
+        <p class="small" style="margin-top: 0.4rem;">
+          Repo: <a href={manifest.canonical.repo}>{manifest.canonical.repo}</a>
+        </p>
+      </div>
+    ) : (<p class="small">No canonical declared (this would be unusual).</p>)}
+  </section>
+
+  <h3 style="margin-top: 1.5rem;">Known mirrors ({manifest.mirrors?.length ?? 0})</h3>
+  {(!manifest.mirrors || manifest.mirrors.length === 0) ? (
+    <p class="small">No mirrors registered yet. If you operate one, see below for how to add it.</p>
+  ) : (
+    <ul class="site-list">
+      {manifest.mirrors.map((m: any) => (
+        <li class="site-card">
+          <div class="site-url"><a href={m.url}>{m.url}</a></div>
+          <div class="site-meta">
+            <span class={`badge badge--${m.trust === "verified-mirror" ? "verified" : "unverified"}`}>{m.trust}</span>
+            <span class="small"> {m.operator}</span>
+            <span class="small"> · Last sync: {m.last_sync ?? "—"}</span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <h3 style="margin-top: 1.5rem;">Regional forks ({manifest.forks?.length ?? 0})</h3>
+  {(!manifest.forks || manifest.forks.length === 0) ? (
+    <p class="small">No regional forks registered yet. See <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/CITY-TEMPLATE.md"><code>CITY-TEMPLATE.md</code></a> to fork for your city or country.</p>
+  ) : (
+    <ul class="site-list">
+      {manifest.forks.map((f: any) => (
+        <li class="site-card">
+          <div class="site-url"><a href={f.url}>{f.url}</a></div>
+          <div class="site-meta">
+            <span class="badge badge--unverified">{f.trust}</span>
+            <span class="small"> {f.operator}</span>
+            <span class="small"> · Scope: {f.scope ?? "—"}</span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <h3 style="margin-top: 1.5rem;">Register your mirror or fork</h3>
+  <ol>
+    <li>Spin up a mirror per <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/MIRRORING.md"><code>MIRRORING.md</code></a> or fork per <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/CITY-TEMPLATE.md"><code>CITY-TEMPLATE.md</code></a>.</li>
+    <li>Open a PR adding an entry to <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/data/mirrors.json"><code>data/mirrors.json</code></a>. Use the schema at <a href="/schema/mirrors.schema.json"><code>/schema/mirrors.schema.json</code></a>.</li>
+    <li>We acknowledge within 48 hours. New mirrors land as <code>self-declared-mirror</code> initially. Promoted to <code>verified-mirror</code> after we confirm the sync and the operator's contact.</li>
+    <li>Forks land as <code>fork-friendly</code> if they share the licence + verification model, or <code>fork-divergent</code> otherwise.</li>
+  </ol>
+
+  <p class="small">Updated {manifest.updated_at}. Manifest available as raw JSON at <a href="/v1/mirrors.json"><code>/v1/mirrors.json</code></a>.</p>
+
+  <style>
+    .site-list { list-style: none; padding: 0; margin: 0; }
+    .site-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem 0.95rem; margin: 0.5rem 0; }
+    .site-url a { font-weight: 600; font-size: 1rem; }
+    .site-meta { margin-top: 0.3rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
+  </style>
+</Base>

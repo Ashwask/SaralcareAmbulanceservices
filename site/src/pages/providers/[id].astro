@@ -59,7 +59,7 @@ const phoneTel = phone.replace(/\s+/g, "");
         data-provider-type={provider.type}>
         <span class="save-icon">★</span> <span class="save-text">Save</span>
       </button>
-      <button class="secondary share-btn" type="button" data-name={provider.brand_name} data-phone={phone} data-href={`https://ambulance.saralcare.com/providers/${provider.id}`}>
+      <button class="secondary share-btn" type="button" data-name={provider.brand_name} data-phone={phone} data-href={`https://www.ambulance.saralcare.com/providers/${provider.id}`}>
         ↗ Share
       </button>
       <button class="secondary report-toggle" type="button">✎ Report a call</button>
@@ -163,9 +163,13 @@ const phoneTel = phone.replace(/\s+/g, "");
 
   <section class="block">
     <p class="small">
-      Are you the provider? <a href={`/claim?provider=${provider.id}`}>Claim this listing</a> to submit corrections.
-      Otherwise: <a href="mailto:ashwinsk@saralcare.com?subject=%5BCORRECTION%5D">email a correction</a>.
+      <strong>Three ways to fix this record:</strong>
     </p>
+    <ul class="small" style="margin: 0.4rem 0 0;">
+      <li><a href={`https://github.com/Ashwask/SaralcareAmbulanceservices/edit/main/data/providers/${provider.id}.yaml`} target="_blank" rel="noopener">✎ Edit on GitHub</a> — open the raw YAML in the GitHub web editor, anyone with a GitHub account can submit a PR in 2 clicks</li>
+      <li><a href={`/claim?provider=${provider.id}`}>Claim this listing</a> — if you're the provider, submit corrections through the verified path</li>
+      <li><a href="mailto:ashwinsk@saralcare.com?subject=%5BCORRECTION%5D">Email a correction</a> — for sensitive details you don't want public</li>
+    </ul>
   </section>
 
   <style>

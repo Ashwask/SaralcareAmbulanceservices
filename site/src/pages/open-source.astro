@@ -1,0 +1,155 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getProviders, getHospitals, getReports } from "@/lib/data";
+
+const providers = getProviders();
+const hospitals = getHospitals();
+const reports = getReports();
+const repo = "https://github.com/Ashwask/SaralcareAmbulanceservices";
+---
+
+<Base
+  title="Open source — Saralcare Ambulances"
+  description="Every part of this project is open. The data, the code, the methodology, the decisions, the moderation queue. Here's the one-stop hub."
+>
+  <h2 style="margin-top: 0.4rem">Open source</h2>
+  <p style="max-width: 62ch; font-size: 1.02rem;">
+    The Saralcare Ambulance Directory is open source — not just licence,
+    process. The dataset, the schemas, the verification protocol, the
+    decisions, the moderation queue, and the failure modes are all on
+    GitHub. Fork it, mirror it, audit it, cite it.
+  </p>
+
+  <section class="os-stat">
+    <div class="os-stat-num">{providers.length}</div>
+    <div class="os-stat-label">providers</div>
+    <div class="os-stat-num">{hospitals.length}</div>
+    <div class="os-stat-label">hospitals</div>
+    <div class="os-stat-num">{reports.length}</div>
+    <div class="os-stat-label">user reports</div>
+    <div class="os-stat-num">CC BY-NC-SA 4.0</div>
+    <div class="os-stat-label">data licence</div>
+  </section>
+
+  <section class="os-grid">
+    <a class="os-tile" href={repo}>
+      <div class="os-tile-icon">⌬</div>
+      <h3>Source repository</h3>
+      <p>The canonical home — every record, every commit, every issue, every decision lives here.</p>
+      <code>{repo.replace("https://", "")}</code>
+    </a>
+    <a class="os-tile" href={`${repo}/issues`}>
+      <div class="os-tile-icon">⊕</div>
+      <h3>Issues / moderation queue</h3>
+      <p>Pending reports, dead-number flags, new-provider submissions, corrections, takedowns, disputes.</p>
+    </a>
+    <a class="os-tile" href={`${repo}/discussions`}>
+      <div class="os-tile-icon">⌗</div>
+      <h3>Discussions</h3>
+      <p>Governance proposals, methodology debate, contributor onboarding. Open conversation, public archive.</p>
+    </a>
+    <a class="os-tile" href={`${repo}/commits/main`}>
+      <div class="os-tile-icon">⏱</div>
+      <h3>Commit history</h3>
+      <p>Every record change with diff, author, and date. The audit trail. See <a href="/changes">/changes</a> for the in-site view.</p>
+    </a>
+  </section>
+
+  <h3>Data + API</h3>
+  <ul class="os-list">
+    <li><a href="/v1/providers.json"><code>/v1/providers.json</code></a> — every provider, slim shape, suitable for ingestion</li>
+    <li><a href="/v1/hospitals.json"><code>/v1/hospitals.json</code></a> — every hospital with affiliation pointers</li>
+    <li><a href="/v1/freshness.json"><code>/v1/freshness.json</code></a> — current verification counts, generated each build</li>
+    <li><a href="/v1/changelog.json"><code>/v1/changelog.json</code></a> — recent commits from git log</li>
+    <li><a href={`${repo}/tree/main/data`}><code>data/</code></a> — raw YAML records (the source of truth, not the JSON)</li>
+    <li><a href={`${repo}/blob/main/data/affiliations/edges.csv`}><code>data/affiliations/edges.csv</code></a> — provider × hospital affiliation graph</li>
+    <li><a href={`${repo}/tree/main/schema`}><code>schema/</code></a> — JSON Schema 2020-12 for every record type</li>
+  </ul>
+
+  <h3>Licences</h3>
+  <ul class="os-list">
+    <li><strong>Data:</strong> CC BY-NC-SA 4.0 — see <a href={`${repo}/blob/main/LICENSE-DATA`}><code>LICENSE-DATA</code></a></li>
+    <li><strong>Code:</strong> MIT — see <a href={`${repo}/blob/main/LICENSE-CODE`}><code>LICENSE-CODE</code></a></li>
+    <li><strong>Content:</strong> CC BY-SA 4.0 — see <a href={`${repo}/blob/main/LICENSE-CONTENT`}><code>LICENSE-CONTENT</code></a></li>
+    <li><a href="/license">License page</a> · <a href={`${repo}/blob/main/LICENSE-FAQ.md`}><code>LICENSE-FAQ.md</code></a> — what counts as commercial</li>
+  </ul>
+
+  <h3>Process documents</h3>
+  <ul class="os-list">
+    <li><a href={`${repo}/blob/main/README.md`}><code>README.md</code></a> — what this is, how to use it</li>
+    <li><a href={`${repo}/blob/main/CONTRIBUTING.md`}><code>CONTRIBUTING.md</code></a> — verification phone-call script, PR rules, moderator flow</li>
+    <li><a href={`${repo}/blob/main/GOVERNANCE.md`}><code>GOVERNANCE.md</code></a> — single-maintainer v1 → editorial council v2 transition</li>
+    <li><a href={`${repo}/blob/main/CODE_OF_CONDUCT.md`}><code>CODE_OF_CONDUCT.md</code></a> — Contributor Covenant adapted for civic-data work</li>
+    <li><a href={`${repo}/blob/main/SECURITY.md`}><code>SECURITY.md</code></a> — responsible disclosure, scope, timeline</li>
+    <li><a href={`${repo}/blob/main/CONTRIBUTORS.md`}><code>CONTRIBUTORS.md</code></a> — opt-in recognition</li>
+    <li><a href="/disclaimer">Disclaimer</a> · <a href="/takedown">Corrections</a> · <a href="/notice">How this site works</a></li>
+  </ul>
+
+  <h3>Decisions (ADRs)</h3>
+  <ul class="os-list">
+    <li><a href={`${repo}/blob/main/decisions/0001-license-cc-by-nc-sa.md`}>0001 — Why CC BY-NC-SA over ODbL or CC0</a></li>
+    <li><a href={`${repo}/blob/main/decisions/0002-pseudonymous-publication.md`}>0002 — Why pseudonymous, and what that does and doesn't buy</a></li>
+    <li><a href={`${repo}/blob/main/decisions/0003-no-real-time-gps.md`}>0003 — Why no real-time GPS tracking</a></li>
+    <li><a href={`${repo}/blob/main/decisions/0004-pan-india-scope.md`}>0004 — Pan-India scope from launch, not Bangalore-only</a></li>
+  </ul>
+
+  <h3>Forks, mirrors, federation</h3>
+  <ul class="os-list">
+    <li><a href={`${repo}/blob/main/CITY-TEMPLATE.md`}><code>CITY-TEMPLATE.md</code></a> — 90-minute guide to fork for another city or country</li>
+    <li><a href={`${repo}/blob/main/MIRRORING.md`}><code>MIRRORING.md</code></a> — 30-minute guide to spin up a read-only mirror</li>
+    <li><a href={`${repo}/blob/main/CHANGELOG.md`}><code>CHANGELOG.md</code></a> — versioned release notes</li>
+  </ul>
+
+  <h3>Contribute</h3>
+  <p>Pick a path:</p>
+  <ul class="os-list">
+    <li><strong>I'm in distress and a number didn't work:</strong> tap "✗ Number didn't work" on the provider card. Done.</li>
+    <li><strong>I want to add a provider:</strong> <a href="/providers/new">/providers/new</a> or <a href={`${repo}/issues/new?template=new-provider.yml`}>open a [NEW PROVIDER] issue</a>.</li>
+    <li><strong>I run an ambulance service and want to claim my listing:</strong> <a href="/claim">/claim</a> or <a href={`${repo}/issues/new?template=correction.yml`}>open a [CORRECTION] issue</a>.</li>
+    <li><strong>I want to verify a provider by calling them:</strong> read <a href={`${repo}/blob/main/CONTRIBUTING.md#the-verification-phone-call-script`}>the verification phone-call script</a>, make the call, open a PR.</li>
+    <li><strong>I want to translate the site into an Indian language:</strong> <a href={`${repo}/issues/new?template=governance.yml`}>open a [GOVERNANCE] issue</a> — i18n infrastructure is planned for v1.5.</li>
+    <li><strong>I want to fork for my city/country:</strong> read <a href={`${repo}/blob/main/CITY-TEMPLATE.md`}>CITY-TEMPLATE.md</a> and tell us when you ship.</li>
+  </ul>
+
+  <h3>Attribution</h3>
+  <p>If you use the data anywhere — a research paper, a news article, an embed on your hospital's intranet, a thesis — the attribution string is:</p>
+  <pre style="background: var(--bg-elev); border: 1px solid var(--border); padding: 0.75rem; border-radius: 8px; font-size: 0.84rem; overflow-x: auto;"><code>Source: Saralcare Ambulance Directory (https://www.ambulance.saralcare.com),
+CC BY-NC-SA 4.0.</code></pre>
+
+  <style>
+    .os-stat {
+      display: grid; grid-template-columns: auto auto auto auto;
+      gap: 0.25rem 1.5rem;
+      align-items: baseline;
+      margin: 1.2rem 0;
+      padding: 0.9rem 1.1rem;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .os-stat-num { font-size: 1.35rem; font-weight: 700; color: var(--fg); }
+    .os-stat-label { font-size: 0.78rem; color: var(--muted); }
+    @media (max-width: 600px) { .os-stat { grid-template-columns: auto auto; } }
+
+    .os-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.6rem; margin-top: 1rem;
+    }
+    .os-tile {
+      display: flex; flex-direction: column;
+      padding: 0.95rem 1.05rem;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--fg); text-decoration: none;
+    }
+    .os-tile:hover { border-color: var(--accent); }
+    .os-tile-icon { font-size: 1.4rem; margin-bottom: 0.3rem; color: var(--accent); }
+    .os-tile h3 { margin: 0 0 0.4rem; font-size: 1.02rem; }
+    .os-tile p { margin: 0 0 0.5rem; font-size: 0.9rem; color: var(--muted); }
+    .os-tile code { font-size: 0.82rem; color: var(--muted); word-break: break-all; }
+
+    .os-list { padding-left: 1.2rem; }
+    .os-list li { margin: 0.35rem 0; }
+  </style>
+</Base>

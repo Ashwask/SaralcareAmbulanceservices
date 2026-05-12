@@ -81,7 +81,7 @@ const submitUrl = import.meta.env.PUBLIC_SUBMIT_URL ?? "";
           } catch (err) {}
         }
         const subject = encodeURIComponent(`[CLAIM] ${payload.provider_id ?? ""}`);
-        const body = encodeURIComponent(Object.entries(payload).map(([k, v]) => `${k}: ${v}`).join("\n") + "\n\n— Submitted from ambulance.saralcare.com");
+        const body = encodeURIComponent(Object.entries(payload).map(([k, v]) => `${k}: ${v}`).join("\n") + "\n\n— Submitted from www.ambulance.saralcare.com");
         window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
         status.textContent = "Opening your email app — please send the pre-filled message to complete your claim.";
       });

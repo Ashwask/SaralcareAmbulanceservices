@@ -32,34 +32,34 @@ const hospLite = hospitals.map((h) => ({
   <FirstVisitModal />
 
   <section class="hero">
-    <h1 class="hero-title">Find an ambulance in India.</h1>
-    <p class="hero-sub">Tap a number. Reach a vehicle. Government 108, private, or charitable — across the country.</p>
+    <h1 class="hero-title" data-i18n="home.title">Find an ambulance in India.</h1>
+    <p class="hero-sub" data-i18n="home.subtitle">Tap a number. Reach a vehicle. Government 108, private, or charitable — across the country.</p>
 
     <div class="hero-actions">
       <button id="geo-btn" class="big-btn">
-        <span class="big-btn-icon">📍</span>
+        <span class="big-btn-icon" aria-hidden="true">📍</span>
         <span class="big-btn-text">
-          <strong>Use my location</strong>
-          <span class="big-btn-hint">Show ambulances near me</span>
+          <strong data-i18n="home.geolocate">Use my location</strong>
+          <span class="big-btn-hint" data-i18n="home.geolocate_hint">Show ambulances near me</span>
         </span>
       </button>
 
       <div class="hero-pin">
-        <label for="pincode-in" class="small">Or enter any Indian pincode</label>
+        <label for="pincode-in" class="small" data-i18n="home.pincode_label">Or enter any Indian pincode</label>
         <div class="hero-pin-row">
-          <input id="pincode-in" type="text" inputmode="numeric" maxlength="6" pattern="^[1-9][0-9]{5}$" placeholder="e.g. 560076 · 400050 · 110017" />
-          <button id="pincode-btn" type="button" class="secondary">Find</button>
+          <input id="pincode-in" type="text" inputmode="numeric" maxlength="6" pattern="^[1-9][0-9]{5}$" placeholder="e.g. 560076 · 400050 · 110017" data-i18n-placeholder="home.pincode_placeholder" aria-label="Indian pincode" />
+          <button id="pincode-btn" type="button" class="secondary" data-i18n="home.find_btn">Find</button>
         </div>
-        <p id="geo-status" class="small" style="margin: 0.2rem 0 0; min-height: 1.1em;"></p>
+        <p id="geo-status" class="small" style="margin: 0.2rem 0 0; min-height: 1.1em;" aria-live="polite"></p>
       </div>
 
-      <div class="hero-divider"><span>or</span></div>
+      <div class="hero-divider"><span data-i18n="home.or">or</span></div>
 
       <a class="big-btn govt" href="tel:108">
-        <span class="big-btn-icon">📞</span>
+        <span class="big-btn-icon" aria-hidden="true">📞</span>
         <span class="big-btn-text">
-          <strong>Call 108 — free, 24×7</strong>
-          <span class="big-btn-hint">Karnataka government EMS</span>
+          <strong data-i18n="home.call_108_title">Call 108 — free, 24×7</strong>
+          <span class="big-btn-hint" data-i18n="home.call_108_hint">Karnataka government EMS</span>
         </span>
       </a>
     </div>

@@ -61,7 +61,7 @@ MIT). You do need to:
    `site/src/layouts/Base.astro` and add:
    ```astro
    <div style="background: #fef3c7; padding: 0.5rem; text-align: center; font-size: 0.9rem;">
-     Mirror of <a href="https://ambulance.saralcare.com">ambulance.saralcare.com</a>.
+     Mirror of <a href="https://www.ambulance.saralcare.com">ambulance.saralcare.com</a>.
      Data may lag the canonical source. Last synced: <span id="sync-date">YYYY-MM-DD</span>.
    </div>
    ```

@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
-  site: "https://ambulance.saralcare.com",
+  site: "https://www.ambulance.saralcare.com",
   output: "static",
   trailingSlash: "ignore",
   build: {

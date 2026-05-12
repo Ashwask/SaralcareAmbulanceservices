@@ -1,0 +1,187 @@
+---
+import Base from "@/layouts/Base.astro";
+const repo = "Ashwask/SaralcareAmbulanceservices";
+---
+
+<Base
+  title="Moderation queue — Saralcare Ambulances"
+  description="Every pending correction, takedown, dispute, and dead-number report. Live from the GitHub Issues API. No login needed."
+>
+  <h2 style="margin-top: 0.4rem">Moderation queue</h2>
+  <p style="max-width: 62ch; color: var(--muted);">
+    Every report, correction, dispute, and takedown lives as a public GitHub
+    issue. This page reads the queue directly from the GitHub Issues API —
+    no login, nothing hidden. If your submission is sitting in this queue
+    longer than 48 hours, please nudge us at <a href="mailto:ashwinsk@saralcare.com">ashwinsk@saralcare.com</a>.
+  </p>
+
+  <div id="mq-stats" class="mq-stats">
+    <div class="mq-card">
+      <div class="mq-num" id="mq-total">—</div>
+      <div class="mq-label">total open</div>
+    </div>
+    <div class="mq-card">
+      <div class="mq-num" id="mq-oldest">—</div>
+      <div class="mq-label">oldest (days)</div>
+    </div>
+    <div class="mq-card">
+      <div class="mq-num" id="mq-this-week">—</div>
+      <div class="mq-label">opened this week</div>
+    </div>
+    <div class="mq-card">
+      <div class="mq-num" id="mq-overdue">—</div>
+      <div class="mq-label">overdue (>48h)</div>
+    </div>
+  </div>
+
+  <p class="small" id="mq-status" style="margin: 0.4rem 0;">Loading…</p>
+
+  <section id="mq-buckets" class="mq-buckets"></section>
+
+  <section style="margin-top: 2rem;">
+    <h3>Performance promise</h3>
+    <ul>
+      <li><strong>Acknowledgement</strong> within 48 hours.</li>
+      <li><strong>Substantive response</strong> within 7 working days where investigation is required.</li>
+      <li><strong>Urgent dead-number reports</strong> within 24 hours.</li>
+      <li><strong>Public correction log</strong> in <a href={`https://github.com/${repo}/tree/main/corrections`}>corrections/</a> with date, type, outcome.</li>
+    </ul>
+    <p class="small">If we miss these targets, the data is public — you'll see it on this page. That's the point.</p>
+  </section>
+
+  <script type="module" define:vars={{ repo }}>
+    const LABEL_GROUPS = [
+      { id: "dead-number", label: "Dead-number reports", priority: 1, sla_hours: 48 },
+      { id: "needs-reverify", label: "Re-verify queue", priority: 1, sla_hours: 168 },
+      { id: "report", label: "User reports (pending review)", priority: 2, sla_hours: 168 },
+      { id: "correction", label: "Corrections", priority: 2, sla_hours: 48 },
+      { id: "takedown", label: "Takedowns", priority: 1, sla_hours: 48 },
+      { id: "dispute", label: "Disputes", priority: 1, sla_hours: 168 },
+      { id: "new-provider", label: "New provider submissions", priority: 3, sla_hours: 168 },
+      { id: "needs-verification", label: "Provider claims awaiting verification call", priority: 2, sla_hours: 48 },
+      { id: "needs-verification-call", label: "Awaiting first verification call", priority: 3, sla_hours: 168 },
+      { id: "governance", label: "Governance proposals", priority: 4, sla_hours: 336 },
+      { id: "bug", label: "Site / technical bugs", priority: 3, sla_hours: 168 },
+    ];
+
+    function ageHours(iso) {
+      return (Date.now() - new Date(iso).getTime()) / 36e5;
+    }
+
+    function fmt(iso) {
+      const h = ageHours(iso);
+      if (h < 24) return `${Math.round(h)}h`;
+      return `${Math.round(h / 24)}d`;
+    }
+
+    async function load() {
+      try {
+        const r = await fetch(`https://api.github.com/repos/${repo}/issues?state=open&per_page=100&sort=created&direction=desc`, {
+          headers: { "Accept": "application/vnd.github+json" },
+        });
+        if (!r.ok) throw new Error(`GitHub ${r.status}`);
+        const issues = await r.json();
+        const filtered = issues.filter((i) => !i.pull_request);
+        renderStats(filtered);
+        renderBuckets(filtered);
+        document.getElementById("mq-status").textContent =
+          `Last refreshed ${new Date().toISOString().slice(0, 10)}. Live data via api.github.com/repos/${repo}/issues.`;
+      } catch (e) {
+        document.getElementById("mq-status").innerHTML =
+          `Couldn't reach GitHub (${e.message}). Likely causes: (a) the repo isn't public yet, (b) GitHub API is rate-limiting your IP, (c) you're offline. Direct link: <a href="https://github.com/${repo}/issues">github.com/${repo}/issues</a>.`;
+        document.getElementById("mq-status").style.color = "var(--accent)";
+      }
+    }
+
+    function renderStats(issues) {
+      const total = issues.length;
+      const now = Date.now();
+      const oldest = issues.reduce((max, i) => Math.max(max, ageHours(i.created_at) / 24), 0);
+      const thisWeek = issues.filter((i) => ageHours(i.created_at) <= 168).length;
+      const overdue = issues.filter((i) => {
+        const lbls = (i.labels ?? []).map((l) => l.name);
+        const grp = LABEL_GROUPS.find((g) => lbls.includes(g.id));
+        if (!grp) return ageHours(i.created_at) > 168;
+        return ageHours(i.created_at) > grp.sla_hours;
+      }).length;
+
+      document.getElementById("mq-total").textContent = total;
+      document.getElementById("mq-oldest").textContent = total === 0 ? "—" : Math.round(oldest);
+      document.getElementById("mq-this-week").textContent = thisWeek;
+      document.getElementById("mq-overdue").textContent = overdue;
+      if (overdue > 0) {
+        document.getElementById("mq-overdue").style.color = "var(--accent)";
+      }
+    }
+
+    function renderBuckets(issues) {
+      const el = document.getElementById("mq-buckets");
+      el.innerHTML = "";
+      if (issues.length === 0) {
+        el.innerHTML = `<p class="small">Queue is empty. Either nothing is pending — or the repo hasn't been pushed yet.</p>`;
+        return;
+      }
+      const byGroup = new Map();
+      for (const i of issues) {
+        const lbls = (i.labels ?? []).map((l) => l.name);
+        const grp = LABEL_GROUPS.find((g) => lbls.includes(g.id));
+        const key = grp ? grp.id : "other";
+        if (!byGroup.has(key)) byGroup.set(key, []);
+        byGroup.get(key).push(i);
+      }
+      // Render in priority order
+      const order = [...LABEL_GROUPS].sort((a, b) => a.priority - b.priority);
+      for (const g of order) {
+        const list = byGroup.get(g.id);
+        if (!list || list.length === 0) continue;
+        const overdue = list.filter((i) => ageHours(i.created_at) > g.sla_hours).length;
+        el.innerHTML += `
+          <div class="mq-bucket">
+            <h3>${g.label} <span class="mq-count">${list.length}</span>${overdue ? ` <span class="mq-overdue-badge">${overdue} overdue</span>` : ""}</h3>
+            <ul>
+              ${list.slice(0, 10).map((i) => `
+                <li>
+                  <a href="${i.html_url}" target="_blank" rel="noopener">#${i.number}</a>
+                  <span>${escapeHtml(i.title)}</span>
+                  <span class="small mq-age">${fmt(i.created_at)} old</span>
+                </li>
+              `).join("")}
+              ${list.length > 10 ? `<li class="small">... and ${list.length - 10} more — <a href="https://github.com/${repo}/issues?q=is%3Aissue+is%3Aopen+label%3A${g.id}" target="_blank">view all</a></li>` : ""}
+            </ul>
+          </div>`;
+      }
+      const other = byGroup.get("other");
+      if (other && other.length > 0) {
+        el.innerHTML += `
+          <div class="mq-bucket">
+            <h3>Other / uncategorised <span class="mq-count">${other.length}</span></h3>
+            <ul>${other.slice(0, 10).map((i) => `<li><a href="${i.html_url}" target="_blank" rel="noopener">#${i.number}</a> ${escapeHtml(i.title)}</li>`).join("")}</ul>
+          </div>`;
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+    }
+
+    load();
+    // Refresh every 60s while page is open
+    setInterval(load, 60_000);
+  </script>
+
+  <style>
+    .mq-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.55rem; margin-top: 1rem; }
+    .mq-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem 0.9rem; }
+    .mq-num { font-size: 1.65rem; font-weight: 700; line-height: 1.05; color: var(--fg); }
+    .mq-label { font-size: 0.78rem; color: var(--muted); }
+
+    .mq-buckets { margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.8rem; }
+    .mq-bucket { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem 1.1rem; }
+    .mq-bucket h3 { margin: 0 0 0.5rem; font-size: 1.02rem; }
+    .mq-count { display: inline-block; background: var(--bg); border: 1px solid var(--border); padding: 0.05rem 0.5rem; border-radius: 999px; font-size: 0.78rem; color: var(--muted); margin-left: 0.4rem; vertical-align: middle; }
+    .mq-overdue-badge { background: var(--accent); color: white; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.72rem; font-weight: 600; margin-left: 0.3rem; vertical-align: middle; }
+    .mq-bucket ul { margin: 0; padding-left: 1.2rem; }
+    .mq-bucket li { margin: 0.2rem 0; }
+    .mq-age { margin-left: 0.5rem; }
+  </style>
+</Base>

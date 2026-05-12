@@ -1,0 +1,17 @@
+{
+  "$schema": "https://www.ambulance.saralcare.com/schema/mirrors.schema.json",
+  "version": "1.0",
+  "canonical": {
+    "url": "https://www.ambulance.saralcare.com",
+    "repo": "https://github.com/Ashwask/SaralcareAmbulanceservices",
+    "operator": "Saralcare ambulance directory project",
+    "contact": "ashwinsk@saralcare.com",
+    "jurisdiction": "India",
+    "license_data": "CC-BY-NC-SA-4.0",
+    "license_code": "MIT",
+    "trust": "canonical"
+  },
+  "mirrors": [],
+  "forks": [],
+  "updated_at": "2026-05-12"
+}

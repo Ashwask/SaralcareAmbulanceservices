@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ambulance.saralcare.com/schema/hospital.schema.json",
+  "$id": "https://www.ambulance.saralcare.com/schema/hospital.schema.json",
   "title": "Hospital Record",
   "description": "Hospital entry, used both for affiliations and for hospital-owned provider records. A hospital that operates its own fleet has a paired provider record of type=hospital-owned.",
   "type": "object",

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.ambulance.saralcare.com/schema/mirrors.schema.json",
+  "title": "Federation manifest — known mirrors and forks",
+  "type": "object",
+  "required": ["version", "canonical", "mirrors", "forks", "updated_at"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string" },
+    "canonical": { "$ref": "#/$defs/site" },
+    "mirrors": { "type": "array", "items": { "$ref": "#/$defs/site" } },
+    "forks": { "type": "array", "items": { "$ref": "#/$defs/site" } },
+    "updated_at": { "type": "string", "format": "date" }
+  },
+  "$defs": {
+    "site": {
+      "type": "object",
+      "required": ["url", "operator", "contact", "license_data", "trust"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "repo": { "type": ["string", "null"], "format": "uri" },
+        "operator": { "type": "string" },
+        "contact": { "type": "string" },
+        "jurisdiction": { "type": "string" },
+        "scope": { "type": "string", "description": "e.g. 'Karnataka only', 'pan-India', 'Bangladesh'" },
+        "language": { "type": "string", "description": "Primary user-facing language code" },
+        "license_data": { "type": "string" },
+        "license_code": { "type": "string" },
+        "last_sync": { "type": ["string", "null"], "format": "date" },
+        "trust": {
+          "type": "string",
+          "enum": ["canonical", "verified-mirror", "self-declared-mirror", "fork-friendly", "fork-divergent"]
+        },
+        "notes": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+# Saralcare Ambulance Directory — funding sources
+#
+# v1 status: NOT YET ACCEPTING DONATIONS.
+#
+# Until a Section 8 not-for-profit entity is registered, we don't have a
+# legal vehicle to receive donations. The fields below are placeholders;
+# uncomment each once the corresponding account exists.
+#
+# When this changes, see /donate on the site and the entry in
+# decisions/0005-funding-and-entity.md (when written).
+
+# github: [Ashwask]
+# patreon: saralcare
+# open_collective: saralcare-ambulances
+# ko_fi: ashwinsk
+# tidelift: npm/saralcare-ambulance-directory
+# liberapay: saralcare
+# issuehunt: Ashwask/SaralcareAmbulanceservices
+# polar: saralcare
+# buy_me_a_coffee: saralcare
+# custom: ["https://www.ambulance.saralcare.com/donate"]

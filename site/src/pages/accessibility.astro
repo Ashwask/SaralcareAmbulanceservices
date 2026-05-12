@@ -1,0 +1,72 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base
+  title="Accessibility — Saralcare Ambulances"
+  description="Our commitments, what's done, and what's missing. Honest accessibility audit, not legal cover."
+>
+  <h2 style="margin-top: 0.4rem">Accessibility</h2>
+  <p style="max-width: 62ch;">
+    Most users will reach this site under stress, on a phone, possibly with shaking hands, possibly with degraded vision, possibly with poor connectivity. Accessibility isn't a polish item for us — it's the primary use case. Here's what we've done, what we know is missing, and how to report something we got wrong.
+  </p>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Commitments</h3>
+    <ul>
+      <li><strong>Target: WCAG 2.1 Level AA</strong>, with selected Level AAA where reasonable.</li>
+      <li><strong>No-mouse usage:</strong> every interactive element reachable + activatable by keyboard.</li>
+      <li><strong>Screen reader support:</strong> semantic HTML, proper heading hierarchy, ARIA labels on non-text controls.</li>
+      <li><strong>Colour contrast:</strong> all body text and interactive elements meet AA (4.5:1) minimum; emergency CTAs target AAA (7:1).</li>
+      <li><strong>Motion:</strong> no auto-playing animation, no parallax, no flashing content. Respects <code>prefers-reduced-motion</code>.</li>
+      <li><strong>Offline + low-bandwidth:</strong> the PWA caches the directory and core map tiles so the site works on a slow or no connection after a single visit.</li>
+      <li><strong>Multilingual:</strong> Hindi and Kannada machine-translation baseline shipped; native-speaker reviews welcome. Tamil, Telugu, Marathi, Bengali, Malayalam scaffolded.</li>
+      <li><strong>Mobile-first:</strong> tap targets ≥44×44 pixels; thumb-reach prioritised.</li>
+    </ul>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Done in v0.2</h3>
+    <ul>
+      <li>Semantic HTML throughout: <code>&lt;main&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;header&gt;</code>, <code>&lt;footer&gt;</code> landmarks.</li>
+      <li>Skip-to-content link visible on keyboard focus.</li>
+      <li>Visible <code>:focus-visible</code> outlines on all interactive elements.</li>
+      <li>ARIA labels on icon-only buttons (save star, search, share, dead-number).</li>
+      <li><code>aria-hidden</code> on decorative emoji icons that pair with text.</li>
+      <li><code>aria-live="polite"</code> on status messages (geolocate status, form feedback).</li>
+      <li><code>aria-pressed</code> state on toggle controls (save).</li>
+      <li>Form labels associated with inputs via <code>for</code>/<code>id</code>; placeholders never substitute for labels.</li>
+      <li>Heading hierarchy: each page has exactly one <code>&lt;h1&gt;</code>, nested correctly.</li>
+      <li>Dark-mode support via <code>prefers-color-scheme</code>.</li>
+      <li>Language declared on <code>&lt;html lang&gt;</code> and updated when the language switcher is used.</li>
+    </ul>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Known gaps (we're honest about these)</h3>
+    <ul>
+      <li><strong>No professional WCAG audit yet.</strong> The above is self-reported. We have not contracted a third-party audit. A volunteer or grant-funded audit is a v1.5 priority.</li>
+      <li><strong>Map view (MapLibre)</strong> is image-driven and not fully accessible to screen readers. We surface the same data as a sortable list on the same page, so map content is not load-bearing.</li>
+      <li><strong>Hindi / Kannada strings are machine-translated.</strong> Medical-emergency copy in particular needs native-speaker review. Until reviewed, the language switcher flags these as "machine-only".</li>
+      <li><strong>Tamil, Telugu, Marathi, Bengali, Malayalam</strong> show up in the switcher but fall back to English at runtime until translations land.</li>
+      <li><strong>Embed widget badge (SVG)</strong> is an image; the surrounding link's text describes the listing, but the badge itself doesn't carry semantic content for screen readers.</li>
+      <li><strong>No specific dyslexia-friendly typography toggle</strong> (e.g., OpenDyslexic). Considered.</li>
+      <li><strong>Form validation messages</strong> rely on the browser's built-in messages. Custom, more verbose validation is on the roadmap.</li>
+    </ul>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Reporting an accessibility issue</h3>
+    <p>If something on this site is unreachable, unreadable, or unusable for you, please tell us. We treat accessibility bugs as priority issues.</p>
+    <ul>
+      <li><strong>Preferred:</strong> open a GitHub issue tagged <code>accessibility</code> at <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/issues/new?labels=accessibility&title=%5BA11Y%5D+">our issue tracker</a>.</li>
+      <li><strong>Email:</strong> <a href="mailto:ashwinsk@saralcare.com?subject=%5BA11Y%5D">ashwinsk@saralcare.com</a> with subject <code>[A11Y]</code>. We respond within 48 hours.</li>
+      <li><strong>Anonymous:</strong> if you'd rather not identify yourself, send the report via any mirror's contact (see <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/MIRRORING.md">MIRRORING.md</a>).</li>
+    </ul>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Why we publish gaps publicly</h3>
+    <p>Most accessibility statements you read are insurance for the publisher. Ours is a punch list for the maintainer. The gaps section is editable in the same Git history as the rest of the project — if we mark something fixed but you can still see the problem, that's a bug worth reporting.</p>
+  </section>
+</Base>

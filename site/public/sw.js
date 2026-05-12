@@ -10,7 +10,7 @@
  *  - Offline fallback page: /offline.html for navigations when nothing cached.
  */
 
-const VERSION = "v1.0.3";
+const VERSION = "v1.0.4";
 const SHELL = `shell-${VERSION}`;
 const DATA = `data-${VERSION}`;
 const TILES = `tiles-${VERSION}`;
