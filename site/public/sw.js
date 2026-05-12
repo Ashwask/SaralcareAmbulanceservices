@@ -10,7 +10,7 @@
  *  - Offline fallback page: /offline.html for navigations when nothing cached.
  */
 
-const VERSION = "v1.0.4";
+const VERSION = "v1.0.5";
 const SHELL = `shell-${VERSION}`;
 const DATA = `data-${VERSION}`;
 const TILES = `tiles-${VERSION}`;
@@ -18,11 +18,13 @@ const STATIC = `static-${VERSION}`;
 
 const SHELL_URLS = [
   "/",
+  "/find",
   "/explore",
   "/notice",
   "/disclaimer",
   "/saved",
   "/for-providers",
+  "/open-source",
   "/offline.html",
   "/manifest.webmanifest",
 ];

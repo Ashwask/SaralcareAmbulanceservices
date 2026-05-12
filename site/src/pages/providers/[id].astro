@@ -1,6 +1,7 @@
 ---
 import Base from "@/layouts/Base.astro";
 import ReportForm from "@/components/ReportForm.astro";
+import CapacityCheck from "@/components/CapacityCheck.astro";
 import { getProviders, getHospitals, getReports, aggregateReportsFor, badge, badgeLabel, freshnessNote } from "@/lib/data";
 
 export async function getStaticPaths() {
@@ -23,7 +24,7 @@ const phoneTel = phone.replace(/\s+/g, "");
   title={`${provider.brand_name} — ambulance phone, Bangalore`}
   description={`Call ${provider.brand_name} in Bangalore. ${provider.type}. ${ownReports.length > 0 ? `${agg.count} user reports.` : "Tap to call."}`}
 >
-  <p class="small" style="margin-top: 0.4rem;"><a href="/">← Find another</a></p>
+  <p class="small" style="margin-top: 0.4rem;"><a href="/find">← Find another</a></p>
 
   <header class="provider-hero">
     <h1 class="provider-name">{provider.brand_name}</h1>
@@ -50,6 +51,8 @@ const phoneTel = phone.replace(/\s+/g, "");
     <div class="hl-microcopy" style="margin-top: 0.5rem;">
       Calling <strong>{provider.brand_name}</strong>. <a href="#" class="pc-dead-link" data-provider-id={provider.id} data-provider-name={provider.brand_name} data-phone={phone}>Number didn't work?</a> &nbsp;·&nbsp; In an emergency, dial <a href="tel:108"><strong>108</strong></a>.
     </div>
+
+    <CapacityCheck providerId={provider.id} providerName={provider.brand_name} />
 
     <div class="provider-actions">
       <button class="secondary save-btn" type="button"

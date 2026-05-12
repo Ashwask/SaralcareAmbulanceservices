@@ -1,0 +1,146 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getProviders, badge } from "@/lib/data";
+
+const providers = getProviders();
+const repo = "https://github.com/Ashwask/SaralcareAmbulanceservices";
+
+// Priority: unverified records with real (non-placeholder) phones, sorted by
+// type so the maintainer hits well-known operators first.
+const PRIORITY_TYPE = ["govt-108", "private-aggregator", "hospital-owned", "private-standalone", "ngo", "charitable"];
+const queue = providers
+  .filter((p) => badge(p) !== "verified")
+  .filter((p) => p.contact?.phone_24h && p.contact.phone_24h !== "+91 00000 00000")
+  .sort((a, b) => PRIORITY_TYPE.indexOf(a.type) - PRIORITY_TYPE.indexOf(b.type))
+  .slice(0, 10);
+---
+
+<Base
+  title="Verify session — Saralcare Ambulances"
+  description="Maintainer-only tool: walk through the top 10 unverified high-priority records with the call script inline. One commit per verification."
+>
+  <p class="small"><a href="/open-source">← Open source hub</a></p>
+  <h2 style="margin-top: 0.4rem">Verify session</h2>
+
+  <div class="card" style="background: var(--amber-bg); border-color: #fde68a; color: #78350f;">
+    <p style="margin: 0; font-weight: 600;">For maintainers — not a user-facing page.</p>
+    <p style="margin: 0.4rem 0 0; font-size: 0.92rem;">
+      Walks you through the top 10 unverified records one at a time. Each row has the call script + a one-click "Edit on GitHub" deep-link that opens the YAML pre-positioned for the changes you'll make after the call. One verification = one commit. Make all 10 in ~60 minutes.
+    </p>
+  </div>
+
+  <section style="margin-top: 1rem;">
+    <h3>The script</h3>
+    <details class="card">
+      <summary style="font-weight: 600; cursor: pointer;">Open the call script (memorise it once)</summary>
+      <div style="margin-top: 0.6rem;">
+        <p>Open with:</p>
+        <blockquote style="border-left: 3px solid var(--accent); padding-left: 0.8rem; color: var(--fg);">
+          "Hello, I'm calling to verify your ambulance service listing for a public directory called the Saralcare Ambulance Directory. May I ask a few short questions? It will take about two minutes."
+        </blockquote>
+        <p>If they agree, ask in order:</p>
+        <ol>
+          <li>Service name and where the ambulance is based.</li>
+          <li>Operating hours (24h or not).</li>
+          <li>Vehicle types — BLS, ALS, MICU, neonatal, PTA.</li>
+          <li>Equipment — oxygen, defib, ventilator, cardiac monitor.</li>
+          <li>Paramedic always on board?</li>
+          <li>Service area — pincodes or polygon.</li>
+          <li>Hospital affiliations / contracts.</li>
+          <li>Base fare, per-km, night premium.</li>
+          <li>Best 24-hour number to publish.</li>
+        </ol>
+        <p>Close with:</p>
+        <blockquote style="border-left: 3px solid var(--accent); padding-left: 0.8rem; color: var(--fg);">
+          "Thank you. We're listing you for free under a public-good licence. If anything is incorrect once listed, email <code>ashwinsk@saralcare.com</code> and we'll fix it within 48 hours."
+        </blockquote>
+      </div>
+    </details>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Queue ({queue.length} of 10)</h3>
+    <p class="small">Sorted: govt-108 → aggregators → hospital-owned → standalone. Click "Open" to start a record. After the call, click "Edit on GitHub" to commit the verification.</p>
+
+    {queue.length === 0 ? (
+      <p>No unverified records with real phones in the queue. <a href={`${repo}/issues?q=is%3Aissue+is%3Aopen+label%3Aneeds-reverify`}>Check the GitHub re-verify queue</a> for stale records due for re-call.</p>
+    ) : (
+      <ol class="vs-queue">
+        {queue.map((p, i) => (
+          <li class="vs-item" data-record={p.id}>
+            <details>
+              <summary>
+                <span class="vs-rank">{i + 1}</span>
+                <span class="vs-name">{p.brand_name}</span>
+                <span class="vs-type small">{p.type}</span>
+                <span class="vs-phone small">{p.contact?.phone_24h}</span>
+              </summary>
+              <div class="vs-body">
+                <p>
+                  <strong>Tap to call:</strong>
+                  <a href={`tel:${(p.contact?.phone_24h ?? "").replace(/\s+/g, "")}`} class="vs-call">📞 {p.contact?.phone_24h}</a>
+                </p>
+                {p.routing_note ? (
+                  <p class="small" style="background: var(--amber-bg); border: 1px solid #fde68a; color: #78350f; padding: 0.4rem 0.6rem; border-radius: 6px;">
+                    ↪ {p.routing_note}
+                  </p>
+                ) : null}
+                <p class="small">Listed sources: {(p.sources ?? []).map((s: any) => s.type).join(", ")}</p>
+
+                <p style="margin-top: 0.7rem;"><strong>Capture during the call:</strong></p>
+                <ul class="small vs-capture">
+                  <li>Vehicle types confirmed: ___</li>
+                  <li>Service area: ___</li>
+                  <li>Hospital affiliations: ___</li>
+                  <li>Fares (base/per-km/night): ___</li>
+                  <li>Best number to publish: ___</li>
+                  <li>Anything unexpected: ___</li>
+                </ul>
+
+                <p style="margin-top: 0.9rem;">
+                  <a class="vs-edit" href={`${repo}/edit/main/data/providers/${p.id}.yaml`} target="_blank" rel="noopener">
+                    ✎ Edit this record on GitHub →
+                  </a>
+                </p>
+                <p class="small">
+                  After the call, change <code>status: unverified</code> → <code>status: verified</code>, set <code>last_verified_at</code> to today, set <code>verified_by</code> to your initials, append a <code>call_logs</code> entry with date + outcome + notes. Commit message: <code>verify {p.id} — answered/no-answer/wrong-number</code>.
+                </p>
+              </div>
+            </details>
+          </li>
+        ))}
+      </ol>
+    )}
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>After the session</h3>
+    <ul>
+      <li>Push your 10 commits.</li>
+      <li>The site rebuilds (Cloudflare Pages auto-triggers on push to main).</li>
+      <li>Within ~3 minutes, the freshness dashboard at <a href="/freshness">/freshness</a> shows the new green badges.</li>
+      <li>Tweet/post a short note summarising what you learned — <em>which numbers worked, which providers were eager to talk, which weren't reachable</em>. This is the launch content.</li>
+    </ul>
+  </section>
+
+  <style>
+    .vs-queue { list-style: none; padding: 0; margin: 0; }
+    .vs-item { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 10px; margin: 0.4rem 0; }
+    .vs-item summary { padding: 0.7rem 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+    .vs-rank { background: var(--bg); border: 1px solid var(--border); width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; }
+    .vs-name { font-weight: 600; }
+    .vs-type { color: var(--muted); }
+    .vs-phone { margin-left: auto; font-family: monospace; }
+    .vs-body { padding: 0 0.9rem 0.9rem; border-top: 1px solid var(--border); margin-top: 0.4rem; padding-top: 0.6rem; }
+    .vs-call { font-size: 1.15rem; font-weight: 700; color: var(--accent); margin-left: 0.5rem; }
+    .vs-capture { background: var(--bg); border: 1px solid var(--border); padding: 0.55rem 0.9rem; border-radius: 6px; list-style: none; }
+    .vs-capture li { padding: 0.18rem 0; }
+    .vs-edit {
+      display: inline-block;
+      background: var(--accent); color: white;
+      padding: 0.5rem 0.9rem; border-radius: 8px;
+      font-weight: 600; text-decoration: none;
+    }
+    .vs-edit:hover { background: var(--accent-hover); }
+  </style>
+</Base>

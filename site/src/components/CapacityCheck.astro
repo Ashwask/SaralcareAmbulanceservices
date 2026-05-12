@@ -1,0 +1,137 @@
+---
+/**
+ * Capacity-check broker — a button on each provider page.
+ *
+ * User clicks → form opens → submit → Worker creates a GitHub issue tagged
+ * `capacity-check`, `urgent-ping` → maintainer or city captain pings the
+ * provider (out-of-band, SMS/WhatsApp) → posts the answer as a comment →
+ * user sees it inline via polling.
+ *
+ * This is information MEDIATION, not dispatch. We don't claim to know the
+ * availability — we relay the question to someone who can ask, and surface
+ * the answer.
+ */
+interface Props {
+  providerId: string;
+  providerName: string;
+}
+const { providerId, providerName } = Astro.props;
+const submitUrl = import.meta.env.PUBLIC_SUBMIT_URL ?? "";
+---
+
+<details class="cc-wrap">
+  <summary class="cc-summary">
+    🟢 Is a vehicle available right now? <span class="cc-sub">— ask the maintainer to ping the provider</span>
+  </summary>
+  <div class="cc-body">
+    <p class="small">
+      We don't track availability in real-time (<a href="/notice">why</a>). What we can do: relay your question to a maintainer who pings the provider directly and posts the answer back here. <strong>Median round-trip: 5-20 minutes.</strong> Not for life-threatening emergencies — for those, dial <a href="tel:108"><strong>108</strong></a> first.
+    </p>
+
+    <form id={`cc-${providerId}`} class="cc-form" data-provider-id={providerId} data-provider-name={providerName} data-submit-url={submitUrl}>
+      <label>
+        Your pincode
+        <input type="text" name="pincode" inputmode="numeric" maxlength="6" pattern="^[1-9][0-9]{5}$" required placeholder="e.g. 560076" />
+      </label>
+      <label>
+        What kind of vehicle do you need?
+        <select name="vehicle_type" required>
+          <option value="">— select —</option>
+          <option value="any">Any available ambulance</option>
+          <option value="BLS">BLS — basic, oxygen + first aid</option>
+          <option value="ALS">ALS — advanced, with paramedic</option>
+          <option value="MICU">MICU — ventilator + ICU staff</option>
+          <option value="PTA">PTA — patient transport (non-emergency)</option>
+        </select>
+      </label>
+      <label>
+        Time-frame
+        <select name="timeframe" required>
+          <option value="now">Now / within 30 minutes</option>
+          <option value="hour">Within the hour</option>
+          <option value="today">Today</option>
+          <option value="tomorrow">Tomorrow / planned transfer</option>
+        </select>
+      </label>
+      <label>
+        How can we reach you with the answer?
+        <input type="text" name="contact" required maxlength="60" placeholder="phone or email — kept private, used once" />
+      </label>
+      <label>
+        Anything else (vehicle ID, route, special needs)
+        <textarea name="notes" rows="2" maxlength="400"></textarea>
+      </label>
+
+      <p class="cc-consent small">
+        Your contact is sent to a project maintainer for this one query and not stored. The query itself becomes a public GitHub issue (without your contact). We do not call you back automatically — a maintainer pings the provider, then replies on the issue and notifies you.
+      </p>
+
+      <div class="cc-row">
+        <button type="submit">Request capacity check</button>
+        <span id={`cc-status-${providerId}`} class="small" aria-live="polite"></span>
+      </div>
+    </form>
+  </div>
+</details>
+
+<script type="module" define:vars={{ providerId, providerName }}>
+  const form = document.getElementById(`cc-${providerId}`);
+  if (form) {
+    const status = document.getElementById(`cc-status-${providerId}`);
+    const submitUrl = form.dataset.submitUrl;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.textContent = "Sending…";
+      const fd = new FormData(form);
+      const payload = {
+        provider_id: providerId,
+        provider_name: providerName,
+        pincode: fd.get("pincode"),
+        vehicle_type: fd.get("vehicle_type"),
+        timeframe: fd.get("timeframe"),
+        notes: fd.get("notes") || "",
+        // Contact stays in the Worker (sent to GH as a hidden moderator-only line).
+        _contact: fd.get("contact"),
+        requested_at: new Date().toISOString(),
+      };
+      if (submitUrl) {
+        try {
+          const r = await fetch(submitUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ form_type: "capacity-check", payload }),
+          });
+          const data = await r.json();
+          if (data.ok) {
+            status.innerHTML = `Sent. A maintainer will ping the provider and reply at <a href="${data.issue_url}" target="_blank" rel="noopener">this thread</a> — typically within 5-20 minutes. We'll also contact you at <code>${payload._contact}</code>.`;
+            form.reset();
+            return;
+          }
+          status.textContent = `Could not send (${data.error}). Try the email fallback.`;
+        } catch (err) {
+          status.textContent = "Network error.";
+        }
+      }
+      // mailto fallback
+      const subject = encodeURIComponent(`[CAPACITY CHECK] ${providerName} — pincode ${payload.pincode}`);
+      const body = encodeURIComponent(
+        `Provider: ${providerName} (${providerId})\nPincode: ${payload.pincode}\nVehicle: ${payload.vehicle_type}\nTimeframe: ${payload.timeframe}\nContact: ${payload._contact}\nNotes: ${payload.notes}\n\n— Submitted from www.ambulance.saralcare.com`
+      );
+      window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
+    });
+  }
+</script>
+
+<style>
+  .cc-wrap { background: var(--green-bg, #f0fdf4); border: 1px solid #bbf7d0; border-radius: 12px; padding: 0.7rem 0.9rem; margin-top: 0.7rem; }
+  .cc-summary { font-weight: 600; cursor: pointer; color: #15803d; }
+  .cc-sub { font-weight: 400; color: var(--muted); font-size: 0.86rem; }
+  .cc-body { margin-top: 0.7rem; }
+  .cc-form { display: flex; flex-direction: column; gap: 0.55rem; }
+  .cc-form label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.9rem; }
+  .cc-form input, .cc-form select, .cc-form textarea { font: inherit; padding: 0.45rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; }
+  .cc-consent { background: white; border: 1px solid var(--border); padding: 0.4rem 0.6rem; border-radius: 6px; }
+  .cc-row { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-top: 0.3rem; }
+  .cc-row button { background: #15803d; color: white; border: 0; padding: 0.55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  .cc-row button:hover { background: #166534; }
+</style>

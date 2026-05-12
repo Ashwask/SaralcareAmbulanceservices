@@ -22,7 +22,7 @@ export interface Env {
   RATE: KVNamespace;
 }
 
-type FormType = "report" | "new-provider" | "provider-claim" | "correction" | "dead-number";
+type FormType = "report" | "new-provider" | "provider-claim" | "correction" | "dead-number" | "capacity-check";
 
 const LABELS: Record<FormType, string[]> = {
   report: ["report", "needs-moderation"],
@@ -30,6 +30,7 @@ const LABELS: Record<FormType, string[]> = {
   "provider-claim": ["provider-claim", "needs-verification"],
   correction: ["correction"],
   "dead-number": ["dead-number", "needs-reverify"],
+  "capacity-check": ["capacity-check", "urgent-ping"],
 };
 
 const TITLES: Record<FormType, (p: any) => string> = {
@@ -38,6 +39,7 @@ const TITLES: Record<FormType, (p: any) => string> = {
   "provider-claim": (p) => `[CLAIM] ${p.provider_id} — ${p.claimant_role ?? "?"}`,
   correction: (p) => `[CORRECTION] ${p.target_id} — ${p.field ?? "?"}`,
   "dead-number": (p) => `[DEAD NUMBER] ${p.provider_id} — ${p.phone}`,
+  "capacity-check": (p) => `[CAPACITY CHECK] ${p.provider_id} — pincode ${p.pincode ?? "?"}`,
 };
 
 export default {

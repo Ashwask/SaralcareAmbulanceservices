@@ -26,10 +26,10 @@
   ],
   "shortcuts": [
     {
-      "name": "Call 108",
-      "short_name": "108",
-      "description": "Government ambulance, free",
-      "url": "/?action=call108"
+      "name": "Find an ambulance",
+      "short_name": "Find",
+      "description": "Geolocate or pincode → 5 nearest providers",
+      "url": "/find"
     },
     {
       "name": "Saved providers",

@@ -181,9 +181,10 @@ const {
       <div class="container row">
         <h1><a href="/" data-i18n="site.title">Saralcare Ambulances</a></h1>
         <nav aria-label="Primary">
-          <a href="/" class:list={[Astro.url.pathname === "/" && "active"]} data-i18n="nav.find">Find</a>
+          <a href="/find" class:list={[Astro.url.pathname.startsWith("/find") && "active"]} data-i18n="nav.find">Find</a>
           <a href="/explore" class:list={[Astro.url.pathname.startsWith("/explore") && "active"]} data-i18n="nav.explore">Explore</a>
           <a href="/for-providers" class:list={[Astro.url.pathname.startsWith("/for-providers") && "active"]} data-i18n="nav.for_providers">For providers</a>
+          <a href="/open-source" class:list={[Astro.url.pathname.startsWith("/open-source") && "active"]}>Open source</a>
           <a href="/notice" class:list={[Astro.url.pathname.startsWith("/notice") && "active"]} data-i18n="nav.about">About</a>
           <LangSwitcher />
         </nav>

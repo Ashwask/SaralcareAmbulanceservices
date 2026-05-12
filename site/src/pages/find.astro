@@ -1,0 +1,525 @@
+---
+import Base from "@/layouts/Base.astro";
+import FirstVisitModal from "@/components/FirstVisitModal.astro";
+import { getProviders, getHospitals, badge } from "@/lib/data";
+
+const providers = getProviders();
+const hospitals = getHospitals();
+
+// Slim payload for client-side nearest-neighbour
+const provLite = providers.map((p) => ({
+  id: p.id,
+  brand_name: p.brand_name,
+  phone: p.contact?.phone_24h ?? "",
+  type: p.type,
+  badge: badge(p),
+  routing_note: (p as any).routing_note ?? null,
+  lat: p.hq_lat_lng[0],
+  lng: p.hq_lat_lng[1],
+  service_pincodes:
+    p.service_areas?.type === "pincode-list" ? (p.service_areas.pincodes ?? []) : [],
+}));
+const hospLite = hospitals.map((h) => ({
+  id: h.id,
+  name: h.name,
+  lat: h.lat_lng[0],
+  lng: h.lat_lng[1],
+  pincode: h.pincode ?? null,
+}));
+---
+
+<Base>
+  <FirstVisitModal />
+
+  <section class="hero">
+    <h1 class="hero-title" data-i18n="home.title">Find an ambulance in India.</h1>
+    <p class="hero-sub" data-i18n="home.subtitle">Tap a number. Reach a vehicle. Government 108, private, or charitable — across the country.</p>
+
+    <div class="hero-actions">
+      <button id="geo-btn" class="big-btn">
+        <span class="big-btn-icon" aria-hidden="true">📍</span>
+        <span class="big-btn-text">
+          <strong data-i18n="home.geolocate">Use my location</strong>
+          <span class="big-btn-hint" data-i18n="home.geolocate_hint">Show ambulances near me</span>
+        </span>
+      </button>
+
+      <div class="hero-pin">
+        <label for="pincode-in" class="small" data-i18n="home.pincode_label">Or enter any Indian pincode</label>
+        <div class="hero-pin-row">
+          <input id="pincode-in" type="text" inputmode="numeric" maxlength="6" pattern="^[1-9][0-9]{5}$" placeholder="e.g. 560076 · 400050 · 110017" data-i18n-placeholder="home.pincode_placeholder" aria-label="Indian pincode" />
+          <button id="pincode-btn" type="button" class="secondary" data-i18n="home.find_btn">Find</button>
+        </div>
+        <p id="geo-status" class="small" style="margin: 0.2rem 0 0; min-height: 1.1em;" aria-live="polite"></p>
+      </div>
+
+      <div class="hero-divider"><span data-i18n="home.or">or</span></div>
+
+      <a class="big-btn govt" href="tel:108">
+        <span class="big-btn-icon" aria-hidden="true">📞</span>
+        <span class="big-btn-text">
+          <strong data-i18n="home.call_108_title">Call 108 — free, 24×7</strong>
+          <span class="big-btn-hint" data-i18n="home.call_108_hint">Karnataka government EMS</span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <section id="city-grid-section" class="city-grid-wrap">
+    <h2 style="margin-bottom: 0.5rem;">Or jump to a city</h2>
+    <p class="small" style="margin-top: 0; margin-bottom: 0.7rem;">All ambulances we've found in each metro. <a href="/explore">See the full directory →</a></p>
+    <div id="city-grid" class="city-grid"></div>
+  </section>
+
+  <section id="nearest-section" hidden>
+    <h2>Nearest providers</h2>
+    <p class="small" id="nearest-context"></p>
+    <div id="nearest-list"></div>
+    <p class="small" style="margin-top: 0.6rem;">
+      Distances are straight-line from the provider's HQ. Actual travel time depends on traffic. <a href="/explore">See all providers →</a>
+    </p>
+  </section>
+
+  <section id="saved-section" hidden>
+    <h2>Saved by you</h2>
+    <div id="saved-list"></div>
+    <p class="small"><a href="/saved">Manage saved providers →</a></p>
+  </section>
+
+  <section class="tiles">
+    <a class="tile" href="/explore">
+      <div class="tile-icon">🗺️</div>
+      <div>
+        <div class="tile-title">Explore the data</div>
+        <div class="tile-sub">Map, fares, affiliations, RTI data, freshness</div>
+      </div>
+    </a>
+    <a class="tile" href="/for-providers">
+      <div class="tile-icon">🚑</div>
+      <div>
+        <div class="tile-title">For ambulance providers</div>
+        <div class="tile-sub">Register your service, claim or correct a listing — free</div>
+      </div>
+    </a>
+    <a class="tile" href="/notice">
+      <div class="tile-icon">ℹ️</div>
+      <div>
+        <div class="tile-title">How this site works</div>
+        <div class="tile-sub">What we do, what we don't, your rights</div>
+      </div>
+    </a>
+  </section>
+
+  <script is:inline define:vars={{ provLite, hospLite, submitUrl: import.meta.env.PUBLIC_SUBMIT_URL ?? "" }}>
+    window.__PROVS__ = provLite;
+    window.__HOSPS__ = hospLite;
+    window.__SUBMIT_URL__ = submitUrl;
+  </script>
+
+  <script type="module">
+    // Distance + nearest, inlined so we don't depend on TS path resolution at runtime.
+    const R = 6371;
+    const toRad = (d) => (d * Math.PI) / 180;
+    function haversineKm(a, b) {
+      const dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+      const la1 = toRad(a.lat), la2 = toRad(b.lat);
+      const x = Math.sin(dLat/2)**2 + Math.sin(dLng/2)**2 * Math.cos(la1) * Math.cos(la2);
+      return 2 * R * Math.asin(Math.sqrt(x));
+    }
+
+    // Bangalore exact pincode → centroid (nearest-neighbour accuracy)
+    const BLR_PIN = {
+      "560001":[12.9764,77.6041],"560002":[12.9647,77.5759],"560003":[13.0096,77.5773],
+      "560004":[12.9433,77.5723],"560005":[12.9929,77.6203],"560008":[12.9758,77.6412],
+      "560011":[12.9362,77.6049],"560017":[12.9601,77.6493],"560020":[12.9866,77.5705],
+      "560022":[12.9926,77.5562],"560027":[12.9505,77.5907],"560029":[12.9355,77.6029],
+      "560030":[12.9489,77.5928],"560034":[12.9279,77.6271],"560037":[12.9698,77.7499],
+      "560038":[12.9778,77.6325],"560040":[12.9626,77.5363],"560043":[13.0212,77.6502],
+      "560047":[12.9434,77.6076],"560048":[13.0500,77.6510],"560066":[12.9785,77.7400],
+      "560068":[12.9051,77.6235],"560070":[12.9106,77.5557],"560076":[12.8939,77.6022],
+      "560078":[12.8956,77.5739],"560085":[12.9248,77.5466],"560092":[13.0428,77.5944],
+      "560097":[13.0586,77.5680],"560099":[12.8053,77.6918],"560100":[12.8395,77.6655],
+    };
+    // Pan-India city centroids (fallback when exact pincode not known)
+    const CITY_BY_SLUG = {
+      bangalore:{lat:12.9716,lng:77.5946,label:"Bengaluru"},
+      mumbai:{lat:19.0760,lng:72.8777,label:"Mumbai"},
+      delhi:{lat:28.6139,lng:77.2090,label:"Delhi NCR"},
+      chennai:{lat:13.0827,lng:80.2707,label:"Chennai"},
+      hyderabad:{lat:17.3850,lng:78.4867,label:"Hyderabad"},
+      kolkata:{lat:22.5726,lng:88.3639,label:"Kolkata"},
+      pune:{lat:18.5204,lng:73.8567,label:"Pune"},
+      ahmedabad:{lat:23.0225,lng:72.5714,label:"Ahmedabad"},
+      jaipur:{lat:26.9124,lng:75.7873,label:"Jaipur"},
+      lucknow:{lat:26.8467,lng:80.9462,label:"Lucknow"},
+      kochi:{lat:9.9312,lng:76.2673,label:"Kochi"},
+      thiruvananthapuram:{lat:8.5241,lng:76.9366,label:"Thiruvananthapuram"},
+      coimbatore:{lat:11.0168,lng:76.9558,label:"Coimbatore"},
+      bhopal:{lat:23.2599,lng:77.4126,label:"Bhopal"},
+      visakhapatnam:{lat:17.6868,lng:83.2185,label:"Visakhapatnam"},
+      chandigarh:{lat:30.7333,lng:76.7794,label:"Chandigarh"},
+    };
+    const PIN_PREFIX_CITY = {
+      "560":"bangalore","561":"bangalore","562":"bangalore",
+      "400":"mumbai","401":"mumbai","402":"mumbai",
+      "411":"pune","412":"pune","413":"pune",
+      "110":"delhi","111":"delhi","112":"delhi","121":"delhi","122":"delhi","201":"delhi",
+      "600":"chennai","601":"chennai","602":"chennai","603":"chennai",
+      "500":"hyderabad","501":"hyderabad","502":"hyderabad",
+      "700":"kolkata","711":"kolkata","712":"kolkata",
+      "380":"ahmedabad","395":"ahmedabad",
+      "302":"jaipur","303":"jaipur",
+      "226":"lucknow","208":"lucknow",
+      "682":"kochi","683":"kochi","695":"thiruvananthapuram",
+      "641":"coimbatore",
+      "462":"bhopal","452":"bhopal",
+      "530":"visakhapatnam",
+      "160":"chandigarh","143":"chandigarh",
+    };
+    const INDIA = { lat: 22.5937, lng: 78.9629 };
+    function centroid(pin) {
+      if (!pin) return INDIA;
+      if (BLR_PIN[pin]) return { lat: BLR_PIN[pin][0], lng: BLR_PIN[pin][1] };
+      const prefix = pin.slice(0, 3);
+      const city = PIN_PREFIX_CITY[prefix];
+      if (city && CITY_BY_SLUG[city]) return CITY_BY_SLUG[city];
+      return INDIA;
+    }
+
+    function badgeClass(b) { return `badge badge--${b}`; }
+    function isDeadLocal(id) {
+      try { return (JSON.parse(localStorage.getItem("sc.amb.dead") || "[]")).includes(id); } catch { return false; }
+    }
+    function renderCard(p, rank, distance) {
+      const isSaved = readSaved().some((s) => s.id === p.id);
+      const phoneTel = String(p.phone || "").replace(/\s+/g, "");
+      const typeLabel = p.type === "govt-108" ? "108 / govt" : p.type.replace("-", " ");
+      const dist = distance != null ? `· ${distance.toFixed(1)} km` : "";
+      const dead = isDeadLocal(p.id);
+      const badgeShown = dead ? "disputed" : p.badge;
+      return `
+        <article class="pc ${dead ? "pc--dead" : ""}" data-provider-id="${p.id}">
+          <div class="pc-head">
+            <span class="pc-rank">${rank}</span>
+            <div class="pc-meta">
+              <a href="/providers/${p.id}" class="pc-name">${escape(p.brand_name)}</a>
+              <div class="pc-sub">
+                <span class="${badgeClass(badgeShown)}">${badgeShown}</span>
+                <span class="pc-type">${typeLabel}</span>
+                <span class="pc-distance">${dist}</span>
+              </div>
+            </div>
+            <button class="pc-save ${isSaved ? "saved" : ""}" type="button"
+              data-provider-id="${p.id}" data-provider-name="${escape(p.brand_name)}"
+              data-provider-phone="${escape(p.phone)}" data-provider-type="${escape(p.type)}"
+              aria-pressed="${isSaved}" aria-label="${isSaved ? "Unsave" : "Save"}">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="${isSaved ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+            </button>
+          </div>
+          <a class="pc-call" href="tel:${phoneTel}">
+            <span class="pc-call-icon">📞</span>
+            <span class="pc-call-num">${escape(p.phone)}</span>
+          </a>
+          ${p.routing_note ? `<div class="pc-routing">↪ ${escape(p.routing_note)}</div>` : ""}
+          <div class="pc-microcopy">
+            <a href="#" class="pc-dead-link" data-provider-id="${p.id}" data-provider-name="${escape(p.brand_name)}" data-phone="${escape(p.phone)}">✗ Number didn't work</a>
+            &nbsp;·&nbsp; If you can't reach them, dial <a href="tel:108"><strong>108</strong></a>.
+          </div>
+        </article>`;
+    }
+    function escape(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+    function showNearest(from, contextLabel) {
+      const provs = window.__PROVS__.map((p) => ({
+        ...p,
+        distance: haversineKm(from, { lat: p.lat, lng: p.lng }),
+      })).sort((a, b) => a.distance - b.distance).slice(0, 5);
+      const html = provs.map((p, i) => renderCard(p, i + 1, p.distance)).join("");
+      document.getElementById("nearest-list").innerHTML = html;
+      document.getElementById("nearest-context").textContent = contextLabel;
+      document.getElementById("nearest-section").hidden = false;
+      // Persist last location
+      try { localStorage.setItem("sc.amb.last-loc", JSON.stringify({ ...from, at: new Date().toISOString() })); } catch {}
+      refreshStars();
+    }
+
+    function setStatus(text, isError) {
+      const el = document.getElementById("geo-status");
+      el.textContent = text;
+      el.style.color = isError ? "var(--accent)" : "var(--muted)";
+    }
+
+    document.getElementById("geo-btn")?.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        setStatus("Geolocation not available. Use the pincode field below.", true);
+        return;
+      }
+      setStatus("Locating…");
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const from = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setStatus("");
+          showNearest(from, "Sorted by distance from your location.");
+          window.scrollTo({ top: document.getElementById("nearest-section").offsetTop - 60, behavior: "smooth" });
+        },
+        (err) => {
+          setStatus("Location not available. Enter a pincode instead.", true);
+        },
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 60_000 }
+      );
+    });
+
+    function findByPincode() {
+      const v = String(document.getElementById("pincode-in").value || "").trim();
+      if (!/^[1-9][0-9]{5}$/.test(v)) {
+        setStatus("Enter a valid 6-digit pincode.", true);
+        return;
+      }
+      try { localStorage.setItem("sc.amb.home-pincode", JSON.stringify(v)); } catch {}
+      const c = centroid(v);
+      showNearest(c, `Sorted by distance from pincode ${v}.`);
+      window.scrollTo({ top: document.getElementById("nearest-section").offsetTop - 60, behavior: "smooth" });
+    }
+
+    document.getElementById("pincode-btn")?.addEventListener("click", findByPincode);
+    document.getElementById("pincode-in")?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") findByPincode();
+    });
+
+    // Saved
+    function readSaved() {
+      try { return JSON.parse(localStorage.getItem("sc.amb.saved") || "[]"); } catch { return []; }
+    }
+    function writeSaved(arr) { try { localStorage.setItem("sc.amb.saved", JSON.stringify(arr)); } catch {} }
+    function refreshStars() {
+      const saved = readSaved();
+      document.querySelectorAll(".pc-save").forEach((btn) => {
+        const id = btn.dataset.providerId;
+        const is = saved.some((p) => p.id === id);
+        btn.classList.toggle("saved", is);
+        btn.setAttribute("aria-pressed", is ? "true" : "false");
+      });
+    }
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest?.(".pc-save");
+      if (!btn) return;
+      e.preventDefault();
+      const id = btn.dataset.providerId;
+      let saved = readSaved();
+      if (saved.some((p) => p.id === id)) {
+        saved = saved.filter((p) => p.id !== id);
+      } else {
+        saved.unshift({
+          id,
+          brand_name: btn.dataset.providerName,
+          phone: btn.dataset.providerPhone,
+          type: btn.dataset.providerType,
+          saved_at: new Date().toISOString(),
+        });
+      }
+      writeSaved(saved.slice(0, 50));
+      refreshStars();
+      renderSavedSection();
+    });
+
+    // Dead-number report — one-tap.
+    function readDead() { try { return JSON.parse(localStorage.getItem("sc.amb.dead") || "[]"); } catch { return []; } }
+    function writeDead(a) { try { localStorage.setItem("sc.amb.dead", JSON.stringify(a)); } catch {} }
+    document.addEventListener("click", async (e) => {
+      const a = e.target.closest?.(".pc-dead-link");
+      if (!a) return;
+      e.preventDefault();
+      const id = a.dataset.providerId;
+      const name = a.dataset.providerName;
+      const phone = a.dataset.phone;
+      // Locally mark dead so the badge flips for this user immediately.
+      const dead = readDead();
+      if (!dead.includes(id)) { dead.push(id); writeDead(dead); }
+      // Replace the link with a "Reported — thank you" line
+      const card = a.closest(".pc");
+      if (card) {
+        card.classList.add("pc--dead");
+        const microcopy = card.querySelector(".pc-microcopy");
+        if (microcopy) microcopy.innerHTML = "✓ Reported. We'll re-verify. Dial <a href=\"tel:108\"><strong>108</strong></a> now.";
+        const badgeEl = card.querySelector(".badge");
+        if (badgeEl) { badgeEl.className = "badge badge--disputed"; badgeEl.textContent = "disputed"; }
+      }
+      // Send to Worker (or mailto fallback)
+      const submitUrl = window.__SUBMIT_URL__;
+      const payload = { provider_id: id, provider_name: name, phone, reported_at: new Date().toISOString() };
+      if (submitUrl) {
+        try {
+          await fetch(submitUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ form_type: "dead-number", payload }),
+          });
+        } catch {}
+      }
+      // If Worker isn't configured, the localStorage flag still gives the user the badge feedback.
+      // The aggregate signal lands when the maintainer reviews moderation queue periodically.
+    });
+
+    function renderSavedSection() {
+      const saved = readSaved();
+      const sec = document.getElementById("saved-section");
+      if (saved.length === 0) { sec.hidden = true; return; }
+      sec.hidden = false;
+      // Render saved as compact cards (without distance)
+      const provById = Object.fromEntries(window.__PROVS__.map((p) => [p.id, p]));
+      const cards = saved.map((s, i) => {
+        const p = provById[s.id] ?? { id: s.id, brand_name: s.brand_name, phone: s.phone, type: s.type, badge: "unverified" };
+        return renderCard(p, i + 1, null);
+      }).join("");
+      document.getElementById("saved-list").innerHTML = cards;
+      refreshStars();
+    }
+
+    // Render the "Or jump to a city" grid based on which cities actually have providers.
+    (function renderCityGrid() {
+      const counts = {};
+      for (const p of window.__PROVS__) {
+        if (!p.service_pincodes) continue;
+        for (const pin of p.service_pincodes) {
+          const prefix = pin.slice(0, 3);
+          const c = PIN_PREFIX_CITY[prefix];
+          if (!c) continue;
+          counts[c] = (counts[c] || 0) + 1;
+        }
+      }
+      const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+      const html = entries.map(([slug, n]) => {
+        const c = CITY_BY_SLUG[slug];
+        if (!c) return "";
+        return `
+          <button class="city-tile" type="button" data-city="${slug}">
+            <div class="city-tile-name">${c.label}</div>
+            <div class="city-tile-count">${n} providers</div>
+          </button>`;
+      }).join("");
+      document.getElementById("city-grid").innerHTML = html || `<p class="small">No cities indexed yet.</p>`;
+    })();
+
+    document.getElementById("city-grid")?.addEventListener("click", (e) => {
+      const btn = e.target.closest?.(".city-tile");
+      if (!btn) return;
+      const slug = btn.dataset.city;
+      const c = CITY_BY_SLUG[slug];
+      if (!c) return;
+      showNearest(c, `Sorted by distance from ${c.label}.`);
+      window.scrollTo({ top: document.getElementById("nearest-section").offsetTop - 60, behavior: "smooth" });
+    });
+
+    // Restore — last location → auto-render nearest list, no permission prompt
+    (function restoreLast() {
+      try {
+        const raw = localStorage.getItem("sc.amb.last-loc");
+        if (raw) {
+          const last = JSON.parse(raw);
+          if (Number.isFinite(last.lat) && Number.isFinite(last.lng)) {
+            showNearest({ lat: last.lat, lng: last.lng }, "Sorted by distance from your last-known location.");
+          }
+        }
+        const pin = localStorage.getItem("sc.amb.home-pincode");
+        if (pin) document.getElementById("pincode-in").value = JSON.parse(pin);
+      } catch {}
+      renderSavedSection();
+    })();
+  </script>
+
+  <style is:global>
+    .hero { padding: 1rem 0 0.4rem; }
+    .hero-title { font-size: 1.7rem; margin: 0.4rem 0 0.4rem; letter-spacing: -0.02em; line-height: 1.15; }
+    .hero-sub { color: var(--muted); margin: 0 0 1rem; }
+    .hero-actions { display: flex; flex-direction: column; gap: 0.75rem; }
+    .big-btn {
+      display: flex; align-items: center; gap: 0.85rem;
+      padding: 1.1rem 1.2rem;
+      background: var(--accent); color: white;
+      border: 0; border-radius: 14px;
+      font: inherit; text-align: left; text-decoration: none;
+      min-height: 72px; cursor: pointer;
+    }
+    .big-btn:hover { background: var(--accent-hover); }
+    .big-btn-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .big-btn-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .big-btn-text strong { font-size: 1.1rem; font-weight: 700; }
+    .big-btn-hint { font-size: 0.86rem; opacity: 0.85; margin-top: 0.1rem; }
+    .big-btn.govt { background: #15803d; }
+    .big-btn.govt:hover { background: #166534; }
+
+    .hero-pin { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px; padding: 0.8rem 1rem; }
+    .hero-pin label { display: block; margin-bottom: 0.35rem; }
+    .hero-pin-row { display: flex; gap: 0.45rem; }
+    .hero-pin-row input { flex: 1; font-size: 1.05rem; letter-spacing: 0.05em; }
+
+    .hero-divider {
+      display: flex; align-items: center; gap: 0.6rem;
+      color: var(--muted); font-size: 0.85rem;
+      margin: 0.1rem 0;
+    }
+    .hero-divider::before, .hero-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+    .city-grid-wrap { margin-top: 1.8rem; }
+    .city-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.5rem;
+    }
+    .city-tile {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 12px; padding: 0.75rem 0.85rem;
+      text-align: left; cursor: pointer; color: var(--fg);
+      display: flex; flex-direction: column; gap: 0.2rem;
+    }
+    .city-tile:hover { border-color: var(--accent); background: var(--bg); }
+    .city-tile-name { font-weight: 600; font-size: 0.98rem; }
+    .city-tile-count { font-size: 0.78rem; color: var(--muted); }
+
+    .tiles {
+      display: grid; gap: 0.55rem; margin: 1.8rem 0 0;
+    }
+    .tile {
+      display: flex; align-items: center; gap: 0.85rem;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      color: var(--fg);
+      text-decoration: none;
+    }
+    .tile:hover { background: var(--bg); }
+    .tile-icon { font-size: 1.45rem; flex-shrink: 0; }
+    .tile-title { font-weight: 600; }
+    .tile-sub { font-size: 0.85rem; color: var(--muted); margin-top: 0.1rem; }
+
+    /* Provider card styles (used by client-rendered cards on this page) */
+    .pc { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px; padding: 0.85rem 0.95rem 0.7rem; margin: 0.55rem 0; display: flex; flex-direction: column; gap: 0.55rem; }
+    .pc-head { display: flex; align-items: flex-start; gap: 0.6rem; }
+    .pc-rank { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: var(--muted); }
+    .pc-meta { flex: 1; min-width: 0; }
+    .pc-name { display: block; font-weight: 600; font-size: 1.02rem; color: var(--fg); text-decoration: none; line-height: 1.2; }
+    .pc-name:hover { text-decoration: underline; }
+    .pc-sub { margin-top: 0.25rem; display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; font-size: 0.82rem; color: var(--muted); }
+    .pc-type { text-transform: capitalize; }
+    .pc-save { background: transparent; color: var(--muted); padding: 0.4rem; border: 1px solid var(--border); border-radius: 8px; flex-shrink: 0; cursor: pointer; }
+    .pc-save.saved { color: var(--accent); border-color: var(--accent); background: var(--accent-bg); }
+    .pc-call { display: flex; align-items: center; justify-content: center; gap: 0.55rem; background: var(--accent); color: white; text-decoration: none; border-radius: 10px; padding: 0.85rem 1rem; font-weight: 700; min-height: 52px; }
+    .pc-call:hover { background: var(--accent-hover); }
+    .pc-call-icon { font-size: 1.15rem; }
+    .pc-call-num { font-size: 1.15rem; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+    .pc-microcopy { font-size: 0.78rem; color: var(--muted); text-align: center; }
+    .pc-microcopy a { color: var(--accent); font-weight: 600; }
+    .pc-dead-link { color: var(--muted) !important; font-weight: 500 !important; text-decoration: underline; text-underline-offset: 2px; }
+    .pc-dead-link:hover { color: var(--accent) !important; }
+    .pc-routing {
+      background: #fffbeb; border: 1px solid #fde68a; color: #78350f;
+      font-size: 0.82rem;
+      padding: 0.4rem 0.7rem;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: -0.15rem;
+    }
+    .pc--dead { opacity: 0.6; }
+    .pc--dead .pc-call { background: #6b7280; }
+  </style>
+</Base>
