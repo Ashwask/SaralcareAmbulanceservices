@@ -30,9 +30,14 @@ const repo = "https://github.com/Ashwask/SaralcareAmbulanceservices";
           <td>Tap to call. If it doesn't answer, tap the "✗ Number didn't work" link so we re-verify.</td>
         </tr>
         <tr>
+          <td><span class="badge badge--source-published">source-published</span></td>
+          <td>Number / details published by the provider themselves on their own website, hospital page, or government listing. We haven't independently called to confirm, but the provider stands behind it publicly.</td>
+          <td>Should work. Tap to call. If it doesn't, the "Number didn't work" link sends it for re-verification.</td>
+        </tr>
+        <tr>
           <td><span class="badge badge--unverified">unverified</span></td>
-          <td>We compiled this from a public source (provider's website, etc.) but haven't called yet.</td>
-          <td>Tap to call but be prepared to try 108 if it doesn't go through.</td>
+          <td>Compiled from a third-party source only (search listings, scraped directories). Not yet confirmed by anyone we trust.</td>
+          <td>Tap to call but be prepared to try 108 if it doesn't go through. Lowest trust tier among the live badges.</td>
         </tr>
         <tr>
           <td><span class="badge badge--dead">dead</span></td>

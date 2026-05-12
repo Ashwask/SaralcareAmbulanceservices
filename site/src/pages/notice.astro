@@ -49,7 +49,8 @@ import Base from "@/layouts/Base.astro";
   <ul>
     <li><span class="badge badge--verified">verified</span> &nbsp; confirmed by phone within 30 days.</li>
     <li><span class="badge badge--stale">stale</span> &nbsp; verified 30–60 days ago. Re-check before relying.</li>
-    <li><span class="badge badge--unverified">unverified</span> &nbsp; ingested from a public source; we haven't called yet.</li>
+    <li><span class="badge badge--source-published">source-published</span> &nbsp; number is from the provider's own website, hospital page, or government listing. Not yet independently called by us, but the provider stands behind it.</li>
+    <li><span class="badge badge--unverified">unverified</span> &nbsp; ingested from a third-party source only (search listings, scrapes). Lowest live-trust tier.</li>
     <li><span class="badge badge--dead">dead</span> &nbsp; unreachable across attempts. Hidden from the map; kept in our public Git history for provenance.</li>
     <li><span class="badge badge--disputed">disputed</span> &nbsp; the provider has contested the record. Read the dispute note.</li>
   </ul>

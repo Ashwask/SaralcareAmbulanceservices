@@ -8,7 +8,7 @@ const counts = providers.reduce(
     acc[badge(p)] = (acc[badge(p)] ?? 0) + 1;
     return acc;
   },
-  { verified: 0, stale: 0, dead: 0, unverified: 0, disputed: 0 }
+  { verified: 0, stale: 0, "source-published": 0, dead: 0, unverified: 0, disputed: 0 }
 );
 
 const byType = providers.reduce((acc: Record<string, number>, p) => {
@@ -33,7 +33,8 @@ const oldest = providers
   <ul>
     <li><span class="badge badge--verified">verified</span> &nbsp; {counts.verified} — confirmed by phone within 30 days</li>
     <li><span class="badge badge--stale">stale</span> &nbsp; {counts.stale} — verified 30–60 days ago; re-check soon</li>
-    <li><span class="badge badge--unverified">unverified</span> &nbsp; {counts.unverified} — ingested from public sources, never called</li>
+    <li><span class="badge badge--source-published">source-published</span> &nbsp; {counts["source-published"]} — number from provider's own published source (website / hospital page / govt listing); not yet phone-confirmed by us</li>
+    <li><span class="badge badge--unverified">unverified</span> &nbsp; {counts.unverified} — ingested from third-party sources only (search listings, scrapes); lowest live-trust tier</li>
     <li><span class="badge badge--dead">dead</span> &nbsp; {counts.dead} — unreachable across attempts; archived</li>
     <li><span class="badge badge--disputed">disputed</span> &nbsp; {counts.disputed} — provider has contested the record</li>
   </ul>

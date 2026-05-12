@@ -331,7 +331,7 @@ sources:
       Phone scraped from public source: Primary booking number across cities; alternative 080
       67335555 also published.
 call_logs: []
-status: unverified
+status: source-published
 last_verified_at: null
 verified_by: null
 license_tag: CC-BY-NC-SA-4.0

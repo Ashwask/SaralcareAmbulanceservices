@@ -29,6 +29,6 @@ sources:
     url: https://www.hindujahospital.com/contact-us-helpline/
     accessed: '2026-05-11'
     notes: 'Phone scraped from public source: P. D. Hinduja Hospital main board.'
-status: unverified
+status: source-published
 last_verified_at: null
 license_tag: CC-BY-NC-SA-4.0

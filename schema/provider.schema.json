@@ -201,8 +201,8 @@
     },
     "status": {
       "type": "string",
-      "enum": ["verified", "unverified", "stale", "dead", "disputed"],
-      "description": "verified=phone-confirmed ≤30 days; unverified=ingested but never called; stale=verified >30 days ago; dead=unreachable across multiple attempts; disputed=provider has contested the record."
+      "enum": ["verified", "source-published", "unverified", "stale", "dead", "disputed"],
+      "description": "verified=phone-confirmed by maintainer within 30 days; source-published=number is from the provider's/hospital's/government's own published website or listing, not independently phone-called; unverified=ingested from a third-party source (JustDial, Google Places) and not yet confirmed; stale=verified >30 days ago; dead=unreachable across multiple attempts; disputed=provider has contested the record."
     },
     "last_verified_at": {
       "type": ["string", "null"],

@@ -335,7 +335,7 @@ sources:
       Phone scraped from public source: 24/7 emergency helpline, single national number per
       red.health homepage.
 call_logs: []
-status: unverified
+status: source-published
 last_verified_at: null
 verified_by: null
 license_tag: CC-BY-NC-SA-4.0

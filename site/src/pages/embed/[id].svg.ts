@@ -14,20 +14,22 @@ export async function getStaticPaths() {
 export const GET: APIRoute = ({ props }) => {
   const provider = (props as any).provider;
   const b = badge(provider);
-  const badgeColor = {
+  const badgeColor = ({
     verified: "#15803d",
     stale: "#b45309",
+    "source-published": "#1d4ed8",
     dead: "#525252",
     unverified: "#94a3b8",
     disputed: "#b91c1c",
-  }[b];
-  const badgeText = {
+  } as Record<string, string>)[b] ?? "#94a3b8";
+  const badgeText = ({
     verified: "Verified",
     stale: "Verify due",
+    "source-published": "Listed",
     dead: "Unreachable",
-    unverified: "Listed",
+    unverified: "Unconfirmed",
     disputed: "Disputed",
-  }[b];
+  } as Record<string, string>)[b] ?? "Listed";
 
   const name = (provider.brand_name ?? "Provider").slice(0, 36);
   const phone = provider.contact?.phone_24h ?? "";

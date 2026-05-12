@@ -334,7 +334,7 @@ sources:
     accessed: '2026-05-11'
     notes: 'Phone scraped from public source: Dial 1298 booking line, Mumbai-origin, now multi-city.'
 call_logs: []
-status: unverified
+status: source-published
 last_verified_at: null
 verified_by: null
 license_tag: CC-BY-NC-SA-4.0

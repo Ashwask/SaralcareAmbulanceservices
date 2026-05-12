@@ -29,6 +29,6 @@ sources:
     url: https://www.amrihospitals.in/contact-us
     accessed: '2026-05-11'
     notes: 'Phone scraped from public source: AMRI (now Manipal Broadway) 24/7 emergency.'
-status: unverified
+status: source-published
 last_verified_at: null
 license_tag: CC-BY-NC-SA-4.0

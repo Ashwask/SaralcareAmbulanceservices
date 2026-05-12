@@ -25,14 +25,19 @@ const OUT = join(ROOT, "api", "v1");
 
 type AnyRec = Record<string, any>;
 
-function badge(r: AnyRec): "verified" | "stale" | "dead" | "unverified" | "disputed" {
+function badge(r: AnyRec): "verified" | "stale" | "source-published" | "dead" | "unverified" | "disputed" {
   if (r.status === "disputed") return "disputed";
   if (r.status === "dead") return "dead";
-  if (!r.last_verified_at) return "unverified";
-  const age = Math.floor((Date.now() - new Date(r.last_verified_at).getTime()) / (1000 * 60 * 60 * 24));
-  if (age > 60) return "dead";
-  if (age > 30) return "stale";
-  return "verified";
+  // Phone-verified by maintainer
+  if (r.last_verified_at) {
+    const age = Math.floor((Date.now() - new Date(r.last_verified_at).getTime()) / (1000 * 60 * 60 * 24));
+    if (age > 60) return "dead";
+    if (age > 30) return "stale";
+    return "verified";
+  }
+  // No phone verification yet — distinguish source-published from third-party-only
+  if (r.status === "source-published") return "source-published";
+  return "unverified";
 }
 
 function loadYamls(dir: string): AnyRec[] {

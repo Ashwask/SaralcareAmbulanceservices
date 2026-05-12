@@ -116,24 +116,29 @@ export function aggregateReportsFor(providerId: string, reports: Report[]) {
 export function badge(r: { status?: string; last_verified_at?: string | null }):
   | "verified"
   | "stale"
+  | "source-published"
   | "dead"
   | "unverified"
   | "disputed" {
   if (r.status === "disputed") return "disputed";
   if (r.status === "dead") return "dead";
-  if (!r.last_verified_at) return "unverified";
-  const age = Math.floor(
-    (Date.now() - new Date(r.last_verified_at).getTime()) / (1000 * 60 * 60 * 24)
-  );
-  if (age > 60) return "dead";
-  if (age > 30) return "stale";
-  return "verified";
+  if (r.last_verified_at) {
+    const age = Math.floor(
+      (Date.now() - new Date(r.last_verified_at).getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (age > 60) return "dead";
+    if (age > 30) return "stale";
+    return "verified";
+  }
+  if (r.status === "source-published") return "source-published";
+  return "unverified";
 }
 
 export function badgeColor(b: ReturnType<typeof badge>): string {
   return {
     verified: "#16a34a",
     stale: "#eab308",
+    "source-published": "#1d4ed8",
     dead: "#525252",
     unverified: "#a3a3a3",
     disputed: "#dc2626",
@@ -144,15 +149,19 @@ export function badgeLabel(b: ReturnType<typeof badge>): string {
   return {
     verified: "Verified by phone",
     stale: "Verified — re-check soon",
+    "source-published": "Number published by provider",
     dead: "Unreachable",
     unverified: "Not yet verified",
     disputed: "Disputed by provider",
   }[b];
 }
 
-export function freshnessNote(r: { last_verified_at?: string | null }): string {
+export function freshnessNote(r: { status?: string; last_verified_at?: string | null }): string {
   if (!r.last_verified_at) {
-    return "Never verified. Compiled from public sources only. Please confirm by phone before relying on this record.";
+    if (r.status === "source-published") {
+      return "Number published by the provider on their own website / hospital page / government listing. We have not independently called to confirm. Should work — but verify before depending on it.";
+    }
+    return "Compiled from a third-party source (search listing, scrape). Not yet confirmed by phone. Please confirm before relying on this record.";
   }
   const age = Math.floor(
     (Date.now() - new Date(r.last_verified_at).getTime()) / (1000 * 60 * 60 * 24)

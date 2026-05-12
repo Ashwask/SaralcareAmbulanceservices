@@ -29,6 +29,6 @@ sources:
     url: https://rubyhall.com/accident-emergency
     accessed: '2026-05-11'
     notes: 'Phone scraped from public source: Ruby Hall Sassoon Road campus emergency.'
-status: unverified
+status: source-published
 last_verified_at: null
 license_tag: CC-BY-NC-SA-4.0

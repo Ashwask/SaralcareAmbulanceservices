@@ -44,16 +44,19 @@ function loadYamls(dir: string): { file: string; data: AnyRec }[] {
     }));
 }
 
-function freshnessBadge(record: AnyRec): "verified" | "stale" | "dead" | "unverified" | "disputed" {
-  if (!record.last_verified_at) return record.status === "unverified" ? "unverified" : record.status;
-  const ageDays = Math.floor(
-    (Date.now() - new Date(record.last_verified_at).getTime()) / (1000 * 60 * 60 * 24)
-  );
+function freshnessBadge(record: AnyRec): "verified" | "stale" | "source-published" | "dead" | "unverified" | "disputed" {
   if (record.status === "disputed") return "disputed";
   if (record.status === "dead") return "dead";
-  if (ageDays > 60) return "dead";
-  if (ageDays > 30) return "stale";
-  return "verified";
+  if (record.last_verified_at) {
+    const ageDays = Math.floor(
+      (Date.now() - new Date(record.last_verified_at).getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (ageDays > 60) return "dead";
+    if (ageDays > 30) return "stale";
+    return "verified";
+  }
+  if (record.status === "source-published") return "source-published";
+  return "unverified";
 }
 
 // ----- schemas -----

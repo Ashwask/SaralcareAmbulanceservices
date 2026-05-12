@@ -87,7 +87,7 @@
     },
     "status": {
       "type": "string",
-      "enum": ["verified", "unverified", "stale", "dead", "disputed"]
+      "enum": ["verified", "source-published", "unverified", "stale", "dead", "disputed"]
     },
     "last_verified_at": { "type": ["string", "null"], "format": "date" },
     "license_tag": { "type": "string", "const": "CC-BY-NC-SA-4.0" }

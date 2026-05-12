@@ -333,7 +333,7 @@ sources:
       Phone scraped from public source: Jehangir Cares dial-1066 within 30km radius. Alt: +91 88888
       81066.
 call_logs: []
-status: unverified
+status: source-published
 last_verified_at: null
 verified_by: null
 license_tag: CC-BY-NC-SA-4.0

@@ -16,6 +16,26 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The
 - Discord / community channels (founder action)
 - First commercial-license inquiry tracking
 
+## [0.5.0] — 2026-05-12
+
+### Added — source-published badge
+Honest fix for the aggregator-first positioning. Adds a fourth live-trust state between phone-verified and third-party-only:
+
+- **New `status: source-published`** — number / data comes from the provider's own published source (their website, hospital page, government listing) but we haven't independently phone-called. Visible as a **blue badge** distinct from grey "unverified".
+- **`unverified` is now reserved** for records sourced only from third-party listings (JustDial-class), where neither we nor the provider has stood behind the data.
+- **Schema enum extended** in `provider.schema.json` and `hospital.schema.json`.
+- **Badge function updated** across `scripts/build-api.ts`, `validate.ts`, `freshness-report.ts`, `trends.ts`, and `site/src/lib/data.ts`.
+- **Migration script** flipped 54 provider records + 25 hospital records from `unverified` to `source-published` based on source-URL provenance (own-website + government-domain heuristics).
+- **CSS** (`.badge--source-published` blue) added to `Base.astro`.
+- **Documentation guide, /notice, /freshness, /trends, embed widget** updated to show the new badge with explanation.
+
+### Fixed
+- Embed widget SVG was crashing on the new badge value before this update.
+
+### Result
+Before this rev: 67 records said "unverified" — implying we didn't know if the numbers worked. **They did** — they came from the providers' own websites.
+After: 54 providers + 25 hospitals correctly tagged as "source-published". The 6 remaining `unverified` records are genuinely unconfirmed (Medulance SPA-rendered records with placeholder phones).
+
 ## [0.2.0] — 2026-05-12
 
 ### Added — Tier 2 open-source engine

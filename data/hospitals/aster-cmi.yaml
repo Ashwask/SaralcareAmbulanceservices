@@ -22,6 +22,6 @@ sources:
     url: https://www.asterhospitals.in/hospitals/aster-cmi-bangalore
     accessed: '2026-05-11'
     notes: 'Phone scraped from public source: Aster CMI Bangalore direct emergency line.'
-status: unverified
+status: source-published
 last_verified_at: null
 license_tag: CC-BY-NC-SA-4.0

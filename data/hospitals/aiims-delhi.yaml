@@ -31,6 +31,6 @@ sources:
     notes: >-
       Phone scraped from public source: AIIMS Delhi MSSO Control Room (emergency). Board
       011-26588500/26588700.
-status: unverified
+status: source-published
 last_verified_at: null
 license_tag: CC-BY-NC-SA-4.0

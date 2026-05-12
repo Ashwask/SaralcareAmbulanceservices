@@ -338,7 +338,7 @@ sources:
       Phone scraped from public source: Manipal Hospitals enquiry/appointment toll-free, routes by
       city via IVR.
 call_logs: []
-status: unverified
+status: source-published
 last_verified_at: null
 verified_by: null
 license_tag: CC-BY-NC-SA-4.0

@@ -21,17 +21,20 @@ const records: AnyRec[] = existsSync(PROVIDERS)
       .map((f) => yaml.load(readFileSync(join(PROVIDERS, f), "utf8"), { schema: yaml.JSON_SCHEMA }) as AnyRec)
   : [];
 
-function badge(r: AnyRec): "verified" | "stale" | "dead" | "unverified" | "disputed" {
+function badge(r: AnyRec): "verified" | "stale" | "source-published" | "dead" | "unverified" | "disputed" {
   if (r.status === "disputed") return "disputed";
   if (r.status === "dead") return "dead";
-  if (!r.last_verified_at) return "unverified";
-  const age = Math.floor((Date.now() - new Date(r.last_verified_at).getTime()) / (1000 * 60 * 60 * 24));
-  if (age > 60) return "dead";
-  if (age > 30) return "stale";
-  return "verified";
+  if (r.last_verified_at) {
+    const age = Math.floor((Date.now() - new Date(r.last_verified_at).getTime()) / (1000 * 60 * 60 * 24));
+    if (age > 60) return "dead";
+    if (age > 30) return "stale";
+    return "verified";
+  }
+  if (r.status === "source-published") return "source-published";
+  return "unverified";
 }
 
-const counts = { verified: 0, stale: 0, dead: 0, unverified: 0, disputed: 0 };
+const counts = { verified: 0, stale: 0, "source-published": 0, dead: 0, unverified: 0, disputed: 0 };
 for (const r of records) counts[badge(r)]++;
 
 const report = {
@@ -51,11 +54,12 @@ const report = {
 
 console.log("Freshness report:");
 console.log(`  total: ${report.total_records}`);
-console.log(`  verified: ${counts.verified}`);
-console.log(`  stale:    ${counts.stale}`);
-console.log(`  dead:     ${counts.dead}`);
-console.log(`  unverified: ${counts.unverified}`);
-console.log(`  disputed: ${counts.disputed}`);
+console.log(`  verified:         ${counts.verified}`);
+console.log(`  stale:            ${counts.stale}`);
+console.log(`  source-published: ${counts["source-published"]}`);
+console.log(`  unverified:       ${counts.unverified}`);
+console.log(`  dead:             ${counts.dead}`);
+console.log(`  disputed:         ${counts.disputed}`);
 
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 writeFileSync(join(OUT, "freshness.json"), JSON.stringify(report, null, 2));

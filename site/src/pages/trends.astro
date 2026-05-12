@@ -49,6 +49,7 @@ const maxMonthly = Math.max(1, ...monthlyAdds.map(([, v]) => v as number));
   <div class="freshness-row">
     <span class="badge badge--verified">verified</span> <strong>{t.freshness.verified ?? 0}</strong>
     <span class="badge badge--stale">stale</span> <strong>{t.freshness.stale ?? 0}</strong>
+    <span class="badge badge--source-published">source-published</span> <strong>{t.freshness["source-published"] ?? 0}</strong>
     <span class="badge badge--unverified">unverified</span> <strong>{t.freshness.unverified ?? 0}</strong>
     <span class="badge badge--dead">dead</span> <strong>{t.freshness.dead ?? 0}</strong>
     <span class="badge badge--disputed">disputed</span> <strong>{t.freshness.disputed ?? 0}</strong>

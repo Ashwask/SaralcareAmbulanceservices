@@ -40,14 +40,17 @@ function ageDays(d: string | null | undefined): number | null {
   return Math.floor((now - new Date(d).getTime()) / dayMs);
 }
 
-function badge(r: AnyRec): "verified" | "stale" | "dead" | "unverified" | "disputed" {
+function badge(r: AnyRec): "verified" | "stale" | "source-published" | "dead" | "unverified" | "disputed" {
   if (r.status === "disputed") return "disputed";
   if (r.status === "dead") return "dead";
-  if (!r.last_verified_at) return "unverified";
-  const age = ageDays(r.last_verified_at)!;
-  if (age > 60) return "dead";
-  if (age > 30) return "stale";
-  return "verified";
+  if (r.last_verified_at) {
+    const age = ageDays(r.last_verified_at)!;
+    if (age > 60) return "dead";
+    if (age > 30) return "stale";
+    return "verified";
+  }
+  if (r.status === "source-published") return "source-published";
+  return "unverified";
 }
 
 // ----- 1. Freshness distribution -----
@@ -56,7 +59,7 @@ const freshness = providers.reduce(
     acc[badge(p)] = (acc[badge(p)] ?? 0) + 1;
     return acc;
   },
-  { verified: 0, stale: 0, dead: 0, unverified: 0, disputed: 0 }
+  { verified: 0, stale: 0, "source-published": 0, dead: 0, unverified: 0, disputed: 0 }
 );
 
 // ----- 2. By provider type -----

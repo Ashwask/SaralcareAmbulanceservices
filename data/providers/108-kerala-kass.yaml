@@ -42,7 +42,7 @@ sources:
     accessed: '2026-05-11'
     notes: State-level 108 EMS published on the Kerala health department website.
 call_logs: []
-status: unverified
+status: source-published
 last_verified_at: null
 verified_by: null
 license_tag: CC-BY-NC-SA-4.0

@@ -341,7 +341,7 @@ sources:
       https://www.deccanherald.com/india/karnataka/bengaluru/how-are-108-ambulances-faring-in-bengaluru-1172491.html
     accessed: '2026-05-11'
 call_logs: []
-status: unverified
+status: source-published
 last_verified_at: null
 verified_by: null
 license_tag: CC-BY-NC-SA-4.0
