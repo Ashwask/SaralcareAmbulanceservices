@@ -1,0 +1,227 @@
+---
+/**
+ * Maintainer / city-captain form. Captures the result of a verification phone
+ * call as structured data. Submits to the Worker which creates a [VERIFY] issue
+ * with a paste-ready YAML patch — the maintainer copies the patch into the
+ * record's YAML file and commits.
+ *
+ * One paste = one verified record. No multi-field manual editing.
+ */
+interface Props {
+  providerId: string;
+  providerName: string;
+  currentPhone?: string;
+}
+const { providerId, providerName, currentPhone = "" } = Astro.props;
+const submitUrl = import.meta.env.PUBLIC_SUBMIT_URL ?? "";
+const today = new Date().toISOString().slice(0, 10);
+---
+
+<details class="vf-wrap">
+  <summary class="vf-summary">
+    ✓ Log a verification call <span class="vf-sub">— after you've called {providerName}</span>
+  </summary>
+
+  <div class="vf-body">
+    <p class="small" style="background: var(--bg); border: 1px solid var(--border); padding: 0.5rem 0.7rem; border-radius: 6px;">
+      <strong>Use this only after you've actually called the number.</strong> The form captures what you heard. Submit it and a maintainer (probably you) pastes the auto-generated YAML patch into the record and commits. Takes ~30 seconds after the call.
+    </p>
+
+    <form id={`vf-${providerId}`} class="vf-form" data-provider-id={providerId} data-submit-url={submitUrl}>
+      <div class="grid-2">
+        <label>Date of call *
+          <input type="date" name="date_of_call" required value={today} max={today} />
+        </label>
+        <label>Your initials *
+          <input type="text" name="caller_initials" required maxlength="4" placeholder="e.g. AK" style="text-transform: uppercase;" />
+        </label>
+      </div>
+
+      <label>Outcome *
+        <select name="outcome" required>
+          <option value="">— select —</option>
+          <option value="answered">Answered, all details confirmed</option>
+          <option value="answered-dispatched">Answered AND they dispatch live (we didn't actually book)</option>
+          <option value="no-answer">No answer / rang out</option>
+          <option value="wrong-number">Wrong number / not an ambulance service</option>
+          <option value="declined-to-confirm">Answered but declined to confirm details</option>
+          <option value="busy">Line consistently engaged</option>
+          <option value="out-of-service">Number out of service</option>
+        </select>
+      </label>
+
+      <fieldset class="vf-fieldset" data-show-when="answered,answered-dispatched">
+        <legend>What they confirmed</legend>
+
+        <label>Phone — confirm the right number to publish
+          <input type="text" name="confirmed_phone" value={currentPhone} placeholder="+91 XXXXX XXXXX or 108 or 1800..." />
+        </label>
+
+        <label>Vehicle types they operate (comma-separated)
+          <input type="text" name="vehicle_types" placeholder="BLS, ALS, MICU" />
+        </label>
+
+        <label>Equipment confirmed (comma-separated)
+          <input type="text" name="equipment" placeholder="oxygen, defibrillator, ventilator, cardiac_monitor" />
+        </label>
+
+        <div class="grid-2">
+          <label>Paramedic always on board?
+            <select name="paramedic_onboard">
+              <option value="">—</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+              <option value="unknown">Couldn't determine</option>
+            </select>
+          </label>
+          <label>Operates 24×7?
+            <select name="staffed_24h">
+              <option value="">—</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid-3">
+          <label>Base fare ₹
+            <input type="number" name="fare_base" min="0" step="50" placeholder="2500" />
+          </label>
+          <label>Per km ₹
+            <input type="number" name="fare_per_km" min="0" step="5" placeholder="40" />
+          </label>
+          <label>Night premium ₹
+            <input type="number" name="fare_night" min="0" step="100" placeholder="500" />
+          </label>
+        </div>
+
+        <label>Hospital affiliations (comma-separated)
+          <input type="text" name="hospital_affiliations" placeholder="manipal-old-airport-road, apollo-bannerghatta" />
+        </label>
+      </fieldset>
+
+      <label>Free-text notes (anything unexpected, useful, or to follow up)
+        <textarea name="notes" rows="3" maxlength="800"></textarea>
+      </label>
+
+      <p class="consent small">
+        Your initials are published in the record's <code>call_logs</code> (the audit trail). Your full identity stays private. By submitting, you license this entry under CC BY-NC-SA 4.0. See <a href="/privacy">/privacy</a>.
+      </p>
+
+      <div class="vf-row">
+        <button type="submit">Generate verification patch</button>
+        <span id={`vf-status-${providerId}`} class="small" aria-live="polite"></span>
+      </div>
+    </form>
+
+    <div id={`vf-result-${providerId}`} class="vf-result" hidden></div>
+  </div>
+</details>
+
+<script type="module" define:vars={{ providerId, providerName }}>
+  const form = document.getElementById(`vf-${providerId}`);
+  if (form) {
+    const status = document.getElementById(`vf-status-${providerId}`);
+    const result = document.getElementById(`vf-result-${providerId}`);
+    const submitUrl = form.dataset.submitUrl;
+
+    // Conditional reveal
+    const outcomeSel = form.querySelector('select[name="outcome"]');
+    const conditionals = form.querySelectorAll("[data-show-when]");
+    function applyConditional() {
+      const v = outcomeSel.value;
+      for (const el of conditionals) {
+        const accepted = el.dataset.showWhen.split(",");
+        el.style.display = accepted.includes(v) ? "" : "none";
+      }
+    }
+    outcomeSel.addEventListener("change", applyConditional);
+    applyConditional();
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.textContent = "Generating patch…";
+      const fd = new FormData(form);
+      const payload = { provider_id: providerId };
+      for (const [k, v] of fd.entries()) {
+        if (v === "" || v == null) continue;
+        if (k === "vehicle_types" || k === "equipment" || k === "hospital_affiliations") {
+          payload[k] = String(v).split(",").map((s) => s.trim()).filter(Boolean);
+        } else if (k.startsWith("fare_")) {
+          payload[k] = Number(v);
+        } else {
+          payload[k] = v;
+        }
+      }
+
+      if (submitUrl) {
+        try {
+          const r = await fetch(submitUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ form_type: "verify", payload }),
+          });
+          const data = await r.json();
+          if (data.ok) {
+            status.innerHTML = `✓ Sent. <a href="${data.issue_url}" target="_blank" rel="noopener">Open the issue</a> — it has a paste-ready YAML patch + the Edit on GitHub URL.`;
+            result.hidden = false;
+            result.innerHTML = `
+              <p style="margin: 0.7rem 0 0; font-weight: 600;">Next steps:</p>
+              <ol style="margin: 0.4rem 0 0 1.2rem;">
+                <li><a href="${data.issue_url}" target="_blank" rel="noopener">Open the issue</a> and copy the YAML patch.</li>
+                <li><a href="https://github.com/Ashwask/SaralcareAmbulanceservices/edit/main/data/providers/${providerId}.yaml" target="_blank" rel="noopener">Open the record file</a>.</li>
+                <li>Apply the patch (replace status/last_verified_at/verified_by; append the call_log entry; update fares).</li>
+                <li>Commit with the suggested message.</li>
+                <li>Close the issue referencing the commit.</li>
+              </ol>`;
+            form.reset();
+            applyConditional();
+            return;
+          }
+          status.textContent = `Worker error (${data.error}). Falling back to email.`;
+        } catch (err) {
+          status.textContent = "Network error. Falling back to email.";
+        }
+      }
+      // mailto fallback
+      const subject = encodeURIComponent(`[VERIFY] ${providerId} — ${payload.outcome ?? "?"}`);
+      const body = encodeURIComponent(
+        `Provider: ${providerName} (${providerId})\n` +
+        Object.entries(payload).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`).join("\n") +
+        `\n\n— Submitted from www.ambulance.saralcare.com`
+      );
+      window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
+    });
+  }
+</script>
+
+<style>
+  .vf-wrap {
+    background: var(--green-bg, #f0fdf4); border: 1px solid #bbf7d0;
+    border-radius: 12px; padding: 0.7rem 0.95rem; margin-top: 0.7rem;
+  }
+  .vf-summary { font-weight: 600; cursor: pointer; color: #15803d; }
+  .vf-sub { font-weight: 400; color: var(--muted); font-size: 0.86rem; }
+  .vf-body { margin-top: 0.7rem; }
+  .vf-form { display: flex; flex-direction: column; gap: 0.65rem; }
+  .vf-form label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.9rem; }
+  .vf-form input, .vf-form select, .vf-form textarea {
+    font: inherit; padding: 0.45rem 0.6rem;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: white;
+  }
+  .vf-form .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
+  .vf-form .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.55rem; }
+  @media (max-width: 540px) { .vf-form .grid-2, .vf-form .grid-3 { grid-template-columns: 1fr; } }
+  .vf-fieldset {
+    border: 1px solid #bbf7d0; border-radius: 8px;
+    padding: 0.6rem 0.8rem; margin: 0;
+    display: flex; flex-direction: column; gap: 0.55rem;
+  }
+  .vf-fieldset legend { font-weight: 600; padding: 0 0.4rem; color: #15803d; }
+  .consent { background: white; border: 1px solid var(--border); padding: 0.45rem 0.65rem; border-radius: 6px; }
+  .vf-row { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; margin-top: 0.3rem; }
+  .vf-row button { background: #15803d; color: white; border: 0; padding: 0.55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  .vf-row button:hover { background: #166534; }
+  .vf-result { background: white; border: 1px solid #bbf7d0; padding: 0.7rem 0.85rem; border-radius: 6px; margin-top: 0.6rem; }
+</style>

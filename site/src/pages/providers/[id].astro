@@ -2,6 +2,7 @@
 import Base from "@/layouts/Base.astro";
 import ReportForm from "@/components/ReportForm.astro";
 import CapacityCheck from "@/components/CapacityCheck.astro";
+import VerifyForm from "@/components/VerifyForm.astro";
 import { getProviders, getHospitals, getReports, aggregateReportsFor, badge, badgeLabel, freshnessNote } from "@/lib/data";
 
 export async function getStaticPaths() {
@@ -36,23 +37,39 @@ const phoneTel = phone.replace(/\s+/g, "");
       {agg.fare_median != null ? <span class="pill">₹{agg.fare_median} median fare</span> : null}
     </div>
 
-    <a class="phone-button" href={`tel:${phoneTel}`} data-provider-id={provider.id}>
-      <span class="phone-button-icon">📞</span>
-      <span class="phone-button-num">{phone}</span>
-      <span class="phone-button-sub">Tap to call · 24×7</span>
-    </a>
+    {phone && phone !== "+91 00000 00000" ? (
+      <>
+        <a class="phone-button" href={`tel:${phoneTel}`} data-provider-id={provider.id}>
+          <span class="phone-button-icon">📞</span>
+          <span class="phone-button-num">{phone}</span>
+          <span class="phone-button-sub">Tap to call · 24×7</span>
+        </a>
 
-    {provider.routing_note ? (
-      <div class="hl-microcopy" style="margin-top: 0.5rem; background: #fffbeb; border-color: #fde68a; color: #78350f;">
-        ↪ {provider.routing_note}
+        {provider.routing_note ? (
+          <div class="hl-microcopy" style="margin-top: 0.5rem; background: #fffbeb; border-color: #fde68a; color: #78350f;">
+            ↪ {provider.routing_note}
+          </div>
+        ) : null}
+      </>
+    ) : (
+      <div class="no-phone-banner">
+        <div class="no-phone-title">📵 No published number yet</div>
+        <p>
+          This provider exists in our dataset but we haven't found a published contact number. <strong>If you know it</strong> — from their website, a leaflet, or because you've actually called them — please add it via the <a href={`https://github.com/Ashwask/SaralcareAmbulanceservices/edit/main/data/providers/${provider.id}.yaml`} target="_blank" rel="noopener">Edit on GitHub</a> link. Replace <code>+91 00000 00000</code> with the real number and commit.
+        </p>
+        <p>
+          In the meantime, dial <a href="tel:108"><strong>108</strong></a> for state EMS.
+        </p>
       </div>
-    ) : null}
+    )}
 
     <div class="hl-microcopy" style="margin-top: 0.5rem;">
       Calling <strong>{provider.brand_name}</strong>. <a href="#" class="pc-dead-link" data-provider-id={provider.id} data-provider-name={provider.brand_name} data-phone={phone}>Number didn't work?</a> &nbsp;·&nbsp; In an emergency, dial <a href="tel:108"><strong>108</strong></a>.
     </div>
 
-    <CapacityCheck providerId={provider.id} providerName={provider.brand_name} />
+    {phone && phone !== "+91 00000 00000" ? (
+      <CapacityCheck providerId={provider.id} providerName={provider.brand_name} />
+    ) : null}
 
     <div class="provider-actions">
       <button class="secondary save-btn" type="button"
@@ -164,6 +181,12 @@ const phoneTel = phone.replace(/\s+/g, "");
     <ReportForm providerId={provider.id} providerName={provider.brand_name} />
   </section>
 
+  {phone && phone !== "+91 00000 00000" ? (
+    <section class="block">
+      <VerifyForm providerId={provider.id} providerName={provider.brand_name} currentPhone={phone} />
+    </section>
+  ) : null}
+
   <section class="block">
     <p class="small">
       <strong>Three ways to fix this record:</strong>
@@ -209,6 +232,13 @@ const phoneTel = phone.replace(/\s+/g, "");
     .phone-button-icon { font-size: 1.5rem; }
     .phone-button-num { font-size: 1.8rem; font-weight: 800; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
     .phone-button-sub { font-size: 0.8rem; opacity: 0.85; }
+    .no-phone-banner {
+      background: var(--amber-bg); border: 1px solid #fde68a; color: #78350f;
+      padding: 1rem 1.1rem; border-radius: 12px; margin-top: 0.4rem;
+    }
+    .no-phone-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.3rem; }
+    .no-phone-banner p { margin: 0.4rem 0 0; font-size: 0.94rem; }
+    .no-phone-banner code { background: white; padding: 0.05rem 0.3rem; border-radius: 3px; }
 
     .provider-actions {
       display: flex; gap: 0.45rem; margin-top: 0.7rem; flex-wrap: wrap;

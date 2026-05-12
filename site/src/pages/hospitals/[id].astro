@@ -25,15 +25,24 @@ const b = badge(hospital);
     {hospital.type ? <> &nbsp;· &nbsp; {hospital.type}</> : null}
   </p>
 
-  <div class="card" style="margin-top: 1.2rem">
-    <p style="margin: 0 0 0.4rem; font-weight: 600;">Emergency Room</p>
-    <p style="margin: 0;">
-      📞 <a href={`tel:${hospital.er_phone?.replace(/\s+/g, "")}`} style="font-size: 1.1rem; font-weight: 600;">{hospital.er_phone}</a>
-    </p>
-    {hospital.ambulance_phone ? (
-      <p style="margin: 0.4rem 0 0;">Ambulance line: <a href={`tel:${hospital.ambulance_phone.replace(/\s+/g, "")}`}>{hospital.ambulance_phone}</a></p>
-    ) : null}
-  </div>
+  {hospital.er_phone && hospital.er_phone !== "+91 00000 00000" ? (
+    <div class="card" style="margin-top: 1.2rem">
+      <p style="margin: 0 0 0.4rem; font-weight: 600;">Emergency Room</p>
+      <p style="margin: 0;">
+        📞 <a href={`tel:${hospital.er_phone?.replace(/\s+/g, "")}`} style="font-size: 1.1rem; font-weight: 600;">{hospital.er_phone}</a>
+      </p>
+      {hospital.ambulance_phone && hospital.ambulance_phone !== "+91 00000 00000" ? (
+        <p style="margin: 0.4rem 0 0;">Ambulance line: <a href={`tel:${hospital.ambulance_phone.replace(/\s+/g, "")}`}>{hospital.ambulance_phone}</a></p>
+      ) : null}
+    </div>
+  ) : (
+    <div class="card" style="margin-top: 1.2rem; background: var(--amber-bg); border-color: #fde68a; color: #78350f;">
+      <p style="margin: 0; font-weight: 700;">📵 No published ER number yet</p>
+      <p style="margin: 0.4rem 0 0; font-size: 0.94rem;">
+        We haven't found a public ER contact number for this hospital. If you know it, please add via the <a href={`https://github.com/Ashwask/SaralcareAmbulanceservices/edit/main/data/hospitals/${hospital.id}.yaml`} target="_blank" rel="noopener">Edit on GitHub</a> link. In the meantime, dial <a href="tel:108"><strong>108</strong></a>.
+      </p>
+    </div>
+  )}
 
   <h3>Address</h3>
   <p>{hospital.address}</p>

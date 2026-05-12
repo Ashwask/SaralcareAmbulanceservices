@@ -1,5 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
+import VerifyForm from "@/components/VerifyForm.astro";
 import { getProviders, badge } from "@/lib/data";
 
 const providers = getProviders();
@@ -97,13 +98,10 @@ const queue = providers
                   <li>Anything unexpected: ___</li>
                 </ul>
 
-                <p style="margin-top: 0.9rem;">
-                  <a class="vs-edit" href={`${repo}/edit/main/data/providers/${p.id}.yaml`} target="_blank" rel="noopener">
-                    ✎ Edit this record on GitHub →
-                  </a>
-                </p>
-                <p class="small">
-                  After the call, change <code>status: unverified</code> → <code>status: verified</code>, set <code>last_verified_at</code> to today, set <code>verified_by</code> to your initials, append a <code>call_logs</code> entry with date + outcome + notes. Commit message: <code>verify {p.id} — answered/no-answer/wrong-number</code>.
+                <VerifyForm providerId={p.id} providerName={p.brand_name} currentPhone={p.contact?.phone_24h ?? ""} />
+
+                <p class="small" style="margin-top: 0.7rem;">
+                  Prefer to edit YAML directly? <a href={`${repo}/edit/main/data/providers/${p.id}.yaml`} target="_blank" rel="noopener">✎ Open the file on GitHub</a> — flip <code>status: unverified</code> → <code>verified</code>, set <code>last_verified_at</code> + <code>verified_by</code>, append a <code>call_logs</code> entry.
                 </p>
               </div>
             </details>

@@ -107,6 +107,13 @@ function aggregateReports(providerId: string) {
   };
 }
 
+// ----- filter: only records with a real, callable phone surface publicly -----
+const PLACEHOLDER_PHONE = "+91 00000 00000";
+function hasRealPhone(r: AnyRec): boolean {
+  const phone = r.contact?.phone_24h ?? r.er_phone;
+  return !!phone && phone !== PLACEHOLDER_PHONE && phone.trim().length > 2;
+}
+
 // ----- slim shape used in list endpoints -----
 function slimProvider(r: AnyRec) {
   return {
@@ -154,10 +161,13 @@ writeFileSync(
       generated_at: new Date().toISOString(),
       license: "CC-BY-NC-SA-4.0",
       attribution: "Saralcare ambulance directory project (https://www.ambulance.saralcare.com)",
-      count: providers.length,
-      providers: providers.map(slimProvider).sort((a, b) =>
-        (a.brand_name ?? "").localeCompare(b.brand_name ?? "")
-      ),
+      count: providers.filter(hasRealPhone).length,
+      total_in_dataset: providers.length,
+      hidden_no_phone: providers.length - providers.filter(hasRealPhone).length,
+      providers: providers
+        .filter(hasRealPhone)
+        .map(slimProvider)
+        .sort((a, b) => (a.brand_name ?? "").localeCompare(b.brand_name ?? "")),
     },
     null,
     2
@@ -204,6 +214,7 @@ const byPincode = new Map<string, AnyRec[]>();
 for (const p of providers) {
   const sa = p.service_areas;
   if (!sa) continue;
+  if (!hasRealPhone(p)) continue; // never surface no-phone records in by-pincode (user would tap nothing)
   if (sa.type === "pincode-list") {
     for (const pin of sa.pincodes ?? []) {
       if (!byPincode.has(pin)) byPincode.set(pin, []);

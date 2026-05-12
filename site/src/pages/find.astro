@@ -6,8 +6,16 @@ import { getProviders, getHospitals, badge } from "@/lib/data";
 const providers = getProviders();
 const hospitals = getHospitals();
 
+// Filter: only records with a real callable phone. No tap-to-nothing.
+const PLACEHOLDER_PHONE = "+91 00000 00000";
+const callable = (phone: string | undefined | null) =>
+  !!phone && phone !== PLACEHOLDER_PHONE && phone.trim().length > 2;
+
+const callableProviders = providers.filter((p) => callable(p.contact?.phone_24h));
+const callableHospitals = hospitals.filter((h) => callable(h.er_phone));
+
 // Slim payload for client-side nearest-neighbour
-const provLite = providers.map((p) => ({
+const provLite = callableProviders.map((p) => ({
   id: p.id,
   brand_name: p.brand_name,
   phone: p.contact?.phone_24h ?? "",
@@ -19,13 +27,14 @@ const provLite = providers.map((p) => ({
   service_pincodes:
     p.service_areas?.type === "pincode-list" ? (p.service_areas.pincodes ?? []) : [],
 }));
-const hospLite = hospitals.map((h) => ({
+const hospLite = callableHospitals.map((h) => ({
   id: h.id,
   name: h.name,
   lat: h.lat_lng[0],
   lng: h.lat_lng[1],
   pincode: h.pincode ?? null,
 }));
+const hiddenCount = providers.length - callableProviders.length;
 ---
 
 <Base>

@@ -55,8 +55,18 @@ const allCities = Array.from(new Set([
   ...hospitalWithCity.map((h) => h._city),
 ])).sort();
 
-const sortedProviders = [...providerWithCity].sort((a, b) => (a._city + a.brand_name).localeCompare(b._city + b.brand_name));
-const sortedHospitals = [...hospitalWithCity].sort((a, b) => (a._city + a.name).localeCompare(b._city + b.name));
+// Separate records with a real callable phone from those waiting for the number to be found.
+const PLACEHOLDER_PHONE = "+91 00000 00000";
+const callable = (phone: string | undefined | null) =>
+  !!phone && phone !== PLACEHOLDER_PHONE && phone.trim().length > 2;
+
+const callableProviders = providerWithCity.filter((p) => callable(p.contact?.phone_24h));
+const noPhoneProviders = providerWithCity.filter((p) => !callable(p.contact?.phone_24h));
+const callableHospitals = hospitalWithCity.filter((h) => callable(h.er_phone));
+const noPhoneHospitals = hospitalWithCity.filter((h) => !callable(h.er_phone));
+
+const sortedProviders = [...callableProviders].sort((a, b) => (a._city + a.brand_name).localeCompare(b._city + b.brand_name));
+const sortedHospitals = [...callableHospitals].sort((a, b) => (a._city + a.name).localeCompare(b._city + b.name));
 
 // Fare summary
 const faresWithBase = providers.filter((p) => p.fares?.base);
@@ -118,7 +128,7 @@ const fareMedian = (() => {
     </div>
     <p class="small" style="margin: 0.4rem 0 0.6rem;">Grouped by city, then alphabetical.</p>
 
-    <h3 style="margin-top: 1.2rem;">Providers (<span id="prov-count">{providers.length}</span>)</h3>
+    <h3 style="margin-top: 1.2rem;">Providers with a published number (<span id="prov-count">{callableProviders.length}</span>)</h3>
     <table class="data-table" id="prov-table">
       <thead>
         <tr><th>Provider</th><th>City</th><th>Type</th><th>Status</th><th>Phone</th></tr>
@@ -140,7 +150,7 @@ const fareMedian = (() => {
       </tbody>
     </table>
 
-    <h3 style="margin-top: 1.5rem;">Hospitals (<span id="hosp-count">{hospitals.length}</span>)</h3>
+    <h3 style="margin-top: 1.5rem;">Hospitals with a published number (<span id="hosp-count">{callableHospitals.length}</span>)</h3>
     <table class="data-table" id="hosp-table">
       <thead>
         <tr><th>Hospital</th><th>City</th><th>Pincode</th><th>ER Phone</th><th>Own fleet?</th></tr>
@@ -182,6 +192,28 @@ const fareMedian = (() => {
       if (qp) { sel.value = qp; applyFilter(); }
     </script>
   </section>
+
+  {noPhoneProviders.length + noPhoneHospitals.length > 0 ? (
+    <section style="margin-top: 1.5rem;">
+      <h3>Records waiting for a published number ({noPhoneProviders.length + noPhoneHospitals.length})</h3>
+      <p class="small" style="max-width: 64ch;">
+        These records exist in the dataset but don't have a callable phone number yet. They're hidden from the find page and map (we won't surface a tap-to-nothing) but visible here for transparency. <strong>If you know the number for any of these, please add it</strong> via the Edit on GitHub link on each record's page.
+      </p>
+      <table class="data-table">
+        <thead><tr><th>Record</th><th>Type / city</th><th>Why it's here</th></tr></thead>
+        <tbody>
+          {[...noPhoneProviders.map((p) => ({ kind: "provider", id: p.id, name: p.brand_name, type: p.type, city: p._city })),
+            ...noPhoneHospitals.map((h) => ({ kind: "hospital", id: h.id, name: h.name, type: "hospital", city: h._city }))].map((r) => (
+            <tr>
+              <td><a href={r.kind === "provider" ? `/providers/${r.id}` : `/hospitals/${r.id}`}>{r.name}</a></td>
+              <td class="small">{r.type} · {r.city}</td>
+              <td class="small">Number not yet published — known operator, scraped or seeded from public sources without a confirmed contact line</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  ) : null}
 
   <section style="margin-top: 1.5rem;">
     <h3>Open data downloads</h3>

@@ -22,7 +22,7 @@ export interface Env {
   RATE: KVNamespace;
 }
 
-type FormType = "report" | "new-provider" | "provider-claim" | "correction" | "dead-number" | "capacity-check" | "host-clinic" | "host-captain";
+type FormType = "report" | "new-provider" | "provider-claim" | "correction" | "dead-number" | "capacity-check" | "host-clinic" | "host-captain" | "verify";
 
 const LABELS: Record<FormType, string[]> = {
   report: ["report", "needs-moderation"],
@@ -33,6 +33,7 @@ const LABELS: Record<FormType, string[]> = {
   "capacity-check": ["capacity-check", "urgent-ping"],
   "host-clinic": ["host-clinic", "needs-onboarding"],
   "host-captain": ["host-captain", "needs-onboarding"],
+  verify: ["verify", "ready-to-merge"],
 };
 
 const TITLES: Record<FormType, (p: any) => string> = {
@@ -44,6 +45,7 @@ const TITLES: Record<FormType, (p: any) => string> = {
   "capacity-check": (p) => `[CAPACITY CHECK] ${p.provider_id} — pincode ${p.pincode ?? "?"}`,
   "host-clinic": (p) => `[HOST CLINIC] ${p.hospital ?? "?"} — ${p.city ?? "?"}`,
   "host-captain": (p) => `[HOST CAPTAIN] ${p.city ?? "?"}`,
+  verify: (p) => `[VERIFY] ${p.provider_id} — ${p.outcome} (caller ${p.caller_initials ?? "?"}, ${p.date_of_call})`,
 };
 
 export default {
@@ -121,6 +123,11 @@ function json(obj: any, status: number, headers: HeadersInit): Response {
 }
 
 function renderIssueBody(formType: FormType, payload: any, ip: string): string {
+  // The verify form has a special body — emit a paste-ready YAML diff
+  if (formType === "verify") {
+    return renderVerifyBody(payload, ip);
+  }
+
   const tableRows = Object.entries(payload)
     .filter(([k]) => !k.startsWith("_"))
     .map(([k, v]) => `| \`${k}\` | ${formatVal(v)} |`)
@@ -153,4 +160,105 @@ function formatVal(v: any): string {
   if (typeof v === "string") return v.replaceAll("|", "\\|").slice(0, 500);
   if (typeof v === "object") return "`" + JSON.stringify(v).slice(0, 500) + "`";
   return String(v);
+}
+
+/**
+ * Verify-form body: structured YAML patch the maintainer pastes into the
+ * record and commits. One paste = one verified record.
+ */
+function renderVerifyBody(p: any, ip: string): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const init = String(p.caller_initials ?? "??").slice(0, 4).toUpperCase();
+  const outcome = p.outcome ?? "answered";
+  const vehicleTypes = Array.isArray(p.vehicle_types) ? p.vehicle_types : (p.vehicle_types ? String(p.vehicle_types).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
+  const equipment = Array.isArray(p.equipment) ? p.equipment : (p.equipment ? String(p.equipment).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
+
+  const callLogEntry =
+`  - date: '${p.date_of_call ?? today}'
+    caller_initials: ${init}
+    outcome: ${outcome}
+    notes: ${jsonString(p.notes || "")}`;
+
+  const farePatch = (p.fare_base || p.fare_per_km)
+? `fares:
+  base: ${p.fare_base ? Number(p.fare_base) : "~"}
+  per_km: ${p.fare_per_km ? Number(p.fare_per_km) : "~"}
+  waiting: ${p.fare_waiting ? Number(p.fare_waiting) : "null"}
+  night_premium: ${p.fare_night ? Number(p.fare_night) : "null"}
+  currency: INR
+  source: 'phone-verification ${p.date_of_call ?? today} caller ${init}'
+  observed_date: '${p.date_of_call ?? today}'`
+: "# fares: not captured this call";
+
+  const phonePatch = p.confirmed_phone
+    ? `phone_24h: '${p.confirmed_phone}'`
+    : "# phone_24h: unchanged";
+
+  const yamlPatch = `# === paste into data/providers/${p.provider_id}.yaml ===
+# Replace the existing status/last_verified_at/verified_by fields; append the
+# call_logs entry to the call_logs array (or create the array if absent).
+
+status: ${outcome === "answered" || outcome === "answered-dispatched" ? "verified" : outcome === "no-answer" || outcome === "out-of-service" ? "stale" : "disputed"}
+last_verified_at: '${p.date_of_call ?? today}'
+verified_by: ${init}
+
+# inside contact: section
+${phonePatch}
+
+# append to call_logs (create array if not present):
+call_logs:
+${callLogEntry}
+
+# update fares (if captured):
+${farePatch}
+`;
+
+  const tableRows = Object.entries(p)
+    .filter(([k]) => !k.startsWith("_"))
+    .map(([k, v]) => `| \`${k}\` | ${formatVal(v)} |`)
+    .join("\n");
+
+  return `
+**Verification call recorded for \`${p.provider_id}\`.**
+
+Caller: ${init} · Date: ${p.date_of_call ?? today} · Outcome: \`${outcome}\`
+
+## ⚡ Maintainer action — paste this YAML and commit
+
+\`\`\`yaml
+${yamlPatch}
+\`\`\`
+
+Commit message suggestion:
+\`\`\`
+verify ${p.provider_id} — ${outcome} (${init}, ${p.date_of_call ?? today})
+\`\`\`
+
+Edit URL: https://github.com/Ashwask/SaralcareAmbulanceservices/edit/main/data/providers/${p.provider_id}.yaml
+
+---
+
+## Full submitted data
+
+| Field | Value |
+|---|---|
+${tableRows}
+
+<details>
+<summary>Audit</summary>
+
+- Submitter IP fragment (rate-limit forensics): \`${ip.slice(0, 4)}…\`
+- Schema: schema/provider.schema.json
+- After merge, close this issue referencing the commit hash.
+
+</details>
+
+_Submitted under CC BY-NC-SA 4.0._
+`.trim();
+}
+
+function jsonString(s: string): string {
+  // Single-line YAML-safe string
+  const escaped = String(s).replace(/'/g, "''").replace(/\n/g, " ");
+  return `'${escaped}'`;
 }

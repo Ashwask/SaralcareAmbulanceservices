@@ -16,6 +16,28 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The
 - Discord / community channels (founder action)
 - First commercial-license inquiry tracking
 
+## [0.6.0] — 2026-05-10
+
+### Changed — hide unpublished numbers from emergency surfaces
+Records with the placeholder phone `+91 00000 00000` (provider exists but contact number not yet found) are no longer surfaced where users could tap-to-nothing:
+
+- **`/find`** filters out no-phone providers from "5 nearest" and pincode lookup.
+- **`/v1/providers.json`** and **`/v1/by-pincode/{pin}.json`** exclude no-phone records by default; new `total_in_dataset` + `hidden_no_phone` counts publish the gap honestly.
+- **Map** (`/find`, `/explore`) renders no marker for no-phone records (no tap-to-nothing).
+- **Per-provider / per-hospital pages** replace the phone-button with a yellow "📵 No published number yet" banner linking to Edit-on-GitHub and dial-108.
+- **`/explore`** surfaces a separate "Records waiting for a published number" table so contributors can still see the gap and help fill it.
+
+### Added — verification form (after-call YAML auto-generation)
+Closing the loop on "I made the call, now how do I commit the verification?":
+
+- **New `VerifyForm.astro` component** — structured form (date, initials, outcome, confirmed phone, vehicle types, equipment, fares, affiliations, notes).
+- **Cloudflare Worker** extended with `form_type: "verify"` — generates a paste-ready YAML patch and opens a `[VERIFY]` GitHub issue with the patch in the body, plus a direct Edit-on-GitHub link.
+- **Wired into `/verify-session`** (10-record maintainer queue) and **`/providers/[id]`** (only when a phone exists; hidden inside `<details>` to keep the user-facing page calm).
+- Verification time per call drops from ~5 min of YAML editing to ~30 sec of paste-and-commit.
+
+### Bumped
+- Service worker → `v1.0.8`
+
 ## [0.5.0] — 2026-05-12
 
 ### Added — source-published badge

@@ -11,9 +11,15 @@ import { getProviders, getHospitals, badge } from "@/lib/data";
 const providers = getProviders();
 const hospitals = getHospitals();
 
+// Filter out records with placeholder phones — map should never surface a marker that taps to nothing.
+const PLACEHOLDER = "+91 00000 00000";
+const callable = (p?: string | null) => !!p && p !== PLACEHOLDER && p.trim().length > 2;
+const callableProviders = providers.filter((p) => callable(p.contact?.phone_24h));
+const callableHospitals = hospitals.filter((h) => callable(h.er_phone));
+
 // Slim geojson the map consumes
 const features = [
-  ...providers.map((p) => ({
+  ...callableProviders.map((p) => ({
     type: "Feature",
     geometry: { type: "Point", coordinates: [p.hq_lat_lng[1], p.hq_lat_lng[0]] },
     properties: {
@@ -26,7 +32,7 @@ const features = [
       href: `/providers/${p.id}`,
     },
   })),
-  ...hospitals.map((h) => ({
+  ...callableHospitals.map((h) => ({
     type: "Feature",
     geometry: { type: "Point", coordinates: [h.lat_lng[1], h.lat_lng[0]] },
     properties: {
