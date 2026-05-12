@@ -1,0 +1,174 @@
+---
+import Base from "@/layouts/Base.astro";
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+
+const trendsPath = join(process.cwd(), "..", "api", "v1", "trends.json");
+let t: any = {
+  totals: {}, freshness: {}, by_type: {}, by_city: {},
+  fare_dispersion_inr: null, response_time_minutes: null,
+  activity_last_12_weeks: [], records_added_by_month: {},
+};
+if (existsSync(trendsPath)) {
+  try { t = JSON.parse(readFileSync(trendsPath, "utf8")); } catch {}
+}
+
+const maxBarHeight = 60;
+const allWeekTotals = t.activity_last_12_weeks.map((w: any) => {
+  const total = Object.entries(w)
+    .filter(([k]) => k !== "week")
+    .reduce((s: number, [, v]) => s + (v as number), 0);
+  return total;
+});
+const maxWeekTotal = Math.max(1, ...allWeekTotals);
+
+const monthlyAdds = Object.entries(t.records_added_by_month)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .slice(-12);
+const maxMonthly = Math.max(1, ...monthlyAdds.map(([, v]) => v as number));
+---
+
+<Base
+  title="Trends — Saralcare Ambulances"
+  description="Historical analytics — verification velocity, freshness, fare dispersion, response time, growth. Built from the dataset + git history on every push."
+>
+  <h2 style="margin-top: 0.4rem">Trends</h2>
+  <p style="max-width: 64ch; color: var(--muted);">
+    Historical analytics derived from the dataset and git history. Updates on every push. As the dataset is young, many series are sparse — that's honest, not a bug.
+  </p>
+
+  <section class="totals">
+    <div class="t-card"><div class="t-num">{t.totals.providers ?? "—"}</div><div class="t-label">providers</div></div>
+    <div class="t-card"><div class="t-num">{t.totals.hospitals ?? "—"}</div><div class="t-label">hospitals</div></div>
+    <div class="t-card"><div class="t-num">{t.totals.published_reports ?? "—"}</div><div class="t-label">user reports</div></div>
+    <div class="t-card"><div class="t-num">{t.totals.contributors ?? "—"}</div><div class="t-label">contributors</div></div>
+  </section>
+
+  <h3>Freshness</h3>
+  <p class="small">How many records are in each verification state right now.</p>
+  <div class="freshness-row">
+    <span class="badge badge--verified">verified</span> <strong>{t.freshness.verified ?? 0}</strong>
+    <span class="badge badge--stale">stale</span> <strong>{t.freshness.stale ?? 0}</strong>
+    <span class="badge badge--unverified">unverified</span> <strong>{t.freshness.unverified ?? 0}</strong>
+    <span class="badge badge--dead">dead</span> <strong>{t.freshness.dead ?? 0}</strong>
+    <span class="badge badge--disputed">disputed</span> <strong>{t.freshness.disputed ?? 0}</strong>
+  </div>
+
+  <h3>Provider types</h3>
+  <ul class="kv-list">
+    {Object.entries(t.by_type).map(([k, v]) => (
+      <li><strong>{v as number}</strong> &mdash; {k}</li>
+    ))}
+  </ul>
+
+  <h3>Geographic coverage (by service-area pincode)</h3>
+  <ul class="kv-list">
+    {Object.entries(t.by_city)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
+      .map(([city, n]) => (
+        <li><strong>{n as number}</strong> &mdash; {city}</li>
+      ))}
+  </ul>
+  <p class="small">A provider counts toward a city if any of its declared service-area pincodes falls in that city's range.</p>
+
+  <h3>Fare dispersion (provider-claimed base fare, INR)</h3>
+  {t.fare_dispersion_inr ? (
+    <ul>
+      <li><strong>Min:</strong> ₹{t.fare_dispersion_inr.min}</li>
+      <li><strong>25th percentile:</strong> ₹{t.fare_dispersion_inr.p25}</li>
+      <li><strong>Median:</strong> ₹{t.fare_dispersion_inr.median}</li>
+      <li><strong>75th percentile:</strong> ₹{t.fare_dispersion_inr.p75}</li>
+      <li><strong>Max:</strong> ₹{t.fare_dispersion_inr.max}</li>
+      <li class="small"><em>n = {t.fare_dispersion_inr.count} records with published fares</em></li>
+    </ul>
+  ) : (
+    <p class="small">No fare data yet. Fares are populated on verification calls — when we ask "what's your base fare?" and log the answer with a date.</p>
+  )}
+
+  <h3>Response time (from user reports, minutes)</h3>
+  {t.response_time_minutes ? (
+    <ul>
+      <li><strong>Min:</strong> {t.response_time_minutes.min} min</li>
+      <li><strong>Median:</strong> {t.response_time_minutes.median} min</li>
+      <li><strong>Max:</strong> {t.response_time_minutes.max} min</li>
+      <li class="small"><em>n = {t.response_time_minutes.count} dispatched-call reports</em></li>
+    </ul>
+  ) : (
+    <p class="small">No response-time data yet. This series fills in as users submit "report your call experience" forms after real calls.</p>
+  )}
+
+  <h3>Activity (last 12 weeks)</h3>
+  <p class="small">Commits to <code>data/</code> by category. Verify = re-verification calls. New = record additions. Correct = field fixes. Report = user reports merged.</p>
+  {t.activity_last_12_weeks.length === 0 ? (
+    <p class="small">No git history yet — this fills in once the repo is pushed.</p>
+  ) : (
+    <div class="bar-chart" aria-label="Weekly activity bar chart">
+      {t.activity_last_12_weeks.map((w: any, i: number) => {
+        const total = (w.verify ?? 0) + (w.claim ?? 0) + (w.correct ?? 0) + (w.report ?? 0) + (w.new ?? 0) + (w.dispute ?? 0) + (w.takedown ?? 0) + (w["dead-number"] ?? 0);
+        const h = Math.max(2, Math.round((total / maxWeekTotal) * maxBarHeight));
+        return (
+          <div class="bar-col">
+            <div class="bar" style={`height: ${h}px`} title={`${w.week}: ${total} commits`}></div>
+            <div class="bar-week">{w.week.slice(-3)}</div>
+            <div class="bar-count">{total}</div>
+          </div>
+        );
+      })}
+    </div>
+  )}
+
+  <h3>Records added (last 12 months)</h3>
+  <p class="small">Net new YAML records (providers + hospitals) per calendar month.</p>
+  {monthlyAdds.length === 0 ? (
+    <p class="small">No data yet.</p>
+  ) : (
+    <div class="bar-chart">
+      {monthlyAdds.map(([month, n]) => (
+        <div class="bar-col">
+          <div class="bar" style={`height: ${Math.max(2, Math.round(((n as number) / maxMonthly) * maxBarHeight))}px; background: var(--green);`}></div>
+          <div class="bar-week">{month.slice(-2)}</div>
+          <div class="bar-count">{n as number}</div>
+        </div>
+      ))}
+    </div>
+  )}
+
+  <section style="margin-top: 2rem;">
+    <h3>What this page shows that others don't</h3>
+    <ul>
+      <li><strong>Verification velocity</strong> — how fast we move records from grey to green. A leading indicator of project health.</li>
+      <li><strong>Fare dispersion</strong> — the spread between cheapest and most expensive base fare. Useful for journalism on price transparency.</li>
+      <li><strong>Response time bands from user reports</strong> — the closest we can get to "how long do ambulances actually take?" without operating any fleet.</li>
+      <li><strong>Geographic concentration</strong> — where the data is richest. Surfaces the gaps you'd want to address with a city-captain programme.</li>
+      <li><strong>Contributor count over time</strong> — the difference between "open in licence" and "open in practice".</li>
+    </ul>
+  </section>
+
+  <p class="small" style="margin-top: 2rem;">
+    Raw JSON: <a href="/v1/trends.json"><code>/v1/trends.json</code></a> · Generated on each build · CC BY-NC-SA 4.0
+  </p>
+
+  <style>
+    .totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.55rem; margin: 1.2rem 0; }
+    .t-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 0.9rem; }
+    .t-num { font-size: 1.65rem; font-weight: 700; line-height: 1.05; color: var(--fg); }
+    .t-label { font-size: 0.78rem; color: var(--muted); }
+
+    .freshness-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.8rem; margin: 0.6rem 0 1rem; }
+
+    .kv-list { padding-left: 1.1rem; }
+    .kv-list li { margin: 0.2rem 0; }
+
+    .bar-chart {
+      display: flex; align-items: flex-end; gap: 0.4rem;
+      padding: 0.8rem 0.5rem 0.4rem;
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 10px; margin: 0.5rem 0;
+      overflow-x: auto;
+    }
+    .bar-col { display: flex; flex-direction: column; align-items: center; min-width: 36px; }
+    .bar { width: 18px; background: var(--accent); border-radius: 3px 3px 0 0; }
+    .bar-week { font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem; }
+    .bar-count { font-size: 0.78rem; font-weight: 600; }
+  </style>
+</Base>

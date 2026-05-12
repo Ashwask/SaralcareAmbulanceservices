@@ -70,6 +70,47 @@ const repo = "https://github.com/Ashwask/SaralcareAmbulanceservices";
     </p>
   </section>
 
+  <section class="pillars">
+    <h2>How the data flows in — three-pillar federation</h2>
+    <p style="max-width: 64ch; color: var(--muted);">
+      Adapted from <a href="https://oaq.notf.in" target="_blank" rel="noopener">OAQ's open-air-quality model</a>. They aggregate from CPCB (government), Airnet/CSTEP (research), and Aurassure (private sensors), plus a "host a monitor" crowdsource layer. We adopt the same three-pillar structure for ambulances. Most pillars are aspirational today — we say so explicitly.
+    </p>
+
+    <div class="pillar-grid">
+      <div class="pillar">
+        <div class="pillar-icon" aria-hidden="true">🏛️</div>
+        <h3>Government tier</h3>
+        <p class="pillar-status"><strong>Like CPCB:</strong> state 108 / Arogya Kavacha / EMRI. 12 state-level records seeded.</p>
+        <p class="small">First RTI drafted, not yet filed. Once filed, station-level fleet + response times feed in. Goal: formal data-sharing MoU with at least one state health department by v2.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon" aria-hidden="true">🎓</div>
+        <h3>Research tier</h3>
+        <p class="pillar-status"><strong>Like Airnet / CSTEP:</strong> medical schools, public-health institutions, academic researchers. <em>0 partnerships today.</em></p>
+        <p class="small">Candidates: IIPH, PHFI, NIMHANS public-health, AIIMS public-health departments, medical-school MPH programmes. Each could contribute systematic surveys, RTI dumps, dissertation research. Outreach has not started.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon" aria-hidden="true">🩺</div>
+        <h3>Private tier</h3>
+        <p class="pillar-status"><strong>Like Aurassure's University Clean Air Network:</strong> ambulance operators who opt in to publishing station lists + affiliations in exchange for the verified badge. <em>Opt-in flow live, no opt-ins yet.</em></p>
+        <p class="small">Self-claim at <a href="/claim">/claim</a>. Embed widget at <a href="/for-providers">/for-providers</a>. The reputational unlock is documented but not yet adopted by any aggregator.</p>
+      </div>
+      <div class="pillar pillar-crowd">
+        <div class="pillar-icon" aria-hidden="true">👁️</div>
+        <h3>Crowdsource layer</h3>
+        <p class="pillar-status"><strong>Like OAQ's "Host a Monitor":</strong> humans as sensors + geographic volunteers.</p>
+        <ul>
+          <li><a href="/host/clinic"><strong>Host a clinic feed</strong></a> — an ER attendant logs every ambulance arrival via a 30-second mobile form.</li>
+          <li><a href="/host/captain"><strong>Become a city captain</strong></a> — verify ~10 records/week in your city. The structural way we scale beyond one maintainer.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="small" style="margin-top: 1rem;">
+      Why be honest about the gaps? Because they are exactly what makes this project a <em>civic infrastructure ask</em>, not a finished service. If you recognise yourself in any pillar — government agency, research institution, ambulance operator, ER attendant, civic volunteer — <a href="mailto:ashwinsk@saralcare.com?subject=%5BPARTNER%5D">email us</a>.
+    </p>
+  </section>
+
   <section class="three-cards">
     <a class="role-card" href="/find">
       <div class="role-emoji">🚑</div>
@@ -215,6 +256,24 @@ const repo = "https://github.com/Ashwask/SaralcareAmbulanceservices";
     .why { margin-top: 2.5rem; max-width: 64ch; }
     .why h2 { font-size: 1.6rem; letter-spacing: -0.015em; }
     .why p { font-size: 1rem; line-height: 1.6; }
+
+    .pillars { margin-top: 2.5rem; }
+    .pillars h2 { font-size: 1.6rem; letter-spacing: -0.015em; }
+    .pillar-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.7rem; margin-top: 1.2rem;
+    }
+    .pillar {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 12px; padding: 0.95rem 1.05rem;
+    }
+    .pillar-icon { font-size: 1.7rem; margin-bottom: 0.4rem; }
+    .pillar h3 { margin: 0 0 0.4rem; font-size: 1rem; }
+    .pillar-status { margin: 0 0 0.45rem; font-size: 0.92rem; }
+    .pillar p { margin: 0; }
+    .pillar.pillar-crowd { grid-column: 1 / -1; border-color: var(--green); }
+    .pillar.pillar-crowd ul { padding-left: 1.1rem; margin: 0.45rem 0 0; }
+    .pillar.pillar-crowd li { margin: 0.25rem 0; }
 
     .three-cards {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

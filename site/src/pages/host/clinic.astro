@@ -1,0 +1,155 @@
+---
+import Base from "@/layouts/Base.astro";
+const submitUrl = import.meta.env.PUBLIC_SUBMIT_URL ?? "";
+---
+
+<Base
+  title="Host a clinic feed — Saralcare Ambulances"
+  description="If you work at a hospital ER, you see every ambulance arrival. Log them via a 30-second mobile form. You become the eyes of the directory — like a hardware sensor in OAQ's network, but human."
+>
+  <p class="small"><a href="/open-source">← Open source hub</a></p>
+  <h2 style="margin-top: 0.4rem">Host a clinic feed</h2>
+  <p style="max-width: 64ch; font-size: 1.03rem;">
+    The single most valuable data signal in this directory is a human standing in an Emergency Room watching ambulances arrive. <strong>You see what we can't: which provider actually showed up, how long they took, what condition the vehicle was in, what the family paid.</strong> If you work at an ER and you'd log this in 30 seconds per arrival, you become a clinic feed host.
+  </p>
+
+  <div class="card" style="background: var(--green-bg, #f0fdf4); border-color: #bbf7d0; color: #15803d; margin-top: 1rem;">
+    <p style="margin: 0; font-weight: 700;">This is the OAQ "Host a Monitor" equivalent for ambulances.</p>
+    <p style="margin: 0.4rem 0 0; font-size: 0.94rem;">
+      OAQ enables individuals to host a $50–500 air-quality sensor that pushes readings into their public network. We can't crowd-source ambulance data with hardware (no equivalent device exists). What we can crowd-source is <strong>your observation as an ER attendant</strong> — the human-sensor.
+    </p>
+  </div>
+
+  <h3>What you'd do</h3>
+  <ol>
+    <li>Use a one-page mobile form, ~30 seconds per ambulance arrival.</li>
+    <li>Capture: provider (autocomplete from our directory), arrival time, response time band, vehicle type, condition (clean/dirty/equipped), what the family said about the fare.</li>
+    <li>That's it. No patient details. No medical decisions. No follow-up.</li>
+  </ol>
+
+  <h3>What you absolutely DON'T do</h3>
+  <ul>
+    <li><strong>Do not record any patient information.</strong> Name, condition, diagnosis, anything identifying. None.</li>
+    <li><strong>Do not record any patient family information.</strong> Their names, contact details, anything.</li>
+    <li><strong>Do not log inside protected EHR or hospital systems.</strong> Use only the public form we provide.</li>
+    <li><strong>Do not take photos that include patient faces, license plates, or identifying details.</strong></li>
+    <li><strong>Do not make medical decisions or recommendations</strong> on the basis of what we publish. You are an observer of operational reality, not a medical authority for this project.</li>
+  </ul>
+
+  <h3>What we publish, what we don't</h3>
+  <div class="card">
+    <p style="margin: 0; font-weight: 600;">We publish (aggregated, with attribution to "an ER host"):</p>
+    <ul>
+      <li>The provider's response time and vehicle type for that arrival.</li>
+      <li>The fare the family was charged (rounded).</li>
+      <li>Aggregate stats: at hospital X, provider Y arrives in ~Z minutes typically.</li>
+    </ul>
+  </div>
+  <div class="card" style="margin-top: 0.7rem;">
+    <p style="margin: 0; font-weight: 600;">We never publish:</p>
+    <ul>
+      <li>Your name (we use the hospital's name + "ER host", e.g. "Apollo Bannerghatta ER host").</li>
+      <li>Your phone, email, or any direct contact info.</li>
+      <li>The specific shift / date / time, beyond an hour-band.</li>
+      <li>Any patient information (you don't give us any).</li>
+    </ul>
+  </div>
+
+  <h3>What you get</h3>
+  <ul>
+    <li><strong>Free training</strong> on the form, the protocol, the privacy boundaries. ~30 minutes.</li>
+    <li><strong>Your hospital's published response-time picture</strong> — the only place in India where this exists.</li>
+    <li><strong>A monthly summary</strong> of what your contributions enabled — anonymised stats, what patients in your catchment paid, where the gaps are.</li>
+    <li><strong>Optional named credit in <code>CONTRIBUTORS.md</code></strong> if you want it (most hosts opt for anonymous).</li>
+    <li><strong>The satisfaction of building real data</strong> in a domain where nobody else is doing this. Your shift becomes a data point in a public commons.</li>
+  </ul>
+
+  <h3>Who we'd love to hear from</h3>
+  <ul>
+    <li>ER nurses, attendants, registration desk staff.</li>
+    <li>House officers / interns rotating through emergency.</li>
+    <li>Hospital administrators willing to designate one ER staff member.</li>
+    <li>Anyone with a sustainable ~5 hours per week to commit.</li>
+  </ul>
+
+  <h3>Privacy commitment for hosts</h3>
+  <p>
+    We collect your name, hospital, email, and phone — used solely for coordination, training, and direct support. Never sold, never traded, never marketed. See <a href="/privacy">the privacy policy</a> and <a href="/no-marketing">the no-marketing policy</a>. You can withdraw at any time and your contributions stay (aggregated, attributed to "ER host") but your identity is removed from our records.
+  </p>
+
+  <h3>Express interest</h3>
+  <form id="host-clinic-form" class="host-form" data-submit-url={submitUrl}>
+    <div class="grid-2">
+      <label>Your name *<input type="text" name="name" required maxlength="80" /></label>
+      <label>Your role *<input type="text" name="role" required maxlength="80" placeholder="e.g. ER nurse, House Officer, Reg desk" /></label>
+    </div>
+    <div class="grid-2">
+      <label>Hospital *<input type="text" name="hospital" required maxlength="120" /></label>
+      <label>City *<input type="text" name="city" required maxlength="80" /></label>
+    </div>
+    <div class="grid-2">
+      <label>Email *<input type="email" name="email" required /></label>
+      <label>Phone (optional)<input type="tel" name="phone" /></label>
+    </div>
+    <label>How many hours/week could you commit?<select name="hours">
+      <option value="1-2">1-2 hours</option>
+      <option value="3-5" selected>3-5 hours</option>
+      <option value="5-10">5-10 hours</option>
+      <option value="more">More</option>
+    </select></label>
+    <label>Anything else we should know<textarea name="notes" rows="3" maxlength="800"></textarea></label>
+
+    <p class="consent small">
+      Your contact details are sent to a maintainer for coordination only. Never marketed. Never sold. Withdrawable. See <a href="/privacy">/privacy</a> and <a href="/no-marketing">/no-marketing</a>.
+    </p>
+    <div class="row">
+      <button type="submit">Express interest</button>
+      <span id="host-clinic-status" class="small" aria-live="polite"></span>
+    </div>
+  </form>
+
+  <script type="module">
+    const form = document.getElementById("host-clinic-form");
+    if (form) {
+      const status = document.getElementById("host-clinic-status");
+      const submitUrl = form.dataset.submitUrl;
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        status.textContent = "Sending…";
+        const fd = new FormData(form);
+        const payload = Object.fromEntries(fd.entries());
+        for (const k of Object.keys(payload)) if (payload[k] === "") delete payload[k];
+        if (submitUrl) {
+          try {
+            const r = await fetch(submitUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ form_type: "host-clinic", payload }),
+            });
+            const data = await r.json();
+            if (data.ok) {
+              status.innerHTML = `Thank you. A maintainer will reach out within 48 hours at ${payload.email} — <a href="${data.issue_url}" target="_blank" rel="noopener">tracking link</a>.`;
+              form.reset();
+              return;
+            }
+          } catch (err) {}
+        }
+        // mailto fallback
+        const subject = encodeURIComponent(`[HOST CLINIC] ${payload.hospital ?? ""} — ${payload.city ?? ""}`);
+        const body = encodeURIComponent(Object.entries(payload).map(([k, v]) => `${k}: ${v}`).join("\n") + "\n\n— Submitted from www.ambulance.saralcare.com/host/clinic");
+        window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
+        status.textContent = "Opening your email app — please send the pre-filled message to complete.";
+      });
+    }
+  </script>
+
+  <style>
+    .host-form { display: flex; flex-direction: column; gap: 0.7rem; max-width: 640px; margin-top: 1rem; }
+    .host-form label { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 500; font-size: 0.94rem; }
+    .host-form .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    @media (max-width: 540px) { .host-form .grid-2 { grid-template-columns: 1fr; } }
+    .host-form .row { display: flex; gap: 0.7rem; align-items: center; margin-top: 0.3rem; }
+    .host-form button { background: var(--accent); color: white; border: 0; padding: 0.6rem 1.1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .consent { background: var(--green-bg, #f0fdf4); border: 1px solid #bbf7d0; padding: 0.5rem 0.7rem; border-radius: 6px; color: #15803d; }
+  </style>
+</Base>

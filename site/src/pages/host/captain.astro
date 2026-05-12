@@ -1,0 +1,151 @@
+---
+import Base from "@/layouts/Base.astro";
+const submitUrl = import.meta.env.PUBLIC_SUBMIT_URL ?? "";
+---
+
+<Base
+  title="Become a city captain — Saralcare Ambulances"
+  description="Volunteer programme: take responsibility for verifying ambulance records in your city on a 30-day cycle. The structural way this project scales beyond one maintainer."
+>
+  <p class="small"><a href="/open-source">← Open source hub</a></p>
+  <h2 style="margin-top: 0.4rem">Become a city captain</h2>
+  <p style="max-width: 64ch; font-size: 1.03rem;">
+    The 30-day verification cycle is the moat. Today, one maintainer makes the calls — which means we scale to roughly one city. <strong>You take responsibility for one city's verification cadence. The directory scales by the number of city captains.</strong>
+  </p>
+
+  <div class="card" style="background: var(--green-bg, #f0fdf4); border-color: #bbf7d0; color: #15803d; margin-top: 1rem;">
+    <p style="margin: 0; font-weight: 700;">This is the OAQ "monitor host" equivalent for geographic verification.</p>
+    <p style="margin: 0.4rem 0 0; font-size: 0.94rem;">
+      Instead of hosting a sensor, you host a <strong>responsibility</strong>: a city's records stay green on your watch. The volume is small (~10-20 records per city in v1) and the time is your time.
+    </p>
+  </div>
+
+  <h3>What you'd do</h3>
+  <ol>
+    <li><strong>Pick a city you live in or know well.</strong> The cities we currently cover: Bengaluru, Mumbai, Delhi NCR, Chennai, Hyderabad, Kolkata, Pune. New cities welcome.</li>
+    <li><strong>Verify ~5-10 records per week</strong> — call the listed number, run the script (in <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>), update the YAML, commit.</li>
+    <li><strong>Triage incoming reports for your city</strong> — dead-number flags, user reports, capacity-check requests. Either handle directly or escalate.</li>
+    <li><strong>Maintain the data quality bar</strong> — every affiliation edge needs a source; every fare needs an observation date; every verification needs caller initials.</li>
+  </ol>
+
+  <h3>Time commitment</h3>
+  <ul>
+    <li><strong>v1 (1-3 months in):</strong> ~2-3 hours/week. Most of it is phone calls during quiet office hours.</li>
+    <li><strong>v2 (after 50+ records per city):</strong> ~4-5 hours/week. Re-verify cadence + report triage scale together.</li>
+    <li><strong>v3 (if we get to 200+ records per city):</strong> reduce by recruiting deputy captains. This is a leadership role, not a perpetual phone-call shift.</li>
+  </ul>
+
+  <h3>What you absolutely DON'T do</h3>
+  <ul>
+    <li><strong>Do not operate any ambulance.</strong> You're a verifier, not a dispatcher. Calls go to providers, never via you.</li>
+    <li><strong>Do not negotiate fares</strong> with providers on behalf of patients. You record what's published; you don't advocate.</li>
+    <li><strong>Do not represent the project commercially.</strong> Commercial licensing inquiries route to the maintainer, not to you.</li>
+    <li><strong>Do not collect or store patient data.</strong> Ever.</li>
+    <li><strong>Do not assert kickbacks, exclusive contracts, or motive</strong> on affiliation edges without a documented public source.</li>
+  </ul>
+
+  <h3>What you get</h3>
+  <ul>
+    <li><strong>Merge rights for your city's data files</strong> once you've done your first 10 verified PRs. You become a co-maintainer for one geography.</li>
+    <li><strong>Named credit in <code>CONTRIBUTORS.md</code></strong> (opt-in) and in the city's records (as <code>verified_by</code>).</li>
+    <li><strong>An optional honorarium</strong> once the Section 8 entity is registered and we have funding (₹2-5k/month per city captain).</li>
+    <li><strong>Co-authorship on any research publication</strong> drawing on the city's dataset (if you contributed substantively).</li>
+    <li><strong>Direct line to the maintainer</strong> for governance discussions. Captains are the proto-editorial-council; when the council forms in v2 (per <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/GOVERNANCE.md">GOVERNANCE.md</a>), captains are first-pick members.</li>
+  </ul>
+
+  <h3>What we'd love to see in candidates</h3>
+  <ul>
+    <li><strong>Familiarity with your city</strong> — you know the hospitals, you can spot a bogus address, you can place a call without explaining where Bannerghatta is.</li>
+    <li><strong>Comfort making cold calls</strong> — most verifications are 2-minute phone calls with a script.</li>
+    <li><strong>Basic GitHub literacy</strong> — opening a PR via the web editor is enough; you don't need to be a programmer.</li>
+    <li><strong>Civic-tech / public-health background</strong> is a plus but not required. Nurses, ASHA workers, students, retired doctors, journalists, NGO workers all welcome.</li>
+    <li><strong>A reliable monthly rhythm.</strong> Two ad-hoc shifts a month is better than five intense days followed by silence.</li>
+  </ul>
+
+  <h3>Onboarding</h3>
+  <ol>
+    <li>Express interest below.</li>
+    <li>Maintainer schedules a 30-minute call. Walks you through the protocol, the privacy boundaries, the GitHub flow.</li>
+    <li>Pair-verification on your first 3 records — you call, maintainer reviews the YAML edit.</li>
+    <li>You go solo. Merge rights granted after 10 successful verified PRs.</li>
+    <li>Recognised in the next CHANGELOG release.</li>
+  </ol>
+
+  <h3>Privacy commitment for captains</h3>
+  <p>
+    We collect your name, city, email, phone — used solely for coordination, training, and direct support. Never sold, never traded, never marketed. See <a href="/privacy">privacy policy</a> and <a href="/no-marketing">no-marketing policy</a>. Withdraw at any time; your contributions stay attributed to you (if opted-in) but no further communication.
+  </p>
+
+  <h3>Express interest</h3>
+  <form id="host-captain-form" class="host-form" data-submit-url={submitUrl}>
+    <div class="grid-2">
+      <label>Your name *<input type="text" name="name" required maxlength="80" /></label>
+      <label>City you'd captain *<input type="text" name="city" required maxlength="80" /></label>
+    </div>
+    <div class="grid-2">
+      <label>Background<input type="text" name="background" maxlength="120" placeholder="nurse / ASHA / civic-tech / student / journalist…" /></label>
+      <label>Email *<input type="email" name="email" required /></label>
+    </div>
+    <div class="grid-2">
+      <label>Phone (optional)<input type="tel" name="phone" /></label>
+      <label>Hours/week<select name="hours">
+        <option value="1-2">1-2 hours</option>
+        <option value="3-5" selected>3-5 hours</option>
+        <option value="5-10">5-10 hours</option>
+      </select></label>
+    </div>
+    <label>Why this project, in your own words<textarea name="motivation" rows="4" maxlength="1000"></textarea></label>
+
+    <p class="consent small">
+      Your details go to a maintainer for coordination only. Never marketed. Never sold. See <a href="/privacy">/privacy</a>.
+    </p>
+    <div class="row">
+      <button type="submit">Express interest</button>
+      <span id="host-captain-status" class="small" aria-live="polite"></span>
+    </div>
+  </form>
+
+  <script type="module">
+    const form = document.getElementById("host-captain-form");
+    if (form) {
+      const status = document.getElementById("host-captain-status");
+      const submitUrl = form.dataset.submitUrl;
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        status.textContent = "Sending…";
+        const fd = new FormData(form);
+        const payload = Object.fromEntries(fd.entries());
+        for (const k of Object.keys(payload)) if (payload[k] === "") delete payload[k];
+        if (submitUrl) {
+          try {
+            const r = await fetch(submitUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ form_type: "host-captain", payload }),
+            });
+            const data = await r.json();
+            if (data.ok) {
+              status.innerHTML = `Thank you. A maintainer will reach out within 48 hours at ${payload.email} — <a href="${data.issue_url}" target="_blank" rel="noopener">tracking link</a>.`;
+              form.reset();
+              return;
+            }
+          } catch (err) {}
+        }
+        const subject = encodeURIComponent(`[HOST CAPTAIN] ${payload.city ?? ""}`);
+        const body = encodeURIComponent(Object.entries(payload).map(([k, v]) => `${k}: ${v}`).join("\n") + "\n\n— Submitted from www.ambulance.saralcare.com/host/captain");
+        window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
+        status.textContent = "Opening your email app — please send the pre-filled message to complete.";
+      });
+    }
+  </script>
+
+  <style>
+    .host-form { display: flex; flex-direction: column; gap: 0.7rem; max-width: 640px; margin-top: 1rem; }
+    .host-form label { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 500; font-size: 0.94rem; }
+    .host-form .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    @media (max-width: 540px) { .host-form .grid-2 { grid-template-columns: 1fr; } }
+    .host-form .row { display: flex; gap: 0.7rem; align-items: center; margin-top: 0.3rem; }
+    .host-form button { background: var(--accent); color: white; border: 0; padding: 0.6rem 1.1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .consent { background: var(--green-bg, #f0fdf4); border: 1px solid #bbf7d0; padding: 0.5rem 0.7rem; border-radius: 6px; color: #15803d; }
+  </style>
+</Base>

@@ -11,8 +11,9 @@
     "build-api": "tsx scripts/build-api.ts",
     "freshness": "tsx scripts/freshness-report.ts",
     "activity": "tsx scripts/activity-feed.ts",
+    "trends": "tsx scripts/trends.ts",
     "site:dev": "npm run dev --workspace=site",
-    "site:build": "npm run validate && npm run build-api && npm run freshness && npm run activity && mkdir -p site/public && rm -rf site/public/v1 && cp -r api/v1 site/public/v1 && npm run build --workspace=site",
+    "site:build": "npm run validate && npm run build-api && npm run freshness && npm run activity && npm run trends && mkdir -p site/public && rm -rf site/public/v1 && cp -r api/v1 site/public/v1 && npm run build --workspace=site",
     "ingest:google": "tsx scripts/ingest-google-places.ts",
     "ingest:justdial": "tsx scripts/ingest-justdial.ts",
     "ingest:osm": "tsx scripts/ingest-osm.ts"

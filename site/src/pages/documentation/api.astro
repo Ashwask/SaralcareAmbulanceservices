@@ -1,0 +1,197 @@
+---
+import Base from "@/layouts/Base.astro";
+const repo = "https://github.com/Ashwask/SaralcareAmbulanceservices";
+const base = "https://www.ambulance.saralcare.com";
+---
+
+<Base
+  title="API documentation — Saralcare Ambulances"
+  description="Public, unauthenticated, CC BY-NC-SA 4.0 JSON API. Every endpoint, every field, every example. No key required."
+>
+  <p class="small"><a href="/documentation/guide">← User guide</a></p>
+  <h2 style="margin-top: 0.4rem">API reference</h2>
+  <p style="max-width: 64ch; color: var(--muted);">
+    All endpoints are public, unauthenticated, CC BY-NC-SA 4.0 with attribution. No key required. Built fresh on every push to the repo. CDN-cached at the edge. Read-only.
+  </p>
+
+  <div class="card">
+    <p style="margin: 0; font-weight: 600;">Base URL</p>
+    <pre style="margin: 0.4rem 0 0; padding: 0.4rem 0.7rem; background: var(--bg); border-radius: 6px;"><code>{base}/v1/</code></pre>
+  </div>
+
+  <h3>Endpoints</h3>
+  <div class="endpoint">
+    <div class="ep-row"><code class="ep-method">GET</code> <code class="ep-path">/v1/providers.json</code></div>
+    <p>All providers, slim shape. Sorted alphabetically by brand name.</p>
+    <details>
+      <summary>Example response (truncated)</summary>
+      <pre><code>{`{
+  "generated_at": "2026-05-12T10:00:00.000Z",
+  "license": "CC-BY-NC-SA-4.0",
+  "attribution": "Saralcare ambulance directory project (${base})",
+  "count": 60,
+  "providers": [
+    {
+      "id": "red-health-bangalore",
+      "brand_name": "RED.Health",
+      "legal_name": "StanPlus Technologies Private Limited (RED.Health)",
+      "type": "private-aggregator",
+      "phone_24h": "+91 91149 11911",
+      "website": "https://www.red.health",
+      "hq_lat_lng": [12.9716, 77.5946],
+      "service_areas": { "type": "pincode-list", "pincodes": ["560001", ...] },
+      "fleet_count_claimed": null,
+      "fares": null,
+      "affiliations_count": 0,
+      "status": "unverified",
+      "badge": "unverified",
+      "last_verified_at": null,
+      "reports": { "count": 0 }
+    },
+    ...
+  ]
+}`}</code></pre>
+    </details>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-row"><code class="ep-method">GET</code> <code class="ep-path">/v1/providers/&lt;id&gt;.json</code></div>
+    <p>One provider, full record including sources, call logs, hospital affiliations, fares, and recent reports.</p>
+    <p class="small">Example: <a href="/v1/providers/red-health-bangalore.json"><code>/v1/providers/red-health-bangalore.json</code></a></p>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-row"><code class="ep-method">GET</code> <code class="ep-path">/v1/hospitals.json</code></div>
+    <p>All hospitals with affiliation pointers.</p>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-row"><code class="ep-method">GET</code> <code class="ep-path">/v1/hospitals/&lt;id&gt;.json</code></div>
+    <p>One hospital, full record.</p>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-row"><code class="ep-method">GET</code> <code class="ep-path">/v1/by-pincode/&lt;pin&gt;.json</code></div>
+    <p>All providers whose declared service area includes the given pincode.</p>
+    <p class="small">Example: <a href="/v1/by-pincode/560076.json"><code>/v1/by-pincode/560076.json</code></a></p>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-row"><code class="ep-method">GET</code> <code class="ep-path">/v1/reports/&lt;provider-id&gt;.json</code></div>
+    <p>Aggregated user reports for one provider — answer rate, dispatch rate, median response time, fare dispersion.</p>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-row"><code class="ep-method">GET</code> <code class="ep-path">/v1/freshness.json</code></div>
+    <p>Dataset-wide verification status counts.</p>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-row"><code class="ep-method">GET</code> <code class="ep-path">/v1/activity.json</code></div>
+    <p>Categorised commit feed (verify, claim, correct, report, new, dispute, takedown, dead-number, schema, code, doc).</p>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-row"><code class="ep-method">GET</code> <code class="ep-path">/v1/changelog.json</code></div>
+    <p>Last 100 commits with hash, date, author, subject.</p>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-row"><code class="ep-method">GET</code> <code class="ep-path">/v1/mirrors.json</code></div>
+    <p>Federation manifest — canonical, known mirrors, regional forks.</p>
+  </div>
+
+  <h3>Schemas</h3>
+  <ul>
+    <li><a href="/schema/provider.schema.json"><code>provider.schema.json</code></a> — JSON Schema 2020-12 for ambulance provider records.</li>
+    <li><a href="/schema/hospital.schema.json"><code>hospital.schema.json</code></a></li>
+    <li><a href="/schema/vehicle.schema.json"><code>vehicle.schema.json</code></a> — optional sub-records under a provider.</li>
+    <li><a href="/schema/report.schema.json"><code>report.schema.json</code></a> — user-submitted call experience reports.</li>
+    <li><a href="/schema/mirrors.schema.json"><code>mirrors.schema.json</code></a></li>
+  </ul>
+
+  <h3>Code examples</h3>
+
+  <h4>curl</h4>
+  <pre><code>{`# Fetch all providers
+curl -s ${base}/v1/providers.json
+
+# Filter for verified Bangalore-area records
+curl -s ${base}/v1/by-pincode/560076.json | jq '.providers[] | select(.badge == "verified")'
+
+# Get one record's full data including sources
+curl -s ${base}/v1/providers/red-health-bangalore.json`}</code></pre>
+
+  <h4>JavaScript (browser fetch)</h4>
+  <pre><code>{`const res = await fetch("${base}/v1/by-pincode/560076.json");
+const { providers } = await res.json();
+const verified = providers.filter(p => p.badge === "verified");
+console.log(\`\${verified.length} verified providers in 560076\`);`}</code></pre>
+
+  <h4>Python</h4>
+  <pre><code>{`import requests
+
+# All providers
+data = requests.get("${base}/v1/providers.json").json()
+print(f"{data['count']} providers, attributed to: {data['attribution']}")
+
+# Affiliations graph
+import csv
+affil_csv = requests.get(
+    "${repo}/raw/main/data/affiliations/edges.csv"
+).text
+edges = list(csv.DictReader(affil_csv.splitlines()))`}</code></pre>
+
+  <h3>Rate limits</h3>
+  <p>None for read endpoints. The site is CDN-cached at the edge, so reads are effectively free for us. If you plan to fetch the dataset on a schedule, please:</p>
+  <ul>
+    <li>Cache locally and refresh once an hour at most.</li>
+    <li>Set a <code>User-Agent</code> header identifying your application + contact email (so we can reach you if we see your traffic).</li>
+  </ul>
+  <p>The submission endpoint (<code>POST</code> via the Cloudflare Worker for contributions) is rate-limited to 10 submissions per hour per IP.</p>
+
+  <h3>Versioning</h3>
+  <p>
+    The API path is prefixed <code>/v1/</code>. Breaking changes to schemas land in <code>/v2/</code> with at least 90 days of overlap. Field additions (non-breaking) land in <code>/v1/</code> with a CHANGELOG entry. Schemas follow <a href="https://semver.org/">semver</a>; the current schema version is recorded in <a href={`${repo}/blob/main/SCHEMA.md`}>SCHEMA.md</a>.
+  </p>
+
+  <h3>Attribution (required for any use)</h3>
+  <pre><code>{`Source: Saralcare Ambulance Directory (${base}),
+CC BY-NC-SA 4.0.`}</code></pre>
+  <p>For derivative datasets, append: <em>"Modified from the source. Changes: [brief description]."</em></p>
+
+  <h3>Commercial use</h3>
+  <p>
+    Free for any non-commercial use under <a href="/license">CC BY-NC-SA 4.0</a>. Commercial use requires a separate bilateral licence — email <a href="mailto:ashwinsk@saralcare.com?subject=%5BLICENSE+REQUEST%5D">ashwinsk@saralcare.com</a>. No published price list, no self-serve.
+  </p>
+
+  <h3>Source of truth</h3>
+  <p>
+    The canonical source is the YAML data under <a href={`${repo}/tree/main/data`}><code>data/</code></a> in the GitHub repo. The JSON API is a derived artefact built fresh on every push. If you need pristine source data including provenance, sources, and call logs, fetch the raw YAML.
+  </p>
+
+  <p class="small" style="margin-top: 2rem;">
+    See also: <a href="/documentation/guide">user guide</a> · <a href="/license">license</a> · <a href="/no-marketing">no-marketing policy</a>.
+  </p>
+
+  <style>
+    .endpoint {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.85rem 1rem; margin: 0.55rem 0;
+    }
+    .ep-row { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+    .ep-method {
+      background: #15803d; color: white;
+      font-size: 0.78rem; font-weight: 700;
+      padding: 0.15rem 0.5rem; border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    .ep-path { font-size: 1rem; font-weight: 600; }
+    .endpoint p { margin: 0.45rem 0 0; font-size: 0.94rem; color: var(--muted); }
+    .endpoint pre {
+      background: var(--bg); padding: 0.7rem 0.9rem; border-radius: 6px;
+      overflow-x: auto; font-size: 0.85rem; margin: 0.6rem 0 0;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  </style>
+</Base>

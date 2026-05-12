@@ -1,0 +1,76 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base
+  title="No-marketing policy — Saralcare Ambulances"
+  description="A named commitment: we will never market to anyone. No newsletters, no ads, no paid placement, no sponsored content, no retargeting. Ever."
+>
+  <h2 style="margin-top: 0.4rem">No-marketing policy</h2>
+  <p style="max-width: 62ch; font-size: 1.04rem;">
+    This is a named commitment, not a slogan. <strong>Saralcare Ambulances will never market to anyone — viewers, contributors, providers, hosts, donors, or licensees.</strong> Adapted from <a href="https://oaq.notf.in" rel="noopener">OAQ's strict no-marketing posture</a>.
+  </p>
+
+  <div class="card" style="background: var(--green-bg, #f0fdf4); border-color: #bbf7d0; margin-top: 1.2rem;">
+    <p style="margin: 0; font-weight: 700; color: #15803d;">Zero-marketing experience.</p>
+    <p style="margin: 0.4rem 0 0;">
+      Your personal contact information — name, email, phone — will never be used for newsletters, promotional campaigns, commercial advertising, or any communication you didn't explicitly ask for.
+    </p>
+  </div>
+
+  <h3>What this means concretely</h3>
+
+  <h4>What we will <em>never</em> do</h4>
+  <ul>
+    <li>Send a newsletter. We don't have one. We won't start one.</li>
+    <li>Email you about new features unless you explicitly subscribe.</li>
+    <li>Sell your contact information. To anyone. Ever.</li>
+    <li>Run ads. Not display, not search, not native, not sponsored.</li>
+    <li>Accept paid placement from any provider. No "top of the list" sponsorships.</li>
+    <li>Take affiliate commissions on calls or bookings.</li>
+    <li>Run a retargeting pixel.</li>
+    <li>A/B test marketing copy against you.</li>
+    <li>Use your data to profile your behaviour, or sell that profile.</li>
+    <li>Send transactional emails dressed up as marketing.</li>
+    <li>Send a "we miss you" or "your data is incomplete" guilt-trip email.</li>
+    <li>Share your information with a "partner" for "joint marketing".</li>
+  </ul>
+
+  <h4>What we will do</h4>
+  <ul>
+    <li><strong>Reply to your specific inquiry.</strong> If you email us, we email back, once, on point.</li>
+    <li><strong>Coordinate verification calls.</strong> If you submitted a contribution, we may call the number you gave us to confirm.</li>
+    <li><strong>Notify monitor hosts about their host duties.</strong> Only what's needed to do the role, only as often as needed.</li>
+    <li><strong>Publish project updates publicly.</strong> Updates land in <a href="/changes">/changes</a>, the CHANGELOG, and the GitHub repo. We don't push them.</li>
+    <li><strong>Post to LinkedIn / Twitter under the Saralcare brand</strong> when there's a milestone worth announcing — public, not personal, never via your inbox.</li>
+  </ul>
+
+  <h3>Why this matters for a civic project</h3>
+  <p>
+    Most directories that claim "free" make money two ways: ads (your attention is the product) and lead-gen (the providers pay per call routed to them). Both create incentives that compromise the data:
+  </p>
+  <ul>
+    <li>Ads → the providers who pay more get more visibility, regardless of quality.</li>
+    <li>Lead-gen → numbers are "tracking numbers" that route via the directory's switchboard. Calls fail more often, get billed back to the provider, and the directory profits from each route.</li>
+  </ul>
+  <p>
+    The numbers we list are the providers' own numbers. We don't route calls. We don't bill anyone. The economic incentive to compromise the data <strong>does not exist</strong> for us — and a public no-marketing commitment is how that posture stays enforceable. If we ever started marketing, you'd have grounds to call us out on this page.
+  </p>
+
+  <h3>How this is enforced</h3>
+  <ul>
+    <li><strong>Code:</strong> the site ships with no analytics scripts, no tracking pixels, no third-party JS for marketing. <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/site/src/layouts/Base.astro">See the layout source</a>.</li>
+    <li><strong>Architecture:</strong> we don't have a CRM. There's no marketing-automation tool wired in. Adding one would be a visible code change in the public repo.</li>
+    <li><strong>Governance:</strong> this policy is referenced in <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/GOVERNANCE.md">GOVERNANCE.md</a>. Any change requires an ADR with public 7-day comment window.</li>
+    <li><strong>Public correction log:</strong> if we ever violate this, it's a reportable issue. File at <a href="https://github.com/Ashwask/SaralcareAmbulanceservices/issues/new?template=governance.yml">our issue tracker</a> with subject <code>[NO-MARKETING VIOLATION]</code>.</li>
+  </ul>
+
+  <h3>Commercial licensing — the one carve-out</h3>
+  <p>
+    Businesses that want to ingest the dataset into a commercial product email us for a bilateral licence (see <a href="/license">/license</a>). That's a commercial conversation initiated by the counterparty, not marketing initiated by us. We don't publicise commercial pricing or solicit licensees.
+  </p>
+
+  <p class="small" style="margin-top: 2rem;">
+    See also: <a href="/privacy">privacy policy</a> · <a href="/disclaimer">disclaimer</a> · <a href="/license">license</a>.
+  </p>
+</Base>

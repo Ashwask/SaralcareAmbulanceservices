@@ -1,0 +1,185 @@
+---
+import Base from "@/layouts/Base.astro";
+const repo = "https://github.com/Ashwask/SaralcareAmbulanceservices";
+---
+
+<Base
+  title="User guide — Saralcare Ambulances"
+  description="How to read the directory: badges, sources, fares, affiliations, what to trust, when to verify. For doctors, journalists, researchers, NGOs, family caregivers."
+>
+  <p class="small"><a href="/documentation/api">API reference →</a></p>
+  <h2 style="margin-top: 0.4rem">User guide</h2>
+  <p style="max-width: 64ch; color: var(--muted);">
+    How to read a record, what each badge means, what to trust at a glance, and when to verify by phone before relying. Written for non-technical readers — doctors, journalists, researchers, NGOs, family caregivers. The <a href="/documentation/api">API reference</a> is for developers.
+  </p>
+
+  <h3>The freshness badge — the most important thing on every record</h3>
+  <div class="card">
+    <p style="margin: 0;">Every provider and hospital carries one badge:</p>
+    <table class="badge-table">
+      <thead><tr><th>Badge</th><th>Meaning</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge--verified">verified</span></td>
+          <td>Confirmed by a phone call within the last 30 days.</td>
+          <td>Most trustworthy. Tap to call.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge--stale">stale</span></td>
+          <td>Verified 30–60 days ago. Probably still works but uncertain.</td>
+          <td>Tap to call. If it doesn't answer, tap the "✗ Number didn't work" link so we re-verify.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge--unverified">unverified</span></td>
+          <td>We compiled this from a public source (provider's website, etc.) but haven't called yet.</td>
+          <td>Tap to call but be prepared to try 108 if it doesn't go through.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge--dead">dead</span></td>
+          <td>Unreachable across multiple attempts. Hidden from search but visible in deep links + public Git history.</td>
+          <td>Don't rely on it. Dial 108.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge--disputed">disputed</span></td>
+          <td>The provider has contested some part of the record.</td>
+          <td>Read the dispute note on the record page before trusting.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Vehicle types — what the abbreviations mean</h3>
+  <ul>
+    <li><strong>BLS</strong> — Basic Life Support. Oxygen, first aid, stretcher. For non-critical transport.</li>
+    <li><strong>ALS</strong> — Advanced Life Support. BLS + defibrillator + paramedic. For cardiac, stroke, trauma.</li>
+    <li><strong>MICU</strong> — Mobile Intensive Care Unit. Ventilator, ICU-grade monitoring, doctor on board. For critical-care transfers.</li>
+    <li><strong>PTA</strong> — Patient Transport Ambulance. Non-emergency, planned transfers.</li>
+    <li><strong>Neonatal</strong> — Specialised for newborns, incubator-equipped.</li>
+    <li><strong>Cardiac</strong> — Heart-attack-focused ALS, may include thrombolysis.</li>
+    <li><strong>Mortuary</strong> — Transfer of deceased. Not an emergency vehicle.</li>
+  </ul>
+  <p class="small">Confirm the vehicle type when you call. A BLS sent to a cardiac arrest is dangerous — better to wait 5 more minutes for an ALS.</p>
+
+  <h3>Provider types</h3>
+  <ul>
+    <li><strong>govt-108</strong> — State emergency medical service. Free at point of use. Dispatched centrally; you don't choose a specific vehicle.</li>
+    <li><strong>private-aggregator</strong> — A booking-app company (RED.Health, Medulance, etc.) that brokers across multiple providers.</li>
+    <li><strong>private-standalone</strong> — A single private operator with their own fleet.</li>
+    <li><strong>hospital-owned</strong> — Operated by a hospital, typically for transfers in or out of their facility.</li>
+    <li><strong>ngo</strong> — Charitable / not-for-profit service.</li>
+    <li><strong>charitable</strong> — Religious trust or community-funded.</li>
+  </ul>
+
+  <h3>The IVR-routing chip — why some numbers route through a menu</h3>
+  <p>
+    Big chain hospitals (Apollo, Manipal, Fortis, Max, Narayana) publish a single national helpline that routes by IVR menu — typically "press 5 for ambulance." Records that share these numbers show a small amber chip below the call button explaining the menu. <strong>If you're under time pressure, dial 108 instead of the chain helpline — you avoid the menu.</strong>
+  </p>
+
+  <h3>"What users report" — historical, not real-time</h3>
+  <p>
+    Below most provider records you'll see aggregate stats from past user calls — answer rate, dispatch rate, median response time, fare dispersion. These are <strong>historical observations</strong> of what *did* happen, not predictions of what will happen now. A 90% answer rate over 50 reports does not guarantee they'll answer this minute.
+  </p>
+
+  <h3>Fares — what's published vs what gets charged</h3>
+  <p>
+    Fares come from two channels:
+  </p>
+  <ul>
+    <li><strong>Provider-claimed</strong> — what the provider told us on our verification call.</li>
+    <li><strong>User-reported</strong> — what users actually paid on real calls (visible in the aggregated stats).</li>
+  </ul>
+  <p>
+    A divergence between the two is normal — surge pricing, distance variance, equipment use can all push the actual fare above the published base. <strong>Always confirm the fare on the call, before the vehicle dispatches.</strong>
+  </p>
+
+  <h3>Hospital affiliations — what an edge means</h3>
+  <p>
+    A <em>hospital affiliation</em> edge means: <strong>this hospital's published Emergency Room number routes calls to this provider</strong>, with a source citation. It does NOT mean:
+  </p>
+  <ul>
+    <li>Exclusive contract (unless the badge says so).</li>
+    <li>Kickback or financial relationship (we never assert motive without a public document).</li>
+    <li>Endorsement by us.</li>
+  </ul>
+  <p>It's a factual observation about ER routing, which is useful when comparing alternatives a hospital might not surface unprompted.</p>
+
+  <h3>Sources — every claim has a citation</h3>
+  <p>
+    Every record has a <code>sources</code> array. Each source is one of:
+  </p>
+  <ul>
+    <li><code>website</code> — provider's own website at a specific date.</li>
+    <li><code>phone-verification</code> — a logged call we placed.</li>
+    <li><code>rti-response</code> — official answer to an RTI we filed.</li>
+    <li><code>govt-listing</code> — published government data.</li>
+    <li><code>press-report</code> — a news article we're citing as supporting evidence.</li>
+    <li><code>hospital-listing</code> — a hospital's own publication.</li>
+    <li><code>osm</code> — OpenStreetMap node.</li>
+    <li><code>google-places</code> — Google Places API.</li>
+    <li><code>justdial</code> — JustDial listing (used sparingly, low trust).</li>
+    <li><code>contributor-pr</code> — community contribution via GitHub.</li>
+  </ul>
+  <p>If a record makes a claim and you can't find a source for it, that's a bug — please <a href={`${repo}/issues/new?template=correction.yml`}>file a correction</a>.</p>
+
+  <h3>When to call 108 instead of using this site</h3>
+  <p>Always call 108 first if:</p>
+  <ul>
+    <li>The patient is in a life-threatening state.</li>
+    <li>You don't have an internet connection.</li>
+    <li>You're in a remote area where this site shows few alternatives.</li>
+    <li>You're in any kind of acute distress that interferes with following a multi-step flow.</li>
+  </ul>
+  <p>Use this site for:</p>
+  <ul>
+    <li>Planning ahead (saving providers for an elderly parent).</li>
+    <li>Comparing fares before a non-emergency transfer.</li>
+    <li>Finding a specific vehicle type (MICU for a critical-care transfer).</li>
+    <li>Researching the affiliation graph for journalism or policy work.</li>
+    <li>Calling when 108 is unreachable or has put you on hold.</li>
+  </ul>
+
+  <h3>How to contribute</h3>
+  <p>
+    Three paths, from least to most involved:
+  </p>
+  <ul>
+    <li><strong>Tap "✗ Number didn't work"</strong> on a record where the number failed — 10 seconds, the maintainer re-verifies.</li>
+    <li><strong>Submit a "report your call experience"</strong> from a provider page — 2 minutes, becomes part of the aggregated stats.</li>
+    <li><strong>Open a PR on GitHub</strong> with new data, corrections, or translations — see <a href={`${repo}/blob/main/FIRST-CONTRIBUTORS.md`}>FIRST-CONTRIBUTORS.md</a>.</li>
+  </ul>
+
+  <h3>FAQ</h3>
+  <details class="card">
+    <summary>Why aren't there more verified records?</summary>
+    <p>Because verification requires a real phone call by a real human, and the maintainer is one person. The verification rate scales with volunteers — see <a href="/host/captain">/host/captain</a>.</p>
+  </details>
+  <details class="card">
+    <summary>Why doesn't this work like Google Maps?</summary>
+    <p>Google Maps shows business listings — we publish a curated directory with sources, verification cadence, and affiliations. Different category. We're closer to OpenStreetMap or OAQ in posture.</p>
+  </details>
+  <details class="card">
+    <summary>Can I trust the dataset for medical-legal use?</summary>
+    <p>The data is for research, planning, and informed decision-making. <strong>Not</strong> a substitute for live verification or 108. See the <a href="/disclaimer">disclaimer</a>.</p>
+  </details>
+  <details class="card">
+    <summary>Is my pincode / location ever sent to a server?</summary>
+    <p>No. Geolocation runs in your browser and the result is used client-side to sort the provider list. We don't log it.</p>
+  </details>
+  <details class="card">
+    <summary>Can my hospital embed this on our patient portal?</summary>
+    <p>Yes — under CC BY-NC-SA 4.0, non-commercial patient-care use. See the <a href="/for-providers">embed widget</a>. If you want to monetise the embed, email us for a commercial licence.</p>
+  </details>
+
+  <p class="small" style="margin-top: 2rem;">
+    See also: <a href="/documentation/api">API reference</a> · <a href="/notice">how this site works</a> · <a href="/disclaimer">disclaimer</a> · <a href="/license">license</a>.
+  </p>
+
+  <style>
+    .badge-table { width: 100%; border-collapse: collapse; margin-top: 0.6rem; font-size: 0.94rem; }
+    .badge-table th, .badge-table td { padding: 0.45rem 0.4rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .badge-table th { font-weight: 600; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem 1.05rem; margin: 0.55rem 0; }
+    details.card summary { font-weight: 600; cursor: pointer; }
+    details.card[open] summary { margin-bottom: 0.5rem; }
+  </style>
+</Base>

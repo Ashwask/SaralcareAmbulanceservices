@@ -22,7 +22,7 @@ export interface Env {
   RATE: KVNamespace;
 }
 
-type FormType = "report" | "new-provider" | "provider-claim" | "correction" | "dead-number" | "capacity-check";
+type FormType = "report" | "new-provider" | "provider-claim" | "correction" | "dead-number" | "capacity-check" | "host-clinic" | "host-captain";
 
 const LABELS: Record<FormType, string[]> = {
   report: ["report", "needs-moderation"],
@@ -31,6 +31,8 @@ const LABELS: Record<FormType, string[]> = {
   correction: ["correction"],
   "dead-number": ["dead-number", "needs-reverify"],
   "capacity-check": ["capacity-check", "urgent-ping"],
+  "host-clinic": ["host-clinic", "needs-onboarding"],
+  "host-captain": ["host-captain", "needs-onboarding"],
 };
 
 const TITLES: Record<FormType, (p: any) => string> = {
@@ -40,6 +42,8 @@ const TITLES: Record<FormType, (p: any) => string> = {
   correction: (p) => `[CORRECTION] ${p.target_id} — ${p.field ?? "?"}`,
   "dead-number": (p) => `[DEAD NUMBER] ${p.provider_id} — ${p.phone}`,
   "capacity-check": (p) => `[CAPACITY CHECK] ${p.provider_id} — pincode ${p.pincode ?? "?"}`,
+  "host-clinic": (p) => `[HOST CLINIC] ${p.hospital ?? "?"} — ${p.city ?? "?"}`,
+  "host-captain": (p) => `[HOST CAPTAIN] ${p.city ?? "?"}`,
 };
 
 export default {

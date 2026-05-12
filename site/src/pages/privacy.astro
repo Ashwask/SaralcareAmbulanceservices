@@ -1,0 +1,114 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base
+  title="Privacy & data policy — Saralcare Ambulances"
+  description="What we collect, what we don't, what we do with it, and how to remove it. Adapted from the OAQ posture. No marketing, ever."
+>
+  <h2 style="margin-top: 0.4rem">Privacy & data policy</h2>
+  <p style="max-width: 62ch; color: var(--muted);">
+    The shortest version: <strong>we don't collect anything from people who just visit or use the directory.</strong> We collect minimum coordination details from people who actively contribute (verifiers, providers claiming a listing, monitor hosts, capacity-check requesters). We never market to anyone. Ever.
+  </p>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>1. What we collect from viewers</h3>
+    <div class="card">
+      <p style="margin: 0; font-weight: 600;">Nothing.</p>
+      <ul style="margin: 0.5rem 0 0;">
+        <li>No accounts, no logins, no cookies for analytics or advertising.</li>
+        <li>No IP logging beyond Cloudflare's standard edge logs (which we don't inspect).</li>
+        <li>Your saved providers, home pincode, and last-known location live <strong>only on your device</strong> in <code>localStorage</code>. They never leave the device.</li>
+        <li>No tracking pixels. No Google Analytics. No Facebook Pixel. No retargeting.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section style="margin-top: 1.2rem;">
+    <h3>2. What we collect from contributors</h3>
+    <p>When you actively contribute — submit a report, claim a listing, register a new service, request a capacity check, apply to host a clinic feed or be a city captain — we ask for the minimum information needed to do the thing you're asking.</p>
+    <div class="card">
+      <p style="margin: 0; font-weight: 600;">Typically: name (or initials), email, phone, location.</p>
+      <p style="margin: 0.5rem 0 0;">Used <strong>only</strong> for:</p>
+      <ul>
+        <li><strong>Verification callback</strong> — we phone you to confirm your contribution is real.</li>
+        <li><strong>Coordination</strong> — for monitor hosts and city captains, we email you about your role.</li>
+        <li><strong>Direct response</strong> — answering your specific inquiry.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section style="margin-top: 1.2rem;">
+    <h3>3. What we never do with your information</h3>
+    <div class="card" style="background: var(--accent-bg); border-color: #fecaca;">
+      <ul style="margin: 0;">
+        <li><strong>Never sold.</strong> Not to providers. Not to insurers. Not to anyone.</li>
+        <li><strong>Never traded.</strong> No data partnerships, ever.</li>
+        <li><strong>Never used for marketing.</strong> No newsletters unless you explicitly subscribe (we don't run one). No promotional campaigns. No retargeting.</li>
+        <li><strong>Never profiled.</strong> We don't build a behavioural profile of anyone.</li>
+        <li><strong>Never shared with third parties for profiling.</strong></li>
+      </ul>
+    </div>
+  </section>
+
+  <section style="margin-top: 1.2rem;">
+    <h3>4. Data transparency & anonymity</h3>
+    <ul>
+      <li><strong>Provider records are public.</strong> Phone numbers, addresses, vehicle types, affiliations — all open, all CC BY-NC-SA 4.0.</li>
+      <li><strong>Contributor identities are private by default.</strong> <code>CONTRIBUTORS.md</code> is opt-in. PR authors can use a pseudonym (e.g. <code>maintainer@ambulance.saralcare.com</code>) instead of personal Git identities.</li>
+      <li><strong>Verification calls log initials only</strong> (up to 4 characters), never full names of callers.</li>
+      <li><strong>User reports never publish</strong> the submitter's full name, email, or phone. Optional initials only.</li>
+      <li><strong>Provider claim flow</strong> verifies the claimant by phone but never publishes their direct line.</li>
+    </ul>
+  </section>
+
+  <section style="margin-top: 1.2rem;">
+    <h3>5. Disclaimer (mirroring OAQ's stance)</h3>
+    <p>
+      Data is for <strong>research, planning, and informed decision-making</strong>. For life-threatening medical decisions, always dial <a href="tel:108"><strong>108</strong></a> first and verify any number by calling before relying on it. The maintainers of this site are <strong>not liable for data accuracy</strong> — see the full <a href="/disclaimer">disclaimer</a> for the legal framing.
+    </p>
+  </section>
+
+  <section style="margin-top: 1.2rem;">
+    <h3>6. India DPDP (Digital Personal Data Protection Act, 2023)</h3>
+    <p>The DPDP Act applies when an entity processes personal data of Indian residents. Our posture:</p>
+    <ul>
+      <li>We do not process personal data of viewers (none collected).</li>
+      <li>Personal data we collect from contributors is processed under the "specified, legitimate purpose" basis (Section 4) — coordination, verification, response.</li>
+      <li>You can request deletion at any time: email <a href="mailto:ashwinsk@saralcare.com?subject=%5BDELETE+MY+DATA%5D">ashwinsk@saralcare.com</a> with subject <code>[DELETE MY DATA]</code>. We honour within 48 hours.</li>
+      <li>We do not transfer data outside India for any processing other than Cloudflare's edge cache (which is global and standard).</li>
+      <li>When a Section 8 entity is registered, it becomes the named Data Fiduciary under DPDP. Until then, the natural person who owns the domain is.</li>
+    </ul>
+  </section>
+
+  <section style="margin-top: 1.2rem;">
+    <h3>7. Your rights</h3>
+    <ul>
+      <li><strong>See what we hold about you:</strong> email us; we reply within 48 hours.</li>
+      <li><strong>Remove your contributions:</strong> email <code>[CONTRIBUTOR REMOVAL]</code> and your data leaves the public dataset.</li>
+      <li><strong>Correct anything:</strong> open a GitHub issue or email us.</li>
+      <li><strong>File a grievance:</strong> if we don't respond, you can escalate to the Data Protection Board of India once it's operational under DPDP.</li>
+    </ul>
+  </section>
+
+  <section style="margin-top: 1.2rem;">
+    <h3>8. Cookies & local storage</h3>
+    <ul>
+      <li>No tracking cookies.</li>
+      <li>No analytics cookies (we run no analytics).</li>
+      <li>localStorage holds: <code>sc.amb.saved</code>, <code>sc.amb.home-pincode</code>, <code>sc.amb.last-loc</code>, <code>sc.amb.notice-seen</code>, <code>sc.amb.dead</code>, <code>sc.amb.lang</code>. These live only on your device; no server sees them.</li>
+      <li>Clear them via your browser's "Clear site data" at any time.</li>
+    </ul>
+  </section>
+
+  <section style="margin-top: 1.5rem;">
+    <h3>Contact</h3>
+    <p>
+      Privacy questions or requests: <a href="mailto:ashwinsk@saralcare.com?subject=%5BPRIVACY%5D">ashwinsk@saralcare.com</a> with subject <code>[PRIVACY]</code>. Responded to within 48 hours.
+    </p>
+  </section>
+
+  <p class="small" style="margin-top: 2rem;">
+    See also: <a href="/no-marketing">no-marketing policy</a> · <a href="/disclaimer">disclaimer</a> · <a href="/license">license</a> · <a href="/notice">how this site works</a>.
+  </p>
+</Base>
