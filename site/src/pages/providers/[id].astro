@@ -64,7 +64,7 @@ const phoneTel = phone.replace(/\s+/g, "");
     )}
 
     <div class="hl-microcopy" style="margin-top: 0.5rem;">
-      Calling <strong>{provider.brand_name}</strong>. <a href="#" class="pc-dead-link" data-provider-id={provider.id} data-provider-name={provider.brand_name} data-phone={phone}>Number didn't work?</a> &nbsp;·&nbsp; In an emergency, dial <a href="tel:108"><strong>108</strong></a>.
+      Calling <strong>{provider.brand_name}</strong>. In an emergency, dial <a href="tel:108"><strong>108</strong></a>.
     </div>
 
     {phone && phone !== "+91 00000 00000" ? (
@@ -313,29 +313,5 @@ const phoneTel = phone.replace(/\s+/g, "");
       if (!sec.hidden) sec.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
-    // Dead-number one-tap report (also on detail page)
-    document.querySelector(".pc-dead-link")?.addEventListener("click", async (e) => {
-      e.preventDefault();
-      const a = e.currentTarget;
-      const id = a.dataset.providerId;
-      // localStorage
-      try {
-        const cur = JSON.parse(localStorage.getItem("sc.amb.dead") || "[]");
-        if (!cur.includes(id)) { cur.push(id); localStorage.setItem("sc.amb.dead", JSON.stringify(cur)); }
-      } catch {}
-      a.textContent = "✓ Reported — re-verify queue.";
-      a.style.color = "var(--green)";
-      a.style.pointerEvents = "none";
-      const submitUrl = (import.meta.env.PUBLIC_SUBMIT_URL ?? "") || "";
-      if (submitUrl) {
-        try {
-          await fetch(submitUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ form_type: "dead-number", payload: { provider_id: id, provider_name: a.dataset.providerName, phone: a.dataset.phone, reported_at: new Date().toISOString() } }),
-          });
-        } catch {}
-      }
-    });
   </script>
 </Base>

@@ -16,6 +16,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The
 - Discord / community channels (founder action)
 - First commercial-license inquiry tracking
 
+## [0.6.1] — 2026-05-13
+
+### Fixed — stale-cache class of bug
+- **HTML now network-first** in the service worker. Previously stale-while-revalidate handed users the previous deploy's HTML on every first hit. JSON and tiles stay SWR (high cache-hit value, low churn).
+- **"New version available" banner** prompts a one-tap reload when a new SW is installed. Driven by `controllerchange` + `SKIP_WAITING` message. Eliminates the silent staleness that hid v0.6.0 changes behind v0.6.0's own SW.
+
+### Changed — end-user surfaces no longer one-tap-flag dead numbers
+- **Removed "Number didn't work" link** from `/find` provider cards and `/providers/[id]` hero microcopy. End users no longer label records dead.
+- Dead/wrong-number / out-of-service moderation now flows exclusively through the contributor verify form (`VerifyForm.astro` with `outcome: no-answer / wrong-number / out-of-service / busy`). Keeps the audit trail consistent: every status change is sourced to a logged call by a known initial.
+- localStorage `sc.amb.dead` no longer written. Old entries are inert (read path removed too).
+
+### Bumped
+- Service worker → `v1.0.9`
+
 ## [0.6.0] — 2026-05-10
 
 ### Changed — hide unpublished numbers from emergency surfaces

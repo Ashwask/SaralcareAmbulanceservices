@@ -225,11 +225,59 @@ const {
       </div>
     </footer>
 
+    <div id="sw-update-banner" hidden>
+      <span>New version available.</span>
+      <button type="button" id="sw-update-btn">Reload</button>
+      <button type="button" id="sw-update-dismiss" aria-label="Dismiss">×</button>
+    </div>
+    <style>
+      #sw-update-banner {
+        position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%);
+        background: #15803d; color: white; border-radius: 999px;
+        padding: 0.5rem 0.6rem 0.5rem 1rem; display: flex; gap: 0.6rem; align-items: center;
+        font-size: 0.9rem; font-weight: 600; z-index: 9999;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+      }
+      #sw-update-banner[hidden] { display: none; }
+      #sw-update-banner button {
+        background: white; color: #15803d; border: 0;
+        padding: 0.35rem 0.85rem; border-radius: 999px;
+        font: inherit; font-weight: 700; cursor: pointer;
+      }
+      #sw-update-dismiss { background: transparent !important; color: white !important; padding: 0.2rem 0.5rem !important; font-size: 1.1rem; }
+    </style>
     <script is:inline>
-      // Register service worker
+      // Register service worker + handle updates
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/sw.js").catch(() => {});
+          navigator.serviceWorker.register("/sw.js").then((reg) => {
+            if (reg.waiting && navigator.serviceWorker.controller) showUpdateBanner(reg.waiting);
+            reg.addEventListener("updatefound", () => {
+              const w = reg.installing;
+              if (!w) return;
+              w.addEventListener("statechange", () => {
+                if (w.state === "installed" && navigator.serviceWorker.controller) showUpdateBanner(w);
+              });
+            });
+          }).catch(() => {});
+
+          let refreshing = false;
+          navigator.serviceWorker.addEventListener("controllerchange", () => {
+            if (refreshing) return;
+            refreshing = true;
+            window.location.reload();
+          });
+
+          function showUpdateBanner(worker) {
+            const banner = document.getElementById("sw-update-banner");
+            if (!banner || sessionStorage.getItem("sw-update-dismissed") === "1") return;
+            banner.hidden = false;
+            document.getElementById("sw-update-btn").onclick = () => worker.postMessage({ type: "SKIP_WAITING" });
+            document.getElementById("sw-update-dismiss").onclick = () => {
+              banner.hidden = true;
+              sessionStorage.setItem("sw-update-dismissed", "1");
+            };
+          }
         });
       }
     </script>

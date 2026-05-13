@@ -196,18 +196,14 @@ const hiddenCount = providers.length - callableProviders.length;
     }
 
     function badgeClass(b) { return `badge badge--${b}`; }
-    function isDeadLocal(id) {
-      try { return (JSON.parse(localStorage.getItem("sc.amb.dead") || "[]")).includes(id); } catch { return false; }
-    }
     function renderCard(p, rank, distance) {
       const isSaved = readSaved().some((s) => s.id === p.id);
       const phoneTel = String(p.phone || "").replace(/\s+/g, "");
       const typeLabel = p.type === "govt-108" ? "108 / govt" : p.type.replace("-", " ");
       const dist = distance != null ? `· ${distance.toFixed(1)} km` : "";
-      const dead = isDeadLocal(p.id);
-      const badgeShown = dead ? "disputed" : p.badge;
+      const badgeShown = p.badge;
       return `
-        <article class="pc ${dead ? "pc--dead" : ""}" data-provider-id="${p.id}">
+        <article class="pc" data-provider-id="${p.id}">
           <div class="pc-head">
             <span class="pc-rank">${rank}</span>
             <div class="pc-meta">
@@ -231,8 +227,7 @@ const hiddenCount = providers.length - callableProviders.length;
           </a>
           ${p.routing_note ? `<div class="pc-routing">↪ ${escape(p.routing_note)}</div>` : ""}
           <div class="pc-microcopy">
-            <a href="#" class="pc-dead-link" data-provider-id="${p.id}" data-provider-name="${escape(p.brand_name)}" data-phone="${escape(p.phone)}">✗ Number didn't work</a>
-            &nbsp;·&nbsp; If you can't reach them, dial <a href="tel:108"><strong>108</strong></a>.
+            If you can't reach them, dial <a href="tel:108"><strong>108</strong></a>.
           </div>
         </article>`;
     }
@@ -329,44 +324,6 @@ const hiddenCount = providers.length - callableProviders.length;
       writeSaved(saved.slice(0, 50));
       refreshStars();
       renderSavedSection();
-    });
-
-    // Dead-number report — one-tap.
-    function readDead() { try { return JSON.parse(localStorage.getItem("sc.amb.dead") || "[]"); } catch { return []; } }
-    function writeDead(a) { try { localStorage.setItem("sc.amb.dead", JSON.stringify(a)); } catch {} }
-    document.addEventListener("click", async (e) => {
-      const a = e.target.closest?.(".pc-dead-link");
-      if (!a) return;
-      e.preventDefault();
-      const id = a.dataset.providerId;
-      const name = a.dataset.providerName;
-      const phone = a.dataset.phone;
-      // Locally mark dead so the badge flips for this user immediately.
-      const dead = readDead();
-      if (!dead.includes(id)) { dead.push(id); writeDead(dead); }
-      // Replace the link with a "Reported — thank you" line
-      const card = a.closest(".pc");
-      if (card) {
-        card.classList.add("pc--dead");
-        const microcopy = card.querySelector(".pc-microcopy");
-        if (microcopy) microcopy.innerHTML = "✓ Reported. We'll re-verify. Dial <a href=\"tel:108\"><strong>108</strong></a> now.";
-        const badgeEl = card.querySelector(".badge");
-        if (badgeEl) { badgeEl.className = "badge badge--disputed"; badgeEl.textContent = "disputed"; }
-      }
-      // Send to Worker (or mailto fallback)
-      const submitUrl = window.__SUBMIT_URL__;
-      const payload = { provider_id: id, provider_name: name, phone, reported_at: new Date().toISOString() };
-      if (submitUrl) {
-        try {
-          await fetch(submitUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ form_type: "dead-number", payload }),
-          });
-        } catch {}
-      }
-      // If Worker isn't configured, the localStorage flag still gives the user the badge feedback.
-      // The aggregate signal lands when the maintainer reviews moderation queue periodically.
     });
 
     function renderSavedSection() {

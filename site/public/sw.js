@@ -10,7 +10,7 @@
  *  - Offline fallback page: /offline.html for navigations when nothing cached.
  */
 
-const VERSION = "v1.0.8";
+const VERSION = "v1.0.9";
 const SHELL = `shell-${VERSION}`;
 const DATA = `data-${VERSION}`;
 const TILES = `tiles-${VERSION}`;
@@ -33,7 +33,11 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(SHELL).then((c) => c.addAll(SHELL_URLS.map((u) => new Request(u, { cache: "reload" }))))
   );
-  self.skipWaiting();
+  // No automatic skipWaiting — page prompts user, then posts SKIP_WAITING.
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
@@ -66,11 +70,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // HTML navigations
+  // HTML navigations — network-first so a fresh deploy is visible on the next
+  // navigation. Falls back to cached HTML when offline, then offline.html.
   if (req.mode === "navigate") {
-    event.respondWith(
-      staleWhileRevalidate(req, SHELL).catch(() => caches.match("/offline.html"))
-    );
+    event.respondWith(networkFirst(req, SHELL));
     return;
   }
 
@@ -94,6 +97,18 @@ async function cacheFirst(req, cacheName, maxEntries) {
     return resp;
   } catch (e) {
     return hit || new Response("offline", { status: 503 });
+  }
+}
+
+async function networkFirst(req, cacheName) {
+  const cache = await caches.open(cacheName);
+  try {
+    const resp = await fetch(req);
+    if (resp && resp.ok) cache.put(req, resp.clone());
+    return resp;
+  } catch (e) {
+    const hit = await cache.match(req);
+    return hit || (await caches.match("/offline.html")) || new Response("offline", { status: 503 });
   }
 }
 
