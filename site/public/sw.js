@@ -10,7 +10,7 @@
  *  - Offline fallback page: /offline.html for navigations when nothing cached.
  */
 
-const VERSION = "v1.0.9";
+const VERSION = "v1.0.10";
 const SHELL = `shell-${VERSION}`;
 const DATA = `data-${VERSION}`;
 const TILES = `tiles-${VERSION}`;
@@ -37,7 +37,13 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
+  if (!event.data) return;
+  if (event.data.type === "SKIP_WAITING") self.skipWaiting();
+  // Drop the HTML cache on tab close so the next visit can't hit a stale page.
+  // SHELL_URLS get re-cached on next install; in-session HTML repopulates via networkFirst.
+  if (event.data.type === "CLEAR_HTML_CACHE") {
+    event.waitUntil(caches.delete(SHELL));
+  }
 });
 
 self.addEventListener("activate", (event) => {
