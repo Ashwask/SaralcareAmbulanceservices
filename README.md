@@ -8,7 +8,7 @@ last verified by phone.
 
 **Live site:** https://www.ambulance.saralcare.com
 **License inquiries (commercial):** ashwinsk@saralcare.com
-**Corrections and takedown:** corrections@ambulance.saralcare.com
+**Corrections and takedown:** ashwinsk@saralcare.com (subject: `[CORRECTION]` or `[TAKEDOWN]`)
 
 ---
 
@@ -131,8 +131,8 @@ correction or new record.
 ## How to contribute
 
 1. **Report a wrong number or stale record.** Open a GitHub issue (or
-   email `corrections@ambulance.saralcare.com`) with the provider ID and
-   what you tried. We re-verify and update.
+   email `ashwinsk@saralcare.com` with subject `[CORRECTION]`) with the
+   provider ID and what you tried. We re-verify and update.
 
 2. **Add a missing provider.** Open a pull request with a new YAML file
    under `data/providers/`. Include at least one source (a website URL,
