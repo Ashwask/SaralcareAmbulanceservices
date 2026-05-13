@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://www.ambulance.saralcare.com/schema/provider.schema.json",
+  "$id": "https://ambulance.saralcare.com/schema/provider.schema.json",
   "title": "Ambulance Provider Record",
   "description": "Canonical record for one ambulance provider in the Saralcare directory.",
   "type": "object",

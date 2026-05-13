@@ -151,7 +151,7 @@ ${tableRows}
 
 </details>
 
-_Submitted under the terms of the disclaimer at https://www.ambulance.saralcare.com/disclaimer. By submitting, the contributor licenses the content to the project under CC BY-NC-SA 4.0._
+_Submitted under the terms of the disclaimer at https://ambulance.saralcare.com/disclaimer. By submitting, the contributor licenses the content to the project under CC BY-NC-SA 4.0._
 `.trim();
 }
 

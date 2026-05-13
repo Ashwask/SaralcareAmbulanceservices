@@ -16,7 +16,7 @@ We respond within 48 hours.
 **Time:** ~10 minutes.
 **Value:** moves one record from unverified → verified, flipping its badge from grey to green.
 
-1. Open the [verify session helper](https://www.ambulance.saralcare.com/verify-session) (when site is live).
+1. Open the [verify session helper](https://ambulance.saralcare.com/verify-session) (when site is live).
 2. Pick a record. Call the listed number.
 3. Run through the [call script](https://github.com/Ashwask/SaralcareAmbulanceservices/blob/main/CONTRIBUTING.md#the-verification-phone-call-script).
 4. Click "Edit on GitHub" on the record's page. Change `status: unverified` → `verified`, set `last_verified_at` and `verified_by`, add a `call_logs` entry. Commit.
@@ -38,7 +38,7 @@ We respond within 48 hours.
 **Time:** ~15 minutes.
 **Value:** the directory grows.
 
-1. Use the [new-provider form](https://www.ambulance.saralcare.com/providers/new) — fills the YAML for you.
+1. Use the [new-provider form](https://ambulance.saralcare.com/providers/new) — fills the YAML for you.
 2. Or [open a structured issue](https://github.com/Ashwask/SaralcareAmbulanceservices/issues/new?template=new-provider.yml).
 3. We verify by phone before merging.
 

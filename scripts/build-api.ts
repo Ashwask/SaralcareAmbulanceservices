@@ -160,7 +160,7 @@ writeFileSync(
     {
       generated_at: new Date().toISOString(),
       license: "CC-BY-NC-SA-4.0",
-      attribution: "Saralcare ambulance directory project (https://www.ambulance.saralcare.com)",
+      attribution: "Saralcare ambulance directory project (https://ambulance.saralcare.com)",
       count: providers.filter(hasRealPhone).length,
       total_in_dataset: providers.length,
       hidden_no_phone: providers.length - providers.filter(hasRealPhone).length,
@@ -195,7 +195,7 @@ writeFileSync(
     {
       generated_at: new Date().toISOString(),
       license: "CC-BY-NC-SA-4.0",
-      attribution: "Saralcare ambulance directory project (https://www.ambulance.saralcare.com)",
+      attribution: "Saralcare ambulance directory project (https://ambulance.saralcare.com)",
       count: hospitals.length,
       hospitals: hospitals.map(slimHospital).sort((a, b) => a.name.localeCompare(b.name)),
     },

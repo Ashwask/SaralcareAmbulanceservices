@@ -89,7 +89,7 @@ After: 54 providers + 25 hospitals correctly tagged as "source-published". The 6
 - **`COMMUNITY.md`** — Discord / Telegram setup steps, monthly office-hour cadence, contribution paths.
 - **`.github/FUNDING.yml`** — placeholder for GitHub Sponsors, activated when entity exists.
 - **`DEPLOY.md`** — 15-minute quick-start that collapses the handover checklist into the critical-path commands.
-- Canonical URL set to **`https://www.ambulance.saralcare.com`** across schemas, site config, docs, Worker CORS.
+- Canonical URL set to **`https://ambulance.saralcare.com`** across schemas, site config, docs, Worker CORS.
 
 ### Changed
 - Provider + hospital correction CTAs now show three explicit paths: "Edit on GitHub", "Claim listing" / "Email correction", and "Open structured issue". Contribution becomes 2 clicks for anyone with a GitHub account.

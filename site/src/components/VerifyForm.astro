@@ -188,7 +188,7 @@ const today = new Date().toISOString().slice(0, 10);
       const body = encodeURIComponent(
         `Provider: ${providerName} (${providerId})\n` +
         Object.entries(payload).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`).join("\n") +
-        `\n\n— Submitted from www.ambulance.saralcare.com`
+        `\n\n— Submitted from ambulance.saralcare.com`
       );
       window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
     });

@@ -6,7 +6,7 @@ stations, private aggregators, hospital-owned fleets, charities, and
 standalone operators, all on one map. Each record carries the date it was
 last verified by phone.
 
-**Live site:** https://www.ambulance.saralcare.com
+**Live site:** https://ambulance.saralcare.com
 **License inquiries (commercial):** ashwinsk@saralcare.com
 **Corrections and takedown:** ashwinsk@saralcare.com (subject: `[CORRECTION]` or `[TAKEDOWN]`)
 

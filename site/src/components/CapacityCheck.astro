@@ -115,7 +115,7 @@ const submitUrl = import.meta.env.PUBLIC_SUBMIT_URL ?? "";
       // mailto fallback
       const subject = encodeURIComponent(`[CAPACITY CHECK] ${providerName} — pincode ${payload.pincode}`);
       const body = encodeURIComponent(
-        `Provider: ${providerName} (${providerId})\nPincode: ${payload.pincode}\nVehicle: ${payload.vehicle_type}\nTimeframe: ${payload.timeframe}\nContact: ${payload._contact}\nNotes: ${payload.notes}\n\n— Submitted from www.ambulance.saralcare.com`
+        `Provider: ${providerName} (${providerId})\nPincode: ${payload.pincode}\nVehicle: ${payload.vehicle_type}\nTimeframe: ${payload.timeframe}\nContact: ${payload._contact}\nNotes: ${payload.notes}\n\n— Submitted from ambulance.saralcare.com`
       );
       window.location.href = `mailto:ashwinsk@saralcare.com?subject=${subject}&body=${body}`;
     });

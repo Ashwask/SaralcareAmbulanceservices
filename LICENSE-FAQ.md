@@ -124,7 +124,7 @@ Required form:
 
 ```
 Source: Saralcare ambulance directory project
-(https://www.ambulance.saralcare.com), CC BY-NC-SA 4.0.
+(https://ambulance.saralcare.com), CC BY-NC-SA 4.0.
 ```
 
 For derivative datasets, add: "Modified from the source. Changes:

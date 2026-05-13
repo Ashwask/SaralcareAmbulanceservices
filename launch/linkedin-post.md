@@ -22,13 +22,13 @@
 >
 > Free under **CC BY-NC-SA 4.0** for individuals, families, doctors, hospitals (for patient care), journalists, researchers, NGOs, and civic groups. Businesses interested in commercial integration: email ashwinsk@saralcare.com.
 >
-> This is **information only**. We don't operate or dispatch any ambulance. **Always call 108 first in an emergency.** Read the full disclaimer at https://www.ambulance.saralcare.com/disclaimer.
+> This is **information only**. We don't operate or dispatch any ambulance. **Always call 108 first in an emergency.** Read the full disclaimer at https://ambulance.saralcare.com/disclaimer.
 >
 > 10 records seeded; verification calls in progress. If you can call one provider this week and tell us whether the number works, the dataset is the better for it. GitHub PRs welcome.
 >
 > Why? This layer of the system has no neutral advocate. Hospitals route to whoever pays them. Aggregators only list their own fleets. 108 is opaque on station locations and response times. Patients see one option when fifty exist. We're building the open commons because the gap is real and the math works.
 >
-> 🔗 https://www.ambulance.saralcare.com
+> 🔗 https://ambulance.saralcare.com
 > 🔗 https://github.com/Ashwask/SaralcareAmbulanceservices *(once repo is public)*
 >
 > #PublicHealth #OpenData #Bengaluru #CivicTech #Healthcare #EmergencyMedicine #Karnataka
@@ -68,7 +68,7 @@
 
 ## Pre-launch checklist (the morning of)
 
-- [ ] Site live at https://www.ambulance.saralcare.com (HTTPS, mobile-render works)
+- [ ] Site live at https://ambulance.saralcare.com (HTTPS, mobile-render works)
 - [ ] All 10 seed records render with sources visible
 - [ ] Disclaimer + takedown process linked from every page
 - [ ] No personal byline anywhere — footer reads "Saralcare ambulance directory project"

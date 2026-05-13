@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://www.ambulance.saralcare.com/schema/vehicle.schema.json",
+  "$id": "https://ambulance.saralcare.com/schema/vehicle.schema.json",
   "title": "Ambulance Vehicle Record",
   "description": "Optional per-vehicle record nested under a provider. v1 typically populates the rolled-up fleet_count_claimed on the provider instead; this schema is used when individual vehicle data is known.",
   "type": "object",

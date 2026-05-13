@@ -1,7 +1,7 @@
 # Deploy — 15-minute quick start
 
 You have the repo locally. This document gets the site live at
-`https://www.ambulance.saralcare.com` in roughly 15 minutes, assuming
+`https://ambulance.saralcare.com` in roughly 15 minutes, assuming
 your Cloudflare and GitHub accounts are signed in.
 
 For the longer, exhaustive checklist see `launch/handover-checklist.md`.
@@ -47,9 +47,9 @@ In Cloudflare DNS for `saralcare.com`:
    - **Name:** `www.ambulance` (or `ambulance` if you drop the `www`)
    - **Target:** the `*.pages.dev` URL from Step 2
    - **Proxy:** enabled (orange cloud)
-2. Back in Pages → your project → **Custom domains** → add `www.ambulance.saralcare.com`.
+2. Back in Pages → your project → **Custom domains** → add `ambulance.saralcare.com`.
 3. Cloudflare auto-issues an SSL cert (1-2 minutes).
-4. Verify: `https://www.ambulance.saralcare.com` renders the site.
+4. Verify: `https://ambulance.saralcare.com` renders the site.
 
 ## Step 4 — Cloudflare Worker for forms (5 minutes — OPTIONAL but recommended)
 
@@ -88,7 +88,7 @@ variables** → add `PUBLIC_SUBMIT_URL = https://submit.ambulance.saralcare.com`
 
 ## Step 5 — Sanity check (2 minutes)
 
-Open `https://www.ambulance.saralcare.com` on a phone and:
+Open `https://ambulance.saralcare.com` on a phone and:
 
 - [ ] Geolocate button shows nearest 5 providers
 - [ ] Tap-to-call opens the dialer

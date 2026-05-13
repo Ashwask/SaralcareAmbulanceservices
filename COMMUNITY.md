@@ -86,9 +86,9 @@ All channels operate under the project's [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md
 
 If you're new and reading this:
 
-1. Skim [NOTICE.md / `/notice`](https://www.ambulance.saralcare.com/notice) so you know what we are and aren't.
+1. Skim [NOTICE.md / `/notice`](https://ambulance.saralcare.com/notice) so you know what we are and aren't.
 2. Skim [CONTRIBUTING.md](CONTRIBUTING.md) for the verification protocol.
-3. Pick one of the contribution paths at [`/open-source`](https://www.ambulance.saralcare.com/open-source).
+3. Pick one of the contribution paths at [`/open-source`](https://ambulance.saralcare.com/open-source).
 4. Drop into Discord (when it exists) or open a GitHub Discussion saying hello + which path interests you.
 
 ## Who runs this

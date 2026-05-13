@@ -1,8 +1,8 @@
 {
-  "$schema": "https://www.ambulance.saralcare.com/schema/mirrors.schema.json",
+  "$schema": "https://ambulance.saralcare.com/schema/mirrors.schema.json",
   "version": "1.0",
   "canonical": {
-    "url": "https://www.ambulance.saralcare.com",
+    "url": "https://ambulance.saralcare.com",
     "repo": "https://github.com/Ashwask/SaralcareAmbulanceservices",
     "operator": "Saralcare ambulance directory project",
     "contact": "ashwinsk@saralcare.com",

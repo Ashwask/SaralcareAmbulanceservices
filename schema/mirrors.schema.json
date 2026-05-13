@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://www.ambulance.saralcare.com/schema/mirrors.schema.json",
+  "$id": "https://ambulance.saralcare.com/schema/mirrors.schema.json",
   "title": "Federation manifest — known mirrors and forks",
   "type": "object",
   "required": ["version", "canonical", "mirrors", "forks", "updated_at"],

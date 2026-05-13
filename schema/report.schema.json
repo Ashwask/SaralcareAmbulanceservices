@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://www.ambulance.saralcare.com/schema/report.schema.json",
+  "$id": "https://ambulance.saralcare.com/schema/report.schema.json",
   "title": "User-submitted call experience report",
   "description": "One observation about a real call attempt to a listed provider. Submitted by patients/families/contributors. Moderated before publication.",
   "type": "object",

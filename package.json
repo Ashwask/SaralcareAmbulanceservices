@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Open, verified directory of ambulance providers in India. CC BY-NC-SA 4.0 data, MIT code.",
   "license": "SEE LICENSE-CODE, LICENSE-DATA, LICENSE-CONTENT",
-  "homepage": "https://www.ambulance.saralcare.com",
+  "homepage": "https://ambulance.saralcare.com",
   "scripts": {
     "validate": "tsx scripts/validate.ts",
     "build-api": "tsx scripts/build-api.ts",
