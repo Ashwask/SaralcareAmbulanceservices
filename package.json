@@ -29,7 +29,6 @@
     "ajv-formats": "^3.0.1",
     "js-yaml": "^4.1.0"
   },
-  "packageManager": "pnpm@9.0.0",
   "workspaces": [
     "site"
   ]

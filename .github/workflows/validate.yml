@@ -8,7 +8,7 @@ on:
       - "scripts/validate.ts"
       - "scripts/build-api.ts"
       - "package.json"
-      - "pnpm-lock.yaml"
+      - "package-lock.json"
   push:
     branches: [main]
 
@@ -18,23 +18,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "pnpm"
+          cache: "npm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Validate schemas and cross-record consistency
-        run: pnpm validate
+        run: npm run validate
 
       - name: Build API artifacts (dry run)
-        run: pnpm build-api
+        run: npm run build-api
 
       - name: Freshness report
-        run: pnpm freshness
+        run: npm run freshness

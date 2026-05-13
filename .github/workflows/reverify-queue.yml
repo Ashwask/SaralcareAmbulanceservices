@@ -15,21 +15,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "pnpm"
+          cache: "npm"
 
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
 
       - name: Generate reverify queue
         id: queue
         run: |
-          pnpm tsx scripts/reverify-queue.ts > queue.md
+          npx tsx scripts/reverify-queue.ts > queue.md
           echo "queue<<EOF" >> $GITHUB_OUTPUT
           cat queue.md >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
